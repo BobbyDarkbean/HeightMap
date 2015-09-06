@@ -25,4 +25,9 @@
 #endif // !defined(HEIGHTMAP_LIB) && defined(OS_WIN)
 
 
+#define DISABLE_COPY(Class) \
+Class(const Class &); \
+Class &operator=(const Class &);
+
+
 #endif // _Hm_Shared_h_
