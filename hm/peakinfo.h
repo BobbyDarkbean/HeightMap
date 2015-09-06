@@ -15,7 +15,7 @@ struct HM_SHARED PeakInfo
 };
 
 
-}
+} // namespace HeightMap
 
 
 #endif // _PeakInfo_h_

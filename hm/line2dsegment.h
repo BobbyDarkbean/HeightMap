@@ -15,7 +15,7 @@ struct HM_SHARED Line2dSegment
 };
 
 
-}
+} // namespace HeightMap
 
 
 #endif // _Line2dSegment_h_
