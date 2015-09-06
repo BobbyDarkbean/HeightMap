@@ -118,8 +118,8 @@
 */
 
 
-#ifndef _Event_h
-#define _Event_h
+#ifndef _Event_h_
+#define _Event_h_
 
 
 #include <list>
@@ -384,4 +384,4 @@ ExternTemplateSpec template class SharedSpec std::list< ::EventService::Event<Ar
 ExternTemplateSpec template class SharedSpec ::EventService::Event<Args>
 
 
-#endif // _Event_h
+#endif // _Event_h_
