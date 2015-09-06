@@ -16,14 +16,16 @@ set (HMCORE_HDR event.h
                 hm_shared.h
                 peakinfo.h
                 line2dsegment.h
+                peakgenerationoptions.h
                 landscape.h
-                )
-set (HMCORE_SRC landscape.cpp)
+                mapper.h)
+set (HMCORE_SRC landscape.cpp
+                mapper.cpp)
 
 set (CMAKE_CXX_FLAGS "-Wall -O3 -pedantic -s")
 add_definitions (-DHEIGHTMAP_LIB)
 
-add_library (${LIB} SHARED ${HMCORE_SRC})
+add_library (${LIB} SHARED ${HMCORE_SRC} ${HMCORE_HDR})
 set_target_properties (${LIB} PROPERTIES
                               VERSION ${HMCORE_VERSION}
                               SOVERSION ${HMCORE_SOVERSION})
