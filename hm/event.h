@@ -5,15 +5,16 @@
  */
 
 /*
-    INSTRUCTIONS ON MACRO USAGE
+    INSTRUCTIONS ON THE USAGE OF MACROS
 
-    1. Define desired event-parameter structures. Events can take
-    only one parameter. Define typedefs for pointer-types and
-    instantiated templates.
+    1. EVENT PARAMETER.
+    Define desired event-parameter structures. Events can take only one
+    parameter. Define typedefs for pointer-types and instantiated templates.
 
-    2. Declare events in a sender-class with the declare_event macro.
-    It is allowed to declare events with the same names but different
-    parameter types. E.g.:
+    2. EVENT DECLARATION.
+    Declare events in a sender-class with the declare_event macro. It is
+    allowed to declare events with the same names but different parameter
+    types. E.g.:
 
     class MySender
     {
@@ -25,13 +26,18 @@
         // ...
     };
 
-    Note: access scopes are set within the macro, so be aware of
-    declaring something in the same scope after those macros.
+    Note: access scopes are set within the macro, so be aware of declaring
+    something in the same scope after those macros.
 
-    3. You can raise events from within the sender-class' methods whether
-    by calling Event::raise() or by passing event name, parameter type
-    and parameter value to the raise_event macro. It is safe to raise
-    event with no handlers attached. E.g.:
+    3. EVENT INITIALIZATION.
+    Initialize events' instances in the sender's constructor. Use an
+    init_event macro in the initializer list for each event instance.
+
+    4. RAISING AN EVENT.
+    You can raise events from within the sender-class' methods whether by
+    calling Event::raise() or by passing event name, parameter type and
+    parameter value to the raise_event macro. It is safe to raise event with
+    no handlers attached. E.g.:
 
     void MySender::some_method()
     {
@@ -42,7 +48,8 @@
         e_valueChanged_int.raise(a);
     }
 
-    4. Declare required event handlers in an observer-class with the
+    5. EVENT HANDLER DECLARATION.
+    Declare required event handlers in an observer-class with the
     declare_eventhandler macro. While implementing handlers in the
     observer, an "event name-parameter" pair must be unique for each
     sender-class type. E.g.
@@ -57,13 +64,14 @@
     declare_eventhandler(MyObserver, MySender, valueChanged, MyStructEventArgs)
     };
 
-    Note: access scopes are set within the macro, so be aware of
-    declaring something in the same scope after those macros.
+    Note: access scopes are set within the macro, so be aware of declaring
+    something in the same scope after those macros.
 
-    5. Implement event handlers in observer-class' source file by using
-    implement_eventhandler macro. This macro provides default
-    implementations for the handler's constructor and destructor and
-    exposes the overridden EventHandler::react() method to implement. E.g.:
+    6. EVENT HANDLER IMPLEMENTATION.
+    Implement event handlers in observer-class' source file by using
+    implement_eventhandler macro. This macro provides default implementations
+    for the handler's constructor and destructor and exposes the overridden
+    EventHandler::react() method to implement. E.g.:
 
     // A definition of Control::valueChanged(int)
     // event handler in the Page class
@@ -72,12 +80,14 @@
         // an implementation of EventHandlerSubclass::react().
     }
 
-    6. Create event handlers' instances in the observer's constructor.
-    Use an init_eventhandler macro in the initializer list for each
-    event handler instance.
+    7. EVENT HANDLER INITIALIZATION.
+    Initialize event handlers' instances in the observer's constructor. Use
+    an init_eventhandler macro in the initializer list for each event handler
+    instance.
 
-    7. Attach handler instances to the events whether by direct calling
-    event providers' operator +=() or by using handle_event macro. E.g.:
+    8. HANDLING AN EVENT.
+    Attach handler instances to the events whether by direct calling event
+    providers' operator +=() or by using handle_event macro. E.g.:
 
     // Handling Control::valueChanged(int) event in the Page class
     void Page::some_method()
@@ -89,8 +99,9 @@
         // ...
     }
 
-    8. When using events in a dynamic link library, Event templates
-    should be instantiated before the sender-class definition. E.g.:
+    9. EXPORTING TEMPLATES FROM A LIBRARY.
+    When using events in a dynamic link library, Event templates should be
+    instantiated before the sender-class definition. E.g.:
 
     #ifdef MY_LIB
     #define MY_LIB_SPEC __declspec(dllexport)
@@ -102,13 +113,13 @@
 
     export_event(MY_LIB_TEMPL_SPEC, MY_LIB_SPEC, int);
     // expands in DLL to:
-    // template class __declspec(dllexport) std::list<EventHandler<int> *>;
-    // template class __declspec(dllexport) std::list<Event<int> *>;
-    // template class __declspec(dllexport) Event<int>;
+    // template class __declspec(dllexport) std::list<EventService::EventHandler<int> *>;
+    // template class __declspec(dllexport) std::list<EventService::Event<int> *>;
+    // template class __declspec(dllexport) EventService::Event<int>;
     // expands in DLL client to:
-    // extern template class __declspec(dllimport) std::list<EventHandler<int> *>;
-    // extern template class __declspec(dllimport) std::list<Event<int> *>;
-    // extern template class __declspec(dllimport) Event<int>;
+    // extern template class __declspec(dllimport) std::list<EventService::EventHandler<int> *>;
+    // extern template class __declspec(dllimport) std::list<EventService::Event<int> *>;
+    // extern template class __declspec(dllimport) EventService::Event<int>;
 
     class MY_DLL_SPEC MySender
     {
@@ -342,6 +353,9 @@ public: \
     ::EventService::EventProvider<Args> event_##EventName##_##Args() \
     { return ::EventService::EventProvider<Args>(&e_##EventName##_##Args); }
 
+#define init_event(EventName, Args) \
+e_##EventName##_##Args()
+
 #define declare_eventhandler(OuterClass, SenderClass, EventName, Args) \
 public: \
     class SenderClass##_on_##EventName##_##Args \
@@ -379,9 +393,9 @@ SenderPtr->event_##EventName##_##ArgsType() \
     += ObserverPtr->eh_##SenderClass##_on_##EventName##_##ArgsType()
 
 #define export_event(ExternTemplateSpec, SharedSpec, Args) \
-ExternTemplateSpec template class SharedSpec std::list< ::EventService::EventHandler<Args> *>; \
-ExternTemplateSpec template class SharedSpec std::list< ::EventService::Event<Args> *>; \
-ExternTemplateSpec template class SharedSpec ::EventService::Event<Args>
+ExternTemplateSpec template class SharedSpec std::list<EventService::EventHandler<Args> *>; \
+ExternTemplateSpec template class SharedSpec std::list<EventService::Event<Args> *>; \
+ExternTemplateSpec template class SharedSpec EventService::Event<Args>
 
 
 #endif // _Event_h_
