@@ -14,11 +14,12 @@ set (HMCORE_SOVERSION ${HMCORE_MAJOR}.${HMCORE_MINOR})
 
 set (HMCORE_HDR event.h
                 hm_shared.h
-                peakinfo.h
-                line2dsegment.h
-                peakgenerationoptions.h
+                internal/contouring.h
                 landscape.h
-                mapper.h)
+                line2dsegment.h
+                mapper.h
+                peakgenerationoptions.h
+                peakinfo.h)
 set (HMCORE_SRC landscape.cpp
                 mapper.cpp)
 
