@@ -2,6 +2,7 @@
 #define _Landscape_h_
 
 
+#include <algorithm>
 #include "hm_shared.h"
 
 
@@ -13,6 +14,7 @@ class HM_SHARED Landscape
 {
 public:
     Landscape(unsigned int w, unsigned int h);
+    Landscape(const Landscape &);
 
     unsigned int width() const;
     unsigned int height() const;
@@ -20,15 +22,33 @@ public:
     double *matrix();
     const double *matrix() const;
 
+    void swap(Landscape &);
+
+    Landscape &operator=(Landscape);    // copy-and-swap
     ~Landscape();
 
 private:
-    DISABLE_COPY(Landscape)
     LandscapeImplementation *m;
 };
 
 
+inline void swap(Landscape &a, Landscape &b)
+{ a.swap(b); }
+
+
 } // namespace HeightMap
+
+
+namespace std {
+
+
+template <>
+inline void swap<HeightMap::Landscape>(
+    HeightMap::Landscape &a,
+    HeightMap::Landscape &b) { a.swap(b); }
+
+
+} // namespace std
 
 
 #endif // _Landscape_h_
