@@ -35,7 +35,7 @@ public:
 
     void generatePeaks(
         std::vector<PeakInfo> &peaks,
-        const PeakGenerationOptions &opts);
+        PeakGenerationOptions opts);
     void extrapolatePeaks(
         Landscape &ls,
         const std::vector<PeakInfo> &peaks);
