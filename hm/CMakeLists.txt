@@ -23,7 +23,7 @@ set (HMCORE_HDR event.h
 set (HMCORE_SRC landscape.cpp
                 mapper.cpp)
 
-set (CMAKE_CXX_FLAGS "-Wall -O3 -pedantic -s")
+set (CMAKE_CXX_FLAGS "-Wall -O3 -pedantic -s -std=c++11")
 add_definitions (-DHEIGHTMAP_LIB)
 
 add_library (${LIB} SHARED ${HMCORE_SRC} ${HMCORE_HDR})

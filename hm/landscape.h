@@ -15,6 +15,7 @@ class HM_SHARED Landscape
 public:
     Landscape(int w, int h);
     Landscape(const Landscape &);
+    Landscape(Landscape &&);
 
     int width() const;
     int height() const;

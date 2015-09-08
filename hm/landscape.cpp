@@ -16,8 +16,9 @@ struct LandscapeImplementation
 private:
     // private copy constructor for cloning
     LandscapeImplementation(const LandscapeImplementation &);
-    // assignment operator is disabled
-    LandscapeImplementation &operator=(const LandscapeImplementation &);
+    // other copy-move methods are disabled
+    LandscapeImplementation &operator=(const LandscapeImplementation &) = delete;
+    DISABLE_MOVE(LandscapeImplementation)
 };
 
 
@@ -53,6 +54,9 @@ Landscape::Landscape(int w, int h)
 
 Landscape::Landscape(const Landscape &other)
     : m(other.m->clone()) { }
+
+Landscape::Landscape(Landscape &&other)
+    : m(new LandscapeImplementation(1, 1)) { swap(other); }
 
 
 int Landscape::width() const { return m->w; }

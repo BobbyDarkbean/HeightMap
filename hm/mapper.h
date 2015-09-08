@@ -48,6 +48,7 @@ public:
 
 private:
     DISABLE_COPY(Mapper)
+    DISABLE_MOVE(Mapper)
 };
 
 
