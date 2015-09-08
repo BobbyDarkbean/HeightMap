@@ -10,8 +10,8 @@ namespace HeightMap {
 
 struct HM_SHARED PeakGenerationOptions
 {
-    unsigned int peakCount, hmWidth, hmHeight;
-    int minPeak, maxPeak;
+    unsigned int peakCount;
+    int hmWidth, hmHeight, minPeak, maxPeak;
 };
 
 

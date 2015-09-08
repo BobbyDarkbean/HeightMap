@@ -49,8 +49,8 @@ void Mapper::generatePeaks(
     // generating peaks
     for (unsigned int i = 0; i < opts.peakCount; ++i) {
         PeakInfo peak = {
-            rand() % static_cast<int>(opts.hmWidth),
-            rand() % static_cast<int>(opts.hmHeight),
+            rand() % opts.hmWidth,
+            rand() % opts.hmHeight,
             static_cast<double>(rand() % range + opts.minPeak)
         };
 
@@ -66,9 +66,13 @@ void Mapper::extrapolatePeaks(
 {
     /* Radial extrapolation */
 
+    using std::min;
+    using std::max;
+    using std::sqrt;
+
     double *hm = ls.matrix();
-    unsigned int hm_width = ls.width();
-    unsigned int hm_height = ls.height();
+    int hm_width = ls.width();
+    int hm_height = ls.height();
 
     // for each peak...
     for (std::vector<PeakInfo>::const_iterator i = peaks.begin(); i != peaks.end(); ++i) {
@@ -76,29 +80,35 @@ void Mapper::extrapolatePeaks(
         int y = i->y;
         double peak = i->height;
 
+        // ...extrapolation radius equals peak height
         int radius = static_cast<int>(peak);
 
-        int left = std::max(x - radius, 0);
-        int right = std::min(x + radius, static_cast<int>(hm_width) - 1);
-        int top = std::max(y - radius, 0);
-        int bottom = std::min(y + radius, static_cast<int>(hm_height) - 1);
+        // ...determining bounding rectangle
+        int left = max(x - radius, 0);
+        int right = min(x + radius, hm_width - 1);
+        int top = max(y - radius, 0);
+        int bottom = min(y + radius, hm_height - 1);
 
+        // ...for each point inside the rectangle
         for (int j = left; j <= right; ++j) {
             for (int k = top; k <= bottom; ++k) {
+                // ...calculating distance to peak
                 int vec_x = x - j;
                 int vec_y = y - k;
 
-                double vec_len = std::sqrt(static_cast<double>(vec_x * vec_x) +
-                                           static_cast<double>(vec_y * vec_y));
+                double vec_len = sqrt(static_cast<double>(vec_x * vec_x) +
+                                      static_cast<double>(vec_y * vec_y));
 
+                // ...if outside the circle, proceeding to the next iteration
                 if (vec_len > peak)
                     continue;
 
-                double h = peak - vec_len;
-                double curr_val = *(hm + j * hm_height + k);
-                double h_diff = peak - curr_val;
-                double add_val = h_diff / peak * h;
+                double h = peak - vec_len;                      // extrapolated value
+                double curr_val = *(hm + j * hm_height + k);    // current value
+                double h_diff = peak - curr_val;                // current-peak difference
+                double add_val = h_diff / peak * h;             // correction value
 
+                // ...modifying current value
                 *(hm + j * hm_height + k) += add_val;
             }
         }

@@ -6,11 +6,11 @@ namespace HeightMap {
 
 struct LandscapeImplementation
 {
-    LandscapeImplementation(unsigned int width, unsigned int height);
+    LandscapeImplementation(int width, int height);
     LandscapeImplementation *clone() const;
     ~LandscapeImplementation();
 
-    unsigned int w, h;
+    int w, h;
     double *const data;
 
 private:
@@ -21,7 +21,7 @@ private:
 };
 
 
-LandscapeImplementation::LandscapeImplementation(unsigned int width, unsigned int height)
+LandscapeImplementation::LandscapeImplementation(int width, int height)
     : w(width),
       h(height),
       data(new double[w * h]) { }
@@ -48,15 +48,15 @@ LandscapeImplementation::~LandscapeImplementation()
 }
 
 
-Landscape::Landscape(unsigned int w, unsigned int h)
+Landscape::Landscape(int w, int h)
     : m(new LandscapeImplementation(w, h)) { }
 
 Landscape::Landscape(const Landscape &other)
     : m(other.m->clone()) { }
 
 
-unsigned int Landscape::width() const { return m->w; }
-unsigned int Landscape::height() const { return m->h; }
+int Landscape::width() const { return m->w; }
+int Landscape::height() const { return m->h; }
 
 double *Landscape::matrix() { return m->data; }
 const double *Landscape::matrix() const { return m->data; }

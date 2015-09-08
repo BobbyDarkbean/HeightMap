@@ -13,11 +13,11 @@ struct LandscapeImplementation;
 class HM_SHARED Landscape
 {
 public:
-    Landscape(unsigned int w, unsigned int h);
+    Landscape(int w, int h);
     Landscape(const Landscape &);
 
-    unsigned int width() const;
-    unsigned int height() const;
+    int width() const;
+    int height() const;
 
     double *matrix();
     const double *matrix() const;
