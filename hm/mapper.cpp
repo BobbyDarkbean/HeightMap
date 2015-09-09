@@ -55,7 +55,7 @@ void Mapper::generatePeaks(
             static_cast<double>(rand() % range + opts.minPeak)
         };
 
-        peaks.push_back(peak);
+        peaks[i] = peak;
         raise_event(peakGenerated, PeakInfo, peak);
     }
 }
