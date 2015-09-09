@@ -2,13 +2,13 @@
 #define _Hm_Shared_h_
 
 
-#ifdef OS_WIN
+#if defined(OS_WIN) || defined(Q_OS_WIN)
 #define DECLSPEC_EXPORT __declspec(dllexport)
 #define DECLSPEC_IMPORT __declspec(dllimport)
 #else
 #define DECLSPEC_EXPORT
 #define DECLSPEC_IMPORT
-#endif // OS_WIN
+#endif // defined(OS_WIN) || defined(Q_OS_WIN)
 
 
 #ifdef HEIGHTMAP_LIB
@@ -18,11 +18,11 @@
 #endif // HEIGHTMAP_LIB
 
 
-#if !defined(HEIGHTMAP_LIB) && defined(OS_WIN)
+#if !defined(HEIGHTMAP_LIB) && (defined(OS_WIN) || defined(Q_OS_WIN))
 #define HM_TEMPLATE extern
 #else
 #define HM_TEMPLATE
-#endif // !defined(HEIGHTMAP_LIB) && defined(OS_WIN)
+#endif // !defined(HEIGHTMAP_LIB) && (defined(OS_WIN) || defined(Q_OS_WIN))
 
 
 #define DISABLE_COPY(Class) \
