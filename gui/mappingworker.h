@@ -4,7 +4,7 @@
 
 #include <QObject>
 #include <QLine>
-#include "event.h"
+#include "eventservice"
 #include "line2dsegment.h"
 #include "peakinfo.h"
 
@@ -33,9 +33,19 @@ public slots:
 private:
     Q_DISABLE_COPY(MappingWorker)
 
+    void _emit_peakExtrapolated(QPoint, double);
+    void _emit_contouringAt(QLine, int);
+
 declare_eventhandler(MappingWorker, Mapper, peakExtrapolated, PeakInfo)
 declare_eventhandler(MappingWorker, Mapper, contouringAt, Line2dSegment)
 };
+
+
+inline void MappingWorker::_emit_peakExtrapolated(QPoint coords, double height)
+{ emit peakExtrapolated(coords, height); }
+
+inline void MappingWorker::_emit_contouringAt(QLine segment, int level)
+{ emit contouringAt(segment, level); }
 
 
 } // namespace HeightMap
