@@ -13,6 +13,7 @@ set (HMCORE_VERSION ${HMCORE_MAJOR}.${HMCORE_MINOR}.${HMCORE_PATCH})
 set (HMCORE_SOVERSION ${HMCORE_MAJOR}.${HMCORE_MINOR})
 
 set (HMCORE_HDR event.h
+                eventservice
                 hm_shared.h
                 internal/contouring.h
                 landscape.h
