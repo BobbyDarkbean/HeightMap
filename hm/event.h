@@ -384,7 +384,7 @@ e_##EventName##_##ArgsType.raise(ArgsVal)
 
 #define implement_eventhandler(OuterClass, SenderClass, EventName, Args) \
 OuterClass::SenderClass##_on_##EventName##_##Args::SenderClass##_on_##EventName##_##Args( \
-    OuterClass *master) : EventHandler<Args>(), m_master(master) { } \
+    OuterClass *master) : ::EventService::EventHandler<Args>(), m_master(master) { } \
 OuterClass::SenderClass##_on_##EventName##_##Args::~SenderClass##_on_##EventName##_##Args() { } \
 void OuterClass::SenderClass##_on_##EventName##_##Args::react(const Args &args)
 
