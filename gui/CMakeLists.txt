@@ -9,7 +9,8 @@ find_package (Qt5Widgets REQUIRED)
 
 include_directories (../hm)
 
-set (HMGUI_HDR mappingworker.h)
+set (HMGUI_HDR mappingdata.h
+               mappingworker.h)
 set (HMGUI_SRC main.cpp
                mappingworker.cpp)
 
