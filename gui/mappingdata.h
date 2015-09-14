@@ -6,20 +6,20 @@
 #include <list>
 #include "peakinfo.h"
 #include "line2dsegment.h"
-#include "peakgenerationoptions.h"
-#include "landscape.h"
 
 
 namespace HeightMap {
 
 
+struct PeakGenerationOptions;
+class Landscape;
 struct MappingData
 {
-    PeakGenerationOptions genOptions;
-    std::vector<PeakInfo> peaks;
-    std::vector<int> levels;
-    std::list<Line2dSegment> contours;
-    Landscape landscape;
+    PeakGenerationOptions *genOptions;
+    std::vector<PeakInfo> *peaks;
+    std::vector<int> *levels;
+    std::list<Line2dSegment> *contours;
+    Landscape *landscape;
 };
 
 
