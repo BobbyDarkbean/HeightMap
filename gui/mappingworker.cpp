@@ -13,7 +13,7 @@ struct MappingWorkerImplementation
     MappingWorkerImplementation();
     ~MappingWorkerImplementation();
 
-    MappingData *data;
+    MappingData data;
     Mapper mapper;
     QMutex mutex;
 
@@ -24,7 +24,7 @@ private:
 
 
 MappingWorkerImplementation::MappingWorkerImplementation()
-    : data(0),
+    : data(),
       mapper(),
       mutex() { }
 
@@ -43,7 +43,7 @@ MappingWorker::MappingWorker(QObject *parent)
 
 void MappingWorker::initFrom(MappingData *data)
 {
-    m->data = data;
+    m->data = *data;
 }
 
 
@@ -69,19 +69,19 @@ void MappingWorker::createLandscape()
 
 void MappingWorker::generatePeaks()
 {
-    m->mapper.generatePeaks(m->data->peaks, m->data->genOptions);
+    m->mapper.generatePeaks(*m->data.peaks, *m->data.genOptions);
     emit peakGeneratingFinished();
 }
 
 void MappingWorker::extrapolatePeaks()
 {
-    m->mapper.extrapolatePeaks(m->data->landscape, m->data->peaks);
+    m->mapper.extrapolatePeaks(*m->data.landscape, *m->data.peaks);
     emit peakExtrapolationFinished();
 }
 
 void MappingWorker::calculateContours()
 {
-    m->mapper.calculateContours(m->data->landscape, m->data->levels, m->data->contours);
+    m->mapper.calculateContours(*m->data.landscape, *m->data.levels, *m->data.contours);
     emit contouringFinished();
 }
 
