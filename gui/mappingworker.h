@@ -24,6 +24,8 @@ public:
     ~MappingWorker();
 
 signals:
+    void processStarted();
+    void processFinished();
     void peakGeneratingFinished();
     void peakExtrapolated(QPoint, double);
     void peakExtrapolationFinished();
@@ -31,13 +33,15 @@ signals:
     void contouringFinished();
 
 public slots:
-    void generatePeaks();
-    void extrapolatePeaks();
-    void calculateContours();
+    void createLandscape();
 
 private:
     DISABLE_COPY(MappingWorker)
     DISABLE_MOVE(MappingWorker)
+
+    void generatePeaks();
+    void extrapolatePeaks();
+    void calculateContours();
 
     void _emit_peakExtrapolated(QPoint, double);
     void _emit_contouringAt(QPoint);

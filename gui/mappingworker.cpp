@@ -53,22 +53,36 @@ MappingWorker::~MappingWorker()
 }
 
 
+void MappingWorker::createLandscape()
+{
+    QMutexLocker lock(&m->mutex);
+
+    emit processStarted();
+
+    generatePeaks();
+    extrapolatePeaks();
+    calculateContours();
+
+    emit processFinished();
+}
+
+
 void MappingWorker::generatePeaks()
 {
     m->mapper.generatePeaks(m->data->peaks, m->data->genOptions);
-    peakGeneratingFinished();
+    emit peakGeneratingFinished();
 }
 
 void MappingWorker::extrapolatePeaks()
 {
     m->mapper.extrapolatePeaks(m->data->landscape, m->data->peaks);
-    peakExtrapolationFinished();
+    emit peakExtrapolationFinished();
 }
 
 void MappingWorker::calculateContours()
 {
     m->mapper.calculateContours(m->data->landscape, m->data->levels, m->data->contours);
-    contouringFinished();
+    emit contouringFinished();
 }
 
 
