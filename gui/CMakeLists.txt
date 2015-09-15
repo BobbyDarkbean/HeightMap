@@ -9,10 +9,19 @@ find_package (Qt5Widgets REQUIRED)
 
 include_directories (../hm)
 
-set (HMGUI_HDR mappingdata.h
-               mappingworker.h)
-set (HMGUI_SRC main.cpp
-               mappingworker.cpp)
+set (HMGUI_HDR colormap.h
+               engraver.h
+               heightmapapplication.h
+               heightmapwindow.h
+               mappingdata.h
+               mappingworker.h
+               preferences.h)
+set (HMGUI_SRC engraver.cpp
+               heightmapapplication.cpp
+               heightmapwindow.cpp
+               main.cpp
+               mappingworker.cpp
+               preferences.cpp)
 
 set (CMAKE_INCLUDE_CURRENT_DIR ON)
 set (CMAKE_AUTOMOC ON)

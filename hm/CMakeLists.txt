@@ -12,10 +12,10 @@ set (HMCORE_PATCH 0)
 set (HMCORE_VERSION ${HMCORE_MAJOR}.${HMCORE_MINOR}.${HMCORE_PATCH})
 set (HMCORE_SOVERSION ${HMCORE_MAJOR}.${HMCORE_MINOR})
 
-set (HMCORE_HDR event.h
+set (HMCORE_HDR internal/contouring.h
+                event.h
                 eventservice
                 hm_shared.h
-                internal/contouring.h
                 landscape.h
                 line2dsegment.h
                 mapper.h
