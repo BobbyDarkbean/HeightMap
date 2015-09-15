@@ -1,9 +1,9 @@
-#include <QApplication>
+#include "heightmapapplication.h"
 #include "heightmapwindow.h"
 
 int main(int argc, char **argv)
 {
-    QApplication app(argc, argv);
+    HeightMap::HeightMapApplication app(argc, argv);
 
     HeightMap::HeightMapWindow w;
     w.show();

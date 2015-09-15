@@ -72,9 +72,9 @@ HeightMapWindowImplementation::~HeightMapWindowImplementation()
 }
 
 
-HeightMapWindow::HeightMapWindow(QWidget *parent) :
-    QMainWindow(parent),
-    m(new HeightMapWindowImplementation)
+HeightMapWindow::HeightMapWindow(QWidget *parent)
+    : QMainWindow(parent),
+      m(new HeightMapWindowImplementation)
 {
     MappingData hmData;
     hmData.genOptions = &m->genOptions;
