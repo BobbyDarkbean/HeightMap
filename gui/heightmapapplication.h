@@ -37,4 +37,7 @@ private:
 } // namespace HeightMap
 
 
+#define hmApp static_cast< ::HeightMap::HeightMapApplication *>(qApp)
+
+
 #endif // _HeightMapApplication_h_
