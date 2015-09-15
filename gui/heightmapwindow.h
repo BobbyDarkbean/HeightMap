@@ -19,6 +19,10 @@ public:
     ~HeightMapWindow();
 
 private slots:
+    void editHeightMapSettings();
+
+    void adjustPreferences();
+
     void onProcessStarted();
     void onProcessFinished();
 

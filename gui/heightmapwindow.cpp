@@ -11,6 +11,9 @@
 #include "peakgenerationoptions.h"
 #include "mappingdata.h"
 #include "engraver.h"
+#include "preferences.h"
+#include "heightmapsettingsdialog.h"
+#include "heightmapapplication.h"
 
 #include "heightmapwindow.h"
 
@@ -76,6 +79,8 @@ HeightMapWindow::HeightMapWindow(QWidget *parent)
     : QMainWindow(parent),
       m(new HeightMapWindowImplementation)
 {
+    adjustPreferences();
+
     MappingData hmData;
     hmData.genOptions = &m->genOptions;
     hmData.peaks = &m->peaks;
@@ -98,10 +103,17 @@ HeightMapWindow::HeightMapWindow(QWidget *parent)
     actGenLs->setShortcut(tr("Ctrl+G"));
     connect(actGenLs, SIGNAL(triggered()), worker, SLOT(createLandscape()));
 
+    QAction *actHmSettings = new QAction(this);
+    actHmSettings->setText(tr("Settings..."));
+    connect(actHmSettings, SIGNAL(triggered()), this, SLOT(editHeightMapSettings()));
+
     QMenu *mnuLandscape = menuBar()->addMenu(tr("Landscape"));
     mnuLandscape->addAction(actGenLs);
+    mnuLandscape->addAction(actHmSettings);
 
     statusBar()->addWidget(m->stateLabel, 1);
+
+    connect(hmApp, SIGNAL(preferencesChanged()), this, SLOT(adjustPreferences()));
 
     connect(worker, SIGNAL(processStarted()), this, SLOT(onProcessStarted()));
     connect(worker, SIGNAL(processFinished()), this, SLOT(onProcessFinished()));
@@ -115,6 +127,27 @@ HeightMapWindow::~HeightMapWindow()
     delete m;
 }
 
+
+void HeightMapWindow::editHeightMapSettings()
+{
+    HeightMapSettingsDialog dialog(this);
+    dialog.setPreferences(hmApp->preferences());
+
+    if (dialog.exec()) {
+        hmApp->setPreferences(dialog.preferences());
+    }
+}
+
+void HeightMapWindow::adjustPreferences()
+{
+    Preferences prefs = hmApp->preferences();
+    m->genOptions.hmHeight = prefs.landscapeHeight();
+    m->genOptions.hmWidth = prefs.landscapeWidth();
+
+    m->genOptions.minPeak = prefs.minPeak();
+    m->genOptions.maxPeak = prefs.maxPeak();
+    m->genOptions.peakCount = prefs.peakCount();
+}
 
 void HeightMapWindow::onProcessStarted()
 {
@@ -131,7 +164,7 @@ void HeightMapWindow::onProcessFinished()
     QImage hmImg(m->genOptions.hmWidth * ImageFactor,
                  m->genOptions.hmWidth * ImageFactor,
                  QImage::Format_ARGB32_Premultiplied);
-    m->engr.drawLandscape(m->landscape, &hmImg, ImageFactor);
+    m->engr.drawIsobars(m->contours, &hmImg, true, ImageFactor);
 
     m->hmImgLabel->setPixmap(QPixmap::fromImage(hmImg));
 }
