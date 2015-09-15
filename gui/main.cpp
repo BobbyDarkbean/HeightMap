@@ -6,7 +6,7 @@ int main(int argc, char **argv)
     HeightMap::HeightMapApplication app(argc, argv);
 
     HeightMap::HeightMapWindow w;
-    w.show();
+    w.showMaximized();
 
     return app.exec();
 }
