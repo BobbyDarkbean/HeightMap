@@ -35,10 +35,10 @@ MappingWorker::MappingWorker(QObject *parent)
     : QObject(parent),
       m(new MappingWorkerImplementation),
       init_eventhandler(Mapper, peakExtrapolated, PeakInfo),
-      init_eventhandler(Mapper, contouringAt, PeakInfo)
+      init_eventhandler(Mapper, contouringAt, int)
 {
     handle_event(Mapper, (&m->mapper), this, peakExtrapolated, PeakInfo);
-    handle_event(Mapper, (&m->mapper), this, contouringAt, PeakInfo);
+    handle_event(Mapper, (&m->mapper), this, contouringAt, int);
 }
 
 void MappingWorker::initFrom(MappingData *data)
@@ -92,10 +92,9 @@ implement_eventhandler(MappingWorker, Mapper, peakExtrapolated, PeakInfo)
     master()->_emit_peakExtrapolated(coords, args.height);
 }
 
-implement_eventhandler(MappingWorker, Mapper, contouringAt, PeakInfo)
+implement_eventhandler(MappingWorker, Mapper, contouringAt, int)
 {
-    QPoint coords(args.x, args.y);
-    master()->_emit_contouringAt(coords);
+    master()->_emit_contouringAt(args);
 }
 
 

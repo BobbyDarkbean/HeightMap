@@ -29,7 +29,7 @@ signals:
     void peakGeneratingFinished();
     void peakExtrapolated(QPoint, double);
     void peakExtrapolationFinished();
-    void contouringAt(QPoint);
+    void contouringAt(int);
     void contouringFinished();
 
 public slots:
@@ -44,20 +44,20 @@ private:
     void calculateContours();
 
     void _emit_peakExtrapolated(QPoint, double);
-    void _emit_contouringAt(QPoint);
+    void _emit_contouringAt(int);
 
     MappingWorkerImplementation *m;
 
 declare_eventhandler(MappingWorker, Mapper, peakExtrapolated, PeakInfo)
-declare_eventhandler(MappingWorker, Mapper, contouringAt, PeakInfo)
+declare_eventhandler(MappingWorker, Mapper, contouringAt, int)
 };
 
 
 inline void MappingWorker::_emit_peakExtrapolated(QPoint coords, double height)
 { emit peakExtrapolated(coords, height); }
 
-inline void MappingWorker::_emit_contouringAt(QPoint coords)
-{ emit contouringAt(coords); }
+inline void MappingWorker::_emit_contouringAt(int x)
+{ emit contouringAt(x); }
 
 
 } // namespace HeightMap
