@@ -26,6 +26,15 @@ private slots:
     void onProcessStarted();
     void onProcessFinished();
 
+    void onPeakGeneratingStarted();
+    void onPeakGeneratingFinished();
+    void onPeakExtrapolationStarted();
+    void onPeakExtrapolated(QPoint, double);
+    void onPeakExtrapolationFinished();
+    void onContouringStarted();
+    void onContouringAt(int);
+    void onContouringFinished();
+
 private:
     DISABLE_COPY(HeightMapWindow)
     DISABLE_MOVE(HeightMapWindow)

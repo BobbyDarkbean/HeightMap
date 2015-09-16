@@ -26,9 +26,12 @@ public:
 signals:
     void processStarted();
     void processFinished();
+    void peakGeneratingStarted();
     void peakGeneratingFinished();
+    void peakExtrapolationStarted();
     void peakExtrapolated(QPoint, double);
     void peakExtrapolationFinished();
+    void contouringStarted();
     void contouringAt(int);
     void contouringFinished();
 

@@ -69,18 +69,21 @@ void MappingWorker::createLandscape()
 
 void MappingWorker::generatePeaks()
 {
+    emit peakGeneratingStarted();
     m->mapper.generatePeaks(*m->data.peaks, *m->data.genOptions);
     emit peakGeneratingFinished();
 }
 
 void MappingWorker::extrapolatePeaks()
 {
+    emit peakExtrapolationStarted();
     m->mapper.extrapolatePeaks(*m->data.landscape, *m->data.peaks);
     emit peakExtrapolationFinished();
 }
 
 void MappingWorker::calculateContours()
 {
+    emit contouringStarted();
     m->mapper.calculateContours(*m->data.landscape, *m->data.levels, *m->data.contours);
     emit contouringFinished();
 }
