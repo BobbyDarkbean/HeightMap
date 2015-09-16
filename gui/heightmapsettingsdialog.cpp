@@ -22,8 +22,7 @@ struct HeightMapSettingsDialogImplementation
 
     ~HeightMapSettingsDialogImplementation();
 
-    QFrame *frmMain;
-
+    QGroupBox *grpLandscape;
     QLabel *lblLandscapeWidth;
     QSpinBox *spnLandscapeWidth;
     QLabel *lblLandscapeHeight;
@@ -54,7 +53,7 @@ private:
 
 
 HeightMapSettingsDialogImplementation::HeightMapSettingsDialogImplementation()
-    : frmMain(new QFrame),
+    : grpLandscape(new QGroupBox),
       lblLandscapeWidth(new QLabel),
       spnLandscapeWidth(new QSpinBox),
       lblLandscapeHeight(new QLabel),
@@ -143,6 +142,10 @@ void HeightMapSettingsDialogImplementation::adjustControls()
     btnOk->setText(QObject::tr("OK"));
     btnCancel->setText(QObject::tr("Cancel"));
 
+    // Group-box
+    grpGenOpts->setTitle(QObject::tr("Peak generating options"));
+    grpLandscape->setTitle(QObject::tr("Landscape"));
+
     QObject::connect(spnMinPeak, SIGNAL(valueChanged(int)), sldMinPeak, SLOT(setValue(int)));
     QObject::connect(spnMaxPeak, SIGNAL(valueChanged(int)), sldMaxPeak, SLOT(setValue(int)));
     QObject::connect(spnPeakCount, SIGNAL(valueChanged(int)), sldPeakCount, SLOT(setValue(int)));
@@ -154,48 +157,44 @@ void HeightMapSettingsDialogImplementation::adjustControls()
 
 void HeightMapSettingsDialogImplementation::adjustLayout(QDialog *master)
 {
-    QBoxLayout *lytLandscapeDim = new QHBoxLayout;
-    lytLandscapeDim->addStretch();
-    lytLandscapeDim->addWidget(lblLandscapeWidth);
-    lytLandscapeDim->addWidget(spnLandscapeWidth);
-    lytLandscapeDim->addStretch();
-    lytLandscapeDim->addWidget(lblLandscapeHeight);
-    lytLandscapeDim->addWidget(spnLandscapeHeight);
-    lytLandscapeDim->addStretch();
-
-    QBoxLayout *lytLandscapeBase = new QHBoxLayout;
-    lytLandscapeBase->addStretch();
-    lytLandscapeBase->addWidget(lblLandscapeBase);
-    lytLandscapeBase->addWidget(spnLandscapeBase);
-    lytLandscapeBase->addStretch();
-
-    QBoxLayout *lytLandscape = new QVBoxLayout;
-    lytLandscape->addLayout(lytLandscapeDim);
-    lytLandscape->addLayout(lytLandscapeBase);
+    QBoxLayout *lytLandscape = new QHBoxLayout(grpLandscape);
+    lytLandscape->setMargin(20);
+    lytLandscape->addStretch();
+    lytLandscape->addWidget(lblLandscapeWidth);
+    lytLandscape->addWidget(spnLandscapeWidth);
+    lytLandscape->addStretch();
+    lytLandscape->addWidget(lblLandscapeHeight);
+    lytLandscape->addWidget(spnLandscapeHeight);
+    lytLandscape->addStretch();
+    lytLandscape->addWidget(lblLandscapeBase);
+    lytLandscape->addWidget(spnLandscapeBase);
+    lytLandscape->addStretch();
 
     QGridLayout *lytGenOpts = new QGridLayout(grpGenOpts);
+    lytGenOpts->setMargin(20);
     lytGenOpts->addWidget(lblMinPeak, 0, 0);
     lytGenOpts->addWidget(sldMinPeak, 0, 1);
     lytGenOpts->addWidget(spnMinPeak, 0, 2);
-    lytGenOpts->addWidget(lblMaxPeak, 1, 0);
-    lytGenOpts->addWidget(sldMaxPeak, 1, 1);
-    lytGenOpts->addWidget(spnMaxPeak, 1, 2);
-    lytGenOpts->addWidget(lblPeakCount, 2, 0);
-    lytGenOpts->addWidget(sldPeakCount, 2, 1);
-    lytGenOpts->addWidget(spnPeakCount, 2, 2);
+    lytGenOpts->setRowMinimumHeight(1, 12);
+    lytGenOpts->addWidget(lblMaxPeak, 2, 0);
+    lytGenOpts->addWidget(sldMaxPeak, 2, 1);
+    lytGenOpts->addWidget(spnMaxPeak, 2, 2);
+    lytGenOpts->setRowMinimumHeight(3, 12);
+    lytGenOpts->addWidget(lblPeakCount, 4, 0);
+    lytGenOpts->addWidget(sldPeakCount, 4, 1);
+    lytGenOpts->addWidget(spnPeakCount, 4, 2);
 
     QBoxLayout *lytButtons = new QHBoxLayout;
     lytButtons->addStretch();
     lytButtons->addWidget(btnOk);
     lytButtons->addWidget(btnCancel);
 
-    QBoxLayout *lytMain = new QVBoxLayout(frmMain);
-    lytMain->addLayout(lytLandscape);
+    QBoxLayout *lytMain = new QVBoxLayout(master);
+    lytMain->addWidget(grpLandscape);
     lytMain->addWidget(grpGenOpts);
+    lytMain->addStretch();
+    lytMain->addSpacing(8);
     lytMain->addLayout(lytButtons);
-
-    QBoxLayout *lytShell = new QVBoxLayout(master);
-    lytShell->addWidget(frmMain);
 
     QObject::connect(btnOk, SIGNAL(clicked()), master, SLOT(accept()));
     QObject::connect(btnCancel, SIGNAL(clicked()), master, SLOT(reject()));
@@ -212,6 +211,9 @@ HeightMapSettingsDialog::HeightMapSettingsDialog(QWidget *parent) :
     m->adjustLayout(this);
 }
 
+
+QSize HeightMapSettingsDialog::sizeHint() const
+{ return QSize(480, 320); }
 
 const Preferences &HeightMapSettingsDialog::preferences() const
 { return m->prefs; }

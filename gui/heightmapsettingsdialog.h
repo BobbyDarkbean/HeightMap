@@ -18,6 +18,8 @@ class HeightMapSettingsDialog : public QDialog
 public:
     explicit HeightMapSettingsDialog(QWidget *parent = 0);
 
+    QSize sizeHint() const;
+
     const Preferences &preferences() const;
     void setPreferences(const Preferences &);
 
