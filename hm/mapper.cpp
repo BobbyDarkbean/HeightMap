@@ -22,6 +22,7 @@ bool &rand_flag()
 Mapper::Mapper()
     : init_event(peakGenerated, PeakInfo),
       init_event(peakExtrapolated, PeakInfo),
+      init_event(contouringAt, int),
       init_event(contouringAt, PeakInfo)
 {
     if (!rand_flag()) {
@@ -139,6 +140,8 @@ void Mapper::calculateContours(
     const int max_lvl = max_level(levels, l_end);
 
     for (int i = 1; i < hm_width; ++i) {
+        raise_event(contouringAt, int, i);
+
         for (int j = 1; j < hm_height; ++j) {
             // { i, j } is bottom right corner
             PeakInfo coords = { i, j };

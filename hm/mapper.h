@@ -12,6 +12,7 @@
 
 
 export_event(HM_TEMPLATE, HM_SHARED, HeightMap::PeakInfo);
+export_event(HM_TEMPLATE, HM_SHARED, int);
 
 
 namespace HeightMap {
@@ -28,6 +29,7 @@ class HM_SHARED Mapper
 
 declare_event(peakGenerated, PeakInfo)
 declare_event(peakExtrapolated, PeakInfo)
+declare_event(contouringAt, int)
 declare_event(contouringAt, PeakInfo)
 
 public:
