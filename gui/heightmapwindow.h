@@ -34,6 +34,8 @@ private slots:
     void onContouringStarted();
     void onContouringAt(int);
     void onContouringFinished();
+    void onOffScreenDrawingStarted();
+    void onOffScreenDrawingFinished();
 
 private:
     DISABLE_COPY(HeightMapWindow)

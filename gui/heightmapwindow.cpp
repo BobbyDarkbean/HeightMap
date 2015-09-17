@@ -25,6 +25,7 @@ namespace HeightMap {
 struct HeightMapWindowImplementation
 {
     HeightMapWindowImplementation();
+    void provideMappingData(MappingWorker *);
     ~HeightMapWindowImplementation();
 
     QLabel *hmImgLabel;
@@ -39,7 +40,9 @@ struct HeightMapWindowImplementation
     std::list<Line2dSegment> contours;
     Landscape landscape;
 
-    Engraver engr;
+    QImage imgLandscape;
+    QImage imgIsobars;
+    QImage imgHybrid;
 
     QThread procThread;
 
@@ -59,19 +62,28 @@ HeightMapWindowImplementation::HeightMapWindowImplementation()
       peaks(),
       levels(),
       contours(),
-      landscape(1024, 1024),
-      engr(),
+      landscape(Preferences::DefaultLandscapeWidth, Preferences::DefaultLandscapeHeight),
+      imgLandscape(),
+      imgIsobars(),
+      imgHybrid(),
       procThread(),
-      processing(false)
-{
-    genOptions.hmHeight = 1024;
-    genOptions.hmWidth = 1024;
-    genOptions.minPeak = 100;
-    genOptions.maxPeak = 200;
-    genOptions.peakCount = 4096;
+      processing(false) { }
 
-    for (int i = genOptions.minPeak; i <= genOptions.maxPeak; ++i)
-        levels.push_back(i);
+void HeightMapWindowImplementation::provideMappingData(MappingWorker *worker)
+{
+    MappingData hmData = {
+        &genOptions,
+        &peaks,
+        &levels,
+        &contours,
+        &landscape,
+
+        &imgLandscape,
+        &imgIsobars,
+        &imgHybrid
+    };
+
+    worker->initFrom(&hmData);
 }
 
 HeightMapWindowImplementation::~HeightMapWindowImplementation()
@@ -87,15 +99,8 @@ HeightMapWindow::HeightMapWindow(QWidget *parent)
 {
     adjustPreferences();
 
-    MappingData hmData;
-    hmData.genOptions = &m->genOptions;
-    hmData.peaks = &m->peaks;
-    hmData.levels = &m->levels;
-    hmData.contours = &m->contours;
-    hmData.landscape = &m->landscape;
-
     MappingWorker *worker = new MappingWorker;
-    worker->initFrom(&hmData);
+    m->provideMappingData(worker);
     worker->moveToThread(&m->procThread);
 
     QScrollArea *scrollArea = new QScrollArea(this);
@@ -134,6 +139,8 @@ HeightMapWindow::HeightMapWindow(QWidget *parent)
     connect(worker, SIGNAL(contouringStarted()), this, SLOT(onContouringStarted()), Qt::BlockingQueuedConnection);
     connect(worker, SIGNAL(contouringAt(int)), this, SLOT(onContouringAt(int)));
     connect(worker, SIGNAL(contouringFinished()), this, SLOT(onContouringFinished()), Qt::BlockingQueuedConnection);
+    connect(worker, SIGNAL(offScreenDrawingStarted()), this, SLOT(onOffScreenDrawingStarted()), Qt::BlockingQueuedConnection);
+    connect(worker, SIGNAL(offScreenDrawingFinished()), this, SLOT(onOffScreenDrawingFinished()), Qt::BlockingQueuedConnection);
 
     connect(&m->procThread, SIGNAL(finished()), worker, SLOT(deleteLater()));
     m->procThread.start();
@@ -164,12 +171,17 @@ void HeightMapWindow::adjustPreferences()
     m->genOptions.minPeak = prefs.minPeak();
     m->genOptions.maxPeak = prefs.maxPeak();
     m->genOptions.peakCount = prefs.peakCount();
+
+    for (int i = m->genOptions.minPeak; i <= m->genOptions.maxPeak; ++i)
+        m->levels.push_back(i);
 }
 
 void HeightMapWindow::onProcessStarted()
 {
     m->peaks.clear();
     m->contours.clear();
+    m->landscape = Landscape(m->genOptions.hmWidth,
+                             m->genOptions.hmHeight);
 
     m->stateLabel->setText(tr("Processing..."));
     m->procBar->show();
@@ -183,13 +195,7 @@ void HeightMapWindow::onProcessFinished()
     m->procLabel->clear();
     m->procBar->hide();
 
-    const int ImageFactor = 4;
-    QImage hmImg(m->genOptions.hmWidth * ImageFactor,
-                 m->genOptions.hmWidth * ImageFactor,
-                 QImage::Format_ARGB32_Premultiplied);
-    m->engr.drawIsobars(m->contours, &hmImg, true, ImageFactor);
-
-    m->hmImgLabel->setPixmap(QPixmap::fromImage(hmImg));
+    m->hmImgLabel->setPixmap(QPixmap::fromImage(m->imgHybrid));
 }
 
 void HeightMapWindow::onPeakGeneratingStarted()
@@ -232,6 +238,15 @@ void HeightMapWindow::onContouringAt(int)
 }
 
 void HeightMapWindow::onContouringFinished()
+{
+}
+
+void HeightMapWindow::onOffScreenDrawingStarted()
+{
+    m->procLabel->setText("Drawing an off-screen representation...");
+}
+
+void HeightMapWindow::onOffScreenDrawingFinished()
 {
 }
 

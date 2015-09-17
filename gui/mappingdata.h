@@ -8,6 +8,7 @@
 #include "line2dsegment.h"
 
 
+class QImage;
 namespace HeightMap {
 
 
@@ -20,6 +21,10 @@ struct MappingData
     std::vector<int> *levels;
     std::list<Line2dSegment> *contours;
     Landscape *landscape;
+
+    QImage *imgLandscape;
+    QImage *imgIsobars;
+    QImage *imgHybrid;
 };
 
 

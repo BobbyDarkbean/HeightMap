@@ -1,6 +1,9 @@
+#include <QImage>
 #include <QMutex>
+#include "landscape.h"
 #include "mapper.h"
 #include "mappingdata.h"
+#include "engraver.h"
 
 #include "mappingworker.h"
 
@@ -62,6 +65,7 @@ void MappingWorker::createLandscape()
     generatePeaks();
     extrapolatePeaks();
     calculateContours();
+    drawOffScreenRepresentation();
 
     emit processFinished();
 }
@@ -86,6 +90,34 @@ void MappingWorker::calculateContours()
     emit contouringStarted();
     m->mapper.calculateContours(*m->data.landscape, *m->data.levels, *m->data.contours);
     emit contouringFinished();
+}
+
+void MappingWorker::drawOffScreenRepresentation()
+{
+    emit offScreenDrawingStarted();
+
+    Engraver engr;
+    const int ImageFactor = 4;
+
+    QImage imgLs(m->data.landscape->width() * ImageFactor,
+                 m->data.landscape->height() * ImageFactor,
+                 QImage::Format_ARGB32_Premultiplied);
+    engr.drawLandscape(*m->data.landscape, &imgLs, ImageFactor);
+    QImage imgBars(m->data.landscape->width() * ImageFactor,
+                   m->data.landscape->height() * ImageFactor,
+                   QImage::Format_ARGB32_Premultiplied);
+    engr.drawIsobars(*m->data.contours, &imgBars, true, ImageFactor);
+    QImage imgHyb(m->data.landscape->width() * ImageFactor,
+                  m->data.landscape->height() * ImageFactor,
+                  QImage::Format_ARGB32_Premultiplied);
+    engr.drawLandscape(*m->data.landscape, &imgHyb, ImageFactor);
+    engr.drawIsobars(*m->data.contours, &imgHyb, false, ImageFactor);
+
+    *m->data.imgLandscape = imgLs;
+    *m->data.imgIsobars = imgBars;
+    *m->data.imgHybrid = imgHyb;
+
+    emit offScreenDrawingFinished();
 }
 
 

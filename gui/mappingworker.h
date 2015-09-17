@@ -34,6 +34,8 @@ signals:
     void contouringStarted();
     void contouringAt(int);
     void contouringFinished();
+    void offScreenDrawingStarted();
+    void offScreenDrawingFinished();
 
 public slots:
     void createLandscape();
@@ -45,6 +47,7 @@ private:
     void generatePeaks();
     void extrapolatePeaks();
     void calculateContours();
+    void drawOffScreenRepresentation();
 
     void _emit_peakExtrapolated(QPoint, double);
     void _emit_contouringAt(int);
