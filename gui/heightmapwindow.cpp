@@ -21,10 +21,22 @@
 namespace HeightMap {
 
 
+namespace {
+enum HeightMapViewMode {
+    HMVM_Landscape  = 0,
+    HMVM_Isobars    = 1,
+    HMVM_Hybrid     = 2
+};
+}
+
+
 struct HeightMapWindowImplementation
 {
     HeightMapWindowImplementation();
+
     void provideMappingData(MappingWorker *);
+    void displayHeightMapImage();
+
     ~HeightMapWindowImplementation();
 
     QLabel *hmImgLabel;
@@ -43,6 +55,8 @@ struct HeightMapWindowImplementation
     QImage imgIsobars;
     QImage imgHybrid;
 
+    HeightMapViewMode hmvm;
+
     QThread procThread;
 
     bool processing;
@@ -51,6 +65,7 @@ private:
     DISABLE_COPY(HeightMapWindowImplementation)
     DISABLE_MOVE(HeightMapWindowImplementation)
 };
+
 
 HeightMapWindowImplementation::HeightMapWindowImplementation()
     : hmImgLabel(new QLabel),
@@ -65,6 +80,7 @@ HeightMapWindowImplementation::HeightMapWindowImplementation()
       imgLandscape(),
       imgIsobars(),
       imgHybrid(),
+      hmvm(HMVM_Isobars),
       procThread(),
       processing(false) { }
 
@@ -83,6 +99,23 @@ void HeightMapWindowImplementation::provideMappingData(MappingWorker *worker)
     };
 
     worker->initFrom(&hmData);
+}
+
+void HeightMapWindowImplementation::displayHeightMapImage()
+{
+    switch (hmvm) {
+    case HMVM_Landscape:
+        hmImgLabel->setPixmap(QPixmap::fromImage(imgLandscape));
+        break;
+    case HMVM_Isobars:
+        hmImgLabel->setPixmap(QPixmap::fromImage(imgIsobars));
+        break;
+    case HMVM_Hybrid:
+        hmImgLabel->setPixmap(QPixmap::fromImage(imgHybrid));
+        break;
+    default:
+        break;
+    }
 }
 
 HeightMapWindowImplementation::~HeightMapWindowImplementation()
@@ -105,6 +138,7 @@ HeightMapWindow::HeightMapWindow(QWidget *parent)
     m->hmImgLabel->setAlignment(Qt::AlignCenter);
 
     QScrollArea *scrollArea = new QScrollArea(this);
+    scrollArea->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
     scrollArea->setWidgetResizable(true);
     scrollArea->setWidget(m->hmImgLabel);
     setCentralWidget(scrollArea);
@@ -131,6 +165,31 @@ HeightMapWindow::HeightMapWindow(QWidget *parent)
     mnuLandscape->addAction(actGenLs);
     mnuLandscape->addSeparator();
     mnuLandscape->addAction(actHmSettings);
+
+    QActionGroup *agpViewMode = new QActionGroup(this);
+    connect(agpViewMode, SIGNAL(triggered(QAction *)), this, SLOT(setViewMode(QAction *)));
+
+    QAction *actViewModeLandscape = new QAction(agpViewMode);
+    actViewModeLandscape->setText(tr("Landscape"));
+    actViewModeLandscape->setCheckable(true);
+    actViewModeLandscape->setProperty("hmvm", HMVM_Landscape);
+
+    QAction *actViewModeIsobars = new QAction(agpViewMode);
+    actViewModeIsobars->setText(tr("Isobars"));
+    actViewModeIsobars->setCheckable(true);
+    actViewModeIsobars->setProperty("hmvm", HMVM_Isobars);
+
+    QAction *actViewModeHybrid = new QAction(agpViewMode);
+    actViewModeHybrid->setText(tr("Hybrid"));
+    actViewModeHybrid->setCheckable(true);
+    actViewModeHybrid->setProperty("hmvm", HMVM_Hybrid);
+
+    actViewModeIsobars->setChecked(true);
+
+    QMenu *mnuView = menuBar()->addMenu(tr("&View"));
+    mnuView->addAction(actViewModeLandscape);
+    mnuView->addAction(actViewModeIsobars);
+    mnuView->addAction(actViewModeHybrid);
 
     statusBar()->addWidget(m->stateLabel, 1);
     statusBar()->addWidget(m->procLabel, 1);
@@ -205,7 +264,7 @@ void HeightMapWindow::onProcessFinished()
     m->procLabel->clear();
     m->procBar->hide();
 
-    m->hmImgLabel->setPixmap(QPixmap::fromImage(m->imgHybrid));
+    m->displayHeightMapImage();
 }
 
 void HeightMapWindow::onPeakGeneratingStarted()
@@ -258,6 +317,12 @@ void HeightMapWindow::onOffScreenDrawingStarted()
 
 void HeightMapWindow::onOffScreenDrawingFinished()
 {
+}
+
+void HeightMapWindow::setViewMode(QAction *viewModeAct)
+{
+    m->hmvm = static_cast<HeightMapViewMode>(viewModeAct->property("hmvm").toInt());
+    m->displayHeightMapImage();
 }
 
 

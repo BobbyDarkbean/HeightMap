@@ -37,6 +37,8 @@ private slots:
     void onOffScreenDrawingStarted();
     void onOffScreenDrawingFinished();
 
+    void setViewMode(QAction *);
+
 private:
     DISABLE_COPY(HeightMapWindow)
     DISABLE_MOVE(HeightMapWindow)
