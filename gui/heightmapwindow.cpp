@@ -103,23 +103,34 @@ HeightMapWindow::HeightMapWindow(QWidget *parent)
     m->provideMappingData(worker);
     worker->moveToThread(&m->procThread);
 
+    m->hmImgLabel->setAlignment(Qt::AlignCenter);
+
     QScrollArea *scrollArea = new QScrollArea(this);
-    scrollArea->setBackgroundRole(QPalette::Light);
     scrollArea->setWidgetResizable(true);
     scrollArea->setWidget(m->hmImgLabel);
     setCentralWidget(scrollArea);
 
+    QAction *actExit = new QAction(this);
+    actExit->setText(tr("E&xit"));
+    actExit->setShortcut(tr("Alt+X"));
+    connect(actExit, SIGNAL(triggered()), this, SLOT(close()));
+
+    QMenu *mnuFile = menuBar()->addMenu(tr("&File"));
+    mnuFile->addAction(actExit);
+
     QAction *actGenLs = new QAction(this);
-    actGenLs->setText(tr("Generate"));
+    actGenLs->setText(tr("&Generate"));
     actGenLs->setShortcut(tr("Ctrl+G"));
     connect(actGenLs, SIGNAL(triggered()), worker, SLOT(createLandscape()));
 
     QAction *actHmSettings = new QAction(this);
-    actHmSettings->setText(tr("Settings..."));
+    actHmSettings->setText(tr("&Settings..."));
+    actHmSettings->setShortcut(tr("Alt+F7"));
     connect(actHmSettings, SIGNAL(triggered()), this, SLOT(editHeightMapSettings()));
 
-    QMenu *mnuLandscape = menuBar()->addMenu(tr("Landscape"));
+    QMenu *mnuLandscape = menuBar()->addMenu(tr("&Landscape"));
     mnuLandscape->addAction(actGenLs);
+    mnuLandscape->addSeparator();
     mnuLandscape->addAction(actHmSettings);
 
     statusBar()->addWidget(m->stateLabel, 1);
