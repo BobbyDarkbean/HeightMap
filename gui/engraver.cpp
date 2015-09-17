@@ -76,7 +76,7 @@ void Engraver::drawMonochromeIsobars(
     int imageFactor)
 {
     const int Shift = imageFactor / 2;
-    p->setPen(QPen(Qt::black, 2.0));
+    p->setPen(QPen(Qt::black, 1.0));
 
     std::list<Line2dSegment>::const_iterator _end = isobars.end();
     for (std::list<Line2dSegment>::const_iterator i = isobars.begin(); i != _end; ++i) {
