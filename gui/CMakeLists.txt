@@ -12,12 +12,14 @@ include_directories (../hm)
 set (HMGUI_HDR colormap.h
                engraver.h
                heightmapapplication.h
+               heightmapsettingsdialog.h
                heightmapwindow.h
                mappingdata.h
                mappingworker.h
                preferences.h)
 set (HMGUI_SRC engraver.cpp
                heightmapapplication.cpp
+               heightmapsettingsdialog.cpp
                heightmapwindow.cpp
                main.cpp
                mappingworker.cpp

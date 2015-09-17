@@ -11,7 +11,6 @@
 #include "landscape.h"
 #include "peakgenerationoptions.h"
 #include "mappingdata.h"
-#include "engraver.h"
 #include "preferences.h"
 #include "heightmapsettingsdialog.h"
 #include "heightmapapplication.h"
