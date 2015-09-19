@@ -101,13 +101,14 @@ void Mapper::extrapolatePeaks(
                 // ...calculating distance to peak
                 int vec_x = x - j;
                 int vec_y = y - k;
-
-                double vec_len = sqrt(static_cast<double>(vec_x * vec_x) +
-                                      static_cast<double>(vec_y * vec_y));
+                double vec_sq = static_cast<double>(vec_x * vec_x) +
+                        static_cast<double>(vec_y * vec_y);
 
                 // ...if outside the circle, proceeding to the next iteration
-                if (vec_len > peak)
+                if (vec_sq > (peak * peak))
                     continue;
+
+                double vec_len = sqrt(vec_sq);
 
                 double h = peak - vec_len;                      // extrapolated value
                 double curr_val = *(hm + j * hm_height + k);    // current value
