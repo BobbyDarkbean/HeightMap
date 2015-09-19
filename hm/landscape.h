@@ -20,6 +20,8 @@ public:
     int width() const;
     int height() const;
 
+    void fill(double level);
+
     double *matrix();
     const double *matrix() const;
 

@@ -7,7 +7,10 @@ namespace HeightMap {
 struct LandscapeImplementation
 {
     LandscapeImplementation(int width, int height);
+
+    void fill(double level);
     LandscapeImplementation *clone() const;
+
     ~LandscapeImplementation();
 
     int w, h;
@@ -27,6 +30,22 @@ LandscapeImplementation::LandscapeImplementation(int width, int height)
       h(height),
       data(new double[w * h]) { }
 
+void LandscapeImplementation::fill(double level)
+{
+    double *itr = data;
+    const double *const end = itr + (w * h);
+    while (itr != end)
+        *itr++ = level;
+}
+
+LandscapeImplementation *LandscapeImplementation::clone() const
+{ return new LandscapeImplementation(*this); }
+
+LandscapeImplementation::~LandscapeImplementation()
+{
+    delete[] data;
+}
+
 // private
 LandscapeImplementation::LandscapeImplementation(const LandscapeImplementation &other)
     : w(other.w),
@@ -38,14 +57,6 @@ LandscapeImplementation::LandscapeImplementation(const LandscapeImplementation &
     double *to = data;
     while (from != end)
         *to++ = *from++;
-}
-
-LandscapeImplementation *LandscapeImplementation::clone() const
-{ return new LandscapeImplementation(*this); }
-
-LandscapeImplementation::~LandscapeImplementation()
-{
-    delete[] data;
 }
 
 
@@ -61,6 +72,8 @@ Landscape::Landscape(Landscape &&other)
 
 int Landscape::width() const { return m->w; }
 int Landscape::height() const { return m->h; }
+
+void Landscape::fill(double level) { m->fill(level); }
 
 double *Landscape::matrix() { return m->data; }
 const double *Landscape::matrix() const { return m->data; }
