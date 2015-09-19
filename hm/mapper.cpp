@@ -40,6 +40,8 @@ void Mapper::generatePeaks(
     std::vector<PeakInfo> &peaks,
     PeakGenerationOptions opts)
 {
+    using std::sort;
+
     // swapping peak bounds if needed
     if (opts.maxPeak < opts.minPeak) {
         std::swap(opts.maxPeak, opts.minPeak);
@@ -59,6 +61,8 @@ void Mapper::generatePeaks(
         peaks[i] = peak;
         raise_event(peakGenerated, PeakInfo, peak);
     }
+
+    sort(peaks.begin(), peaks.end(), peakHeightLessThan);
 }
 
 

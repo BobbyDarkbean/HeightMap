@@ -15,6 +15,14 @@ struct HM_SHARED PeakInfo
 };
 
 
+inline bool peakHeightLessThan(const PeakInfo &a, const PeakInfo &b)
+{ return a.height < b.height; }
+
+
+inline bool peakCoordsLessThan(const PeakInfo &a, const PeakInfo &b)
+{ return (a.x < b.x) ? true : (a.x > b.x) ? false : (a.y < b.y); }
+
+
 } // namespace HeightMap
 
 
