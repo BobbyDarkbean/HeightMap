@@ -4,6 +4,7 @@
 #include <QAction>
 #include <QMenuBar>
 #include <QStatusBar>
+#include <QBoxLayout>
 #include <QImage>
 #include <QPixmap>
 #include <QThread>
@@ -34,6 +35,8 @@ struct HeightMapWindowImplementation
 {
     HeightMapWindowImplementation();
 
+    void createActions(HeightMapWindow *, MappingWorker *);
+
     void provideMappingData(MappingWorker *);
     void displayHeightMapImage();
 
@@ -42,8 +45,12 @@ struct HeightMapWindowImplementation
     QLabel *hmImgLabel;
 
     QLabel *stateLabel;
+    QLabel *lvlsLabel;
     QLabel *procLabel;
     QProgressBar *procBar;
+    QLabel *pkLabel;
+    QLabel *lsSizeLabel;
+    QLabel *cntrsLabel;
 
     PeakGenerationOptions genOptions;
     std::vector<PeakInfo> peaks;
@@ -70,8 +77,12 @@ private:
 HeightMapWindowImplementation::HeightMapWindowImplementation()
     : hmImgLabel(new QLabel),
       stateLabel(new QLabel),
+      lvlsLabel(new QLabel),
       procLabel(new QLabel),
       procBar(new QProgressBar),
+      pkLabel(new QLabel),
+      lsSizeLabel(new QLabel),
+      cntrsLabel(new QLabel),
       genOptions(),
       peaks(),
       levels(),
@@ -83,6 +94,57 @@ HeightMapWindowImplementation::HeightMapWindowImplementation()
       hmvm(HMVM_Isobars),
       procThread(),
       processing(false) { }
+
+void HeightMapWindowImplementation::createActions(HeightMapWindow *master, MappingWorker *worker)
+{
+    QAction *actExit = new QAction(master);
+    actExit->setText(HeightMapWindow::tr("E&xit"));
+    actExit->setShortcut(HeightMapWindow::tr("Alt+X"));
+    QObject::connect(actExit, SIGNAL(triggered()), master, SLOT(close()));
+
+    QMenu *mnuFile = master->menuBar()->addMenu(HeightMapWindow::tr("&File"));
+    mnuFile->addAction(actExit);
+
+    QAction *actGenLs = new QAction(master);
+    actGenLs->setText(HeightMapWindow::tr("&Generate"));
+    actGenLs->setShortcut(HeightMapWindow::tr("Ctrl+G"));
+    QObject::connect(actGenLs, SIGNAL(triggered()), worker, SLOT(createLandscape()));
+
+    QAction *actHmSettings = new QAction(master);
+    actHmSettings->setText(HeightMapWindow::tr("&Settings..."));
+    actHmSettings->setShortcut(HeightMapWindow::tr("Alt+F7"));
+    QObject::connect(actHmSettings, SIGNAL(triggered()), master, SLOT(editHeightMapSettings()));
+
+    QMenu *mnuLandscape = master->menuBar()->addMenu(HeightMapWindow::tr("&Landscape"));
+    mnuLandscape->addAction(actGenLs);
+    mnuLandscape->addSeparator();
+    mnuLandscape->addAction(actHmSettings);
+
+    QActionGroup *agpViewMode = new QActionGroup(master);
+    QObject::connect(agpViewMode, SIGNAL(triggered(QAction *)), master, SLOT(setViewMode(QAction *)));
+
+    QAction *actViewModeLandscape = new QAction(agpViewMode);
+    actViewModeLandscape->setText(HeightMapWindow::tr("Landscape"));
+    actViewModeLandscape->setCheckable(true);
+    actViewModeLandscape->setProperty("hmvm", HMVM_Landscape);
+
+    QAction *actViewModeIsobars = new QAction(agpViewMode);
+    actViewModeIsobars->setText(HeightMapWindow::tr("Isobars"));
+    actViewModeIsobars->setCheckable(true);
+    actViewModeIsobars->setProperty("hmvm", HMVM_Isobars);
+
+    QAction *actViewModeHybrid = new QAction(agpViewMode);
+    actViewModeHybrid->setText(HeightMapWindow::tr("Hybrid"));
+    actViewModeHybrid->setCheckable(true);
+    actViewModeHybrid->setProperty("hmvm", HMVM_Hybrid);
+
+    actViewModeIsobars->setChecked(true);
+
+    QMenu *mnuView = master->menuBar()->addMenu(HeightMapWindow::tr("&View"));
+    mnuView->addAction(actViewModeLandscape);
+    mnuView->addAction(actViewModeIsobars);
+    mnuView->addAction(actViewModeHybrid);
+}
 
 void HeightMapWindowImplementation::provideMappingData(MappingWorker *worker)
 {
@@ -135,6 +197,8 @@ HeightMapWindow::HeightMapWindow(QWidget *parent)
     m->provideMappingData(worker);
     worker->moveToThread(&m->procThread);
 
+    m->createActions(this, worker);
+
     m->hmImgLabel->setAlignment(Qt::AlignCenter);
 
     QScrollArea *scrollArea = new QScrollArea(this);
@@ -143,57 +207,21 @@ HeightMapWindow::HeightMapWindow(QWidget *parent)
     scrollArea->setWidget(m->hmImgLabel);
     setCentralWidget(scrollArea);
 
-    QAction *actExit = new QAction(this);
-    actExit->setText(tr("E&xit"));
-    actExit->setShortcut(tr("Alt+X"));
-    connect(actExit, SIGNAL(triggered()), this, SLOT(close()));
+    QWidget *procBarShell = new QWidget(this);
+    QBoxLayout *procBarLayout = new QHBoxLayout(procBarShell);
+    procBarLayout->setMargin(0);
+    procBarLayout->addWidget(m->procBar);
+    procBarShell->setMaximumHeight(m->procLabel->sizeHint().height());
 
-    QMenu *mnuFile = menuBar()->addMenu(tr("&File"));
-    mnuFile->addAction(actExit);
+    m->procBar->hide();
 
-    QAction *actGenLs = new QAction(this);
-    actGenLs->setText(tr("&Generate"));
-    actGenLs->setShortcut(tr("Ctrl+G"));
-    connect(actGenLs, SIGNAL(triggered()), worker, SLOT(createLandscape()));
-
-    QAction *actHmSettings = new QAction(this);
-    actHmSettings->setText(tr("&Settings..."));
-    actHmSettings->setShortcut(tr("Alt+F7"));
-    connect(actHmSettings, SIGNAL(triggered()), this, SLOT(editHeightMapSettings()));
-
-    QMenu *mnuLandscape = menuBar()->addMenu(tr("&Landscape"));
-    mnuLandscape->addAction(actGenLs);
-    mnuLandscape->addSeparator();
-    mnuLandscape->addAction(actHmSettings);
-
-    QActionGroup *agpViewMode = new QActionGroup(this);
-    connect(agpViewMode, SIGNAL(triggered(QAction *)), this, SLOT(setViewMode(QAction *)));
-
-    QAction *actViewModeLandscape = new QAction(agpViewMode);
-    actViewModeLandscape->setText(tr("Landscape"));
-    actViewModeLandscape->setCheckable(true);
-    actViewModeLandscape->setProperty("hmvm", HMVM_Landscape);
-
-    QAction *actViewModeIsobars = new QAction(agpViewMode);
-    actViewModeIsobars->setText(tr("Isobars"));
-    actViewModeIsobars->setCheckable(true);
-    actViewModeIsobars->setProperty("hmvm", HMVM_Isobars);
-
-    QAction *actViewModeHybrid = new QAction(agpViewMode);
-    actViewModeHybrid->setText(tr("Hybrid"));
-    actViewModeHybrid->setCheckable(true);
-    actViewModeHybrid->setProperty("hmvm", HMVM_Hybrid);
-
-    actViewModeIsobars->setChecked(true);
-
-    QMenu *mnuView = menuBar()->addMenu(tr("&View"));
-    mnuView->addAction(actViewModeLandscape);
-    mnuView->addAction(actViewModeIsobars);
-    mnuView->addAction(actViewModeHybrid);
-
-    statusBar()->addWidget(m->stateLabel, 1);
-    statusBar()->addWidget(m->procLabel, 1);
-    statusBar()->addWidget(m->procBar, 2);
+    statusBar()->addWidget(m->stateLabel, 6);
+    statusBar()->addWidget(m->lsSizeLabel, 3);
+    statusBar()->addWidget(m->lvlsLabel, 3);
+    statusBar()->addWidget(m->procLabel, 8);
+    statusBar()->addWidget(procBarShell, 12);
+    statusBar()->addWidget(m->pkLabel, 4);
+    statusBar()->addWidget(m->cntrsLabel, 6);
 
     connect(hmApp, SIGNAL(preferencesChanged()), this, SLOT(adjustPreferences()));
 
@@ -241,6 +269,7 @@ void HeightMapWindow::adjustPreferences()
     m->genOptions.maxPeak = prefs.maxPeak();
     m->genOptions.peakCount = prefs.peakCount();
 
+    m->levels.clear();
     for (int i = m->genOptions.minPeak; i <= m->genOptions.maxPeak; ++i)
         m->levels.push_back(i);
 }
@@ -253,6 +282,14 @@ void HeightMapWindow::onProcessStarted()
                              m->genOptions.hmHeight);
 
     m->stateLabel->setText(tr("Processing..."));
+    m->lsSizeLabel->setText(QString("%1%2%3")
+                            .arg(m->landscape.width())
+                            .arg(QChar(0x00d7))
+                            .arg(m->landscape.height()));
+    m->lvlsLabel->setText(tr("%1 level(s)").arg(m->levels.size()));
+
+    m->procBar->setValue(0);
+    m->procBar->setMaximum(m->genOptions.peakCount + m->landscape.width() - 1);
     m->procBar->show();
     m->processing = true;
 }
@@ -270,19 +307,16 @@ void HeightMapWindow::onProcessFinished()
 void HeightMapWindow::onPeakGeneratingStarted()
 {
     m->procLabel->setText("Generating peaks...");
-    m->procBar->setValue(0);
-    m->procBar->setMaximum(m->genOptions.peakCount);
 }
 
 void HeightMapWindow::onPeakGeneratingFinished()
 {
+    m->pkLabel->setText(tr("%1 peak(s)").arg(m->peaks.size()));
 }
 
 void HeightMapWindow::onPeakExtrapolationStarted()
 {
     m->procLabel->setText("Extrapolating peaks...");
-    m->procBar->setValue(0);
-    m->procBar->setMaximum(m->genOptions.peakCount);
 }
 
 void HeightMapWindow::onPeakExtrapolated(QPoint, double)
@@ -297,8 +331,6 @@ void HeightMapWindow::onPeakExtrapolationFinished()
 void HeightMapWindow::onContouringStarted()
 {
     m->procLabel->setText("Calculating contours...");
-    m->procBar->setValue(0);
-    m->procBar->setMaximum(m->landscape.width());
 }
 
 void HeightMapWindow::onContouringAt(int)
@@ -308,6 +340,7 @@ void HeightMapWindow::onContouringAt(int)
 
 void HeightMapWindow::onContouringFinished()
 {
+    m->cntrsLabel->setText(tr("%1 isobar segment(s)").arg(m->contours.size()));
 }
 
 void HeightMapWindow::onOffScreenDrawingStarted()
