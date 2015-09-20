@@ -20,7 +20,7 @@ class MappingWorker : public QObject
 
 public:
     explicit MappingWorker(QObject *parent = 0);
-    void initFrom(MappingData *);
+    void initFrom(const MappingData &);
     ~MappingWorker();
 
 signals:

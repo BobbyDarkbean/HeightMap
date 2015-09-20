@@ -44,9 +44,9 @@ MappingWorker::MappingWorker(QObject *parent)
     handle_event(Mapper, (&m->mapper), this, contouringAt, int);
 }
 
-void MappingWorker::initFrom(MappingData *data)
+void MappingWorker::initFrom(const MappingData &data)
 {
-    m->data = *data;
+    m->data = data;
 }
 
 
@@ -74,7 +74,10 @@ void MappingWorker::createLandscape()
 void MappingWorker::generatePeaks()
 {
     emit peakGeneratingStarted();
+
+    m->data.landscape->fill(64);
     m->mapper.generatePeaks(*m->data.peaks, *m->data.genOptions);
+
     emit peakGeneratingFinished();
 }
 

@@ -98,7 +98,7 @@ void HeightMapWindowImplementation::provideMappingData(MappingWorker *worker)
         &imgHybrid
     };
 
-    worker->initFrom(&hmData);
+    worker->initFrom(hmData);
 }
 
 void HeightMapWindowImplementation::displayHeightMapImage()
