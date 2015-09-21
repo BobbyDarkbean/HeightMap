@@ -1,5 +1,3 @@
-#include <cstdlib>
-#include <ctime>
 #include <cmath>
 #include "internal/contouring.h"
 #include "landscape.h"
@@ -10,30 +8,11 @@
 namespace HeightMap {
 
 
-namespace {
-bool &rand_flag()
-{
-    static bool b = false;
-    return b;
-}
-}
-
-
 Mapper::Mapper()
     : init_event(peakGenerated, PeakInfo),
       init_event(peakExtrapolated, PeakInfo),
       init_event(contouringAt, int),
-      init_event(contouringAt, PeakInfo)
-{
-    if (!rand_flag()) {
-        srand(static_cast<unsigned int>(time(0)));
-        volatile int r;
-        r = rand();
-        r = rand();
-        (void)r;
-        rand_flag() = true;
-    }
-}
+      init_event(contouringAt, PeakInfo) { }
 
 
 void Mapper::generatePeaks(

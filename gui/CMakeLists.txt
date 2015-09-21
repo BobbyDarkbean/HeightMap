@@ -15,6 +15,7 @@ set (HMGUI_HDR colormap.h
                heightmapsettingsdialog.h
                heightmapwindow.h
                mappingdata.h
+               mappingthread.h
                mappingworker.h
                preferences.h)
 set (HMGUI_SRC engraver.cpp
@@ -22,6 +23,7 @@ set (HMGUI_SRC engraver.cpp
                heightmapsettingsdialog.cpp
                heightmapwindow.cpp
                main.cpp
+               mappingthread.cpp
                mappingworker.cpp
                preferences.cpp)
 

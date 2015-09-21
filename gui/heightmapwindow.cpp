@@ -7,7 +7,7 @@
 #include <QBoxLayout>
 #include <QImage>
 #include <QPixmap>
-#include <QThread>
+#include "mappingthread.h"
 #include "mappingworker.h"
 #include "landscape.h"
 #include "peakgenerationoptions.h"
@@ -64,7 +64,7 @@ struct HeightMapWindowImplementation
 
     HeightMapViewMode hmvm;
 
-    QThread procThread;
+    MappingThread procThread;
 
     bool processing;
 
