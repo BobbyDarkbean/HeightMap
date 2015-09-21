@@ -62,6 +62,10 @@ const std::vector<PeakInfo> &Terrain::peaks() const { return m->peaks; }
 const std::list<Line2dSegment> &Terrain::contours() const { return m->contours; }
 
 
+void Terrain::fillLandscape(
+    double level)
+{ m->ls.fill(level); }
+
 void Terrain::generatePeaks(
     Mapper *mapper,
     const PeakGenerationOptions &opts)
