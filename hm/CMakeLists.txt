@@ -26,7 +26,7 @@ set (HMCORE_SRC landscape.cpp
                 mapper.cpp
                 terrain.cpp)
 
-if (${UNIX} OR ${MINGW})
+if (UNIX OR MINGW)
     set (CMAKE_CXX_FLAGS "-Wall -O3 -pedantic -s -std=c++11")
 endif ()
 add_definitions (-DHEIGHTMAP_LIB)

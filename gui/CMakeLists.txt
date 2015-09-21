@@ -30,7 +30,7 @@ set (HMGUI_SRC engraver.cpp
 set (CMAKE_INCLUDE_CURRENT_DIR ON)
 set (CMAKE_AUTOMOC ON)
 
-if (${UNIX} OR ${MINGW})
+if (UNIX OR MINGW)
     set (CMAKE_CXX_FLAGS "-Wall -O3 -pedantic -s -std=c++11 ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
 endif ()
 
