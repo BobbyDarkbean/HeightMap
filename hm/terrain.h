@@ -33,18 +33,15 @@ public:
 
     void fillLandscape(double level);
 
-    void generatePeaks(
-        Mapper *mapper,
-        const PeakGenerationOptions &opts);
-    void extrapolatePeaks(
-        Mapper *mapper);
-    void calculateContours(
-        Mapper *mapper,
-        const std::vector<int> &levelLayout);
+    void generatePeaks(Mapper *mapper,
+                       const PeakGenerationOptions &opts);
+    void extrapolatePeaks(Mapper *mapper);
+    void calculateContours(Mapper *mapper,
+                           const std::vector<int> &levelLayout);
 
-    void exportLandscape(
-        std::ostream &,
-        int precision) const;
+    void exportPeaks(std::ostream &) const;
+    void exportLandscape(std::ostream &,
+                         int precision) const;
 
     void swap(Terrain &);
 

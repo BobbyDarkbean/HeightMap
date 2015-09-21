@@ -1,3 +1,5 @@
+#include <fstream>
+#include <iomanip>
 #include "landscape.h"
 #include "mapper.h"
 
@@ -10,6 +12,9 @@ namespace HeightMap {
 struct TerrainImplementation
 {
     TerrainImplementation(int width, int height);
+
+    void exportPeaks(std::ostream &) const;
+
     TerrainImplementation *clone() const;
     ~TerrainImplementation();
 
@@ -30,6 +35,20 @@ TerrainImplementation::TerrainImplementation(int width, int height)
     : ls(width, height),
       peaks(),
       contours() { }
+
+void TerrainImplementation::exportPeaks(std::ostream &stream) const
+{
+    stream.precision(2);
+    stream.flags(std::ios::fixed);
+
+    for (std::vector<PeakInfo>::const_iterator itr = peaks.begin(); itr != peaks.end(); ++itr) {
+        stream << "{ "
+               << "x: " << std::setw(4) << std::right << itr->x << " ; "
+               << "y: " << std::setw(4) << std::right << itr->y << " ; "
+               << "level: " << std::setw(6) << std::right << itr->height
+               << " }" << std::endl;
+    }
+}
 
 TerrainImplementation *TerrainImplementation::clone() const
 { return new TerrainImplementation(*this); }
@@ -80,6 +99,10 @@ void Terrain::calculateContours(
     const std::vector<int> &levelLayout)
 { mapper->calculateContours(m->ls, levelLayout, m->contours); }
 
+
+void Terrain::exportPeaks(
+    std::ostream &stream) const
+{ m->exportPeaks(stream); }
 
 void Terrain::exportLandscape(
     std::ostream &stream,

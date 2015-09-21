@@ -91,7 +91,7 @@ void Landscape::exportTo(
     for (int i = 0; i < height(); ++i) {
         for (int j = 0; j < width(); ++j) {
             stream.width(12);
-            stream << std::right << *(d + j * height() + i) /*<< '\t'*/;
+            stream << std::right << *(d + j * height() + i);
         }
         stream << '\n';
     }
