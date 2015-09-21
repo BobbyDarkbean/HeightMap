@@ -1,0 +1,68 @@
+#ifndef _Terrain_h_
+#define _Terrain_h_
+
+
+#include <vector>
+#include <list>
+#include <algorithm>
+#include "hm_shared.h"
+#include "peakinfo.h"
+#include "line2dsegment.h"
+
+
+namespace HeightMap {
+
+
+struct PeakGenerationOptions;
+class Landscape;
+class Mapper;
+struct TerrainImplementation;
+class HM_SHARED Terrain
+{
+public:
+    Terrain(int w, int h);
+    Terrain(const Terrain &);
+    Terrain(Terrain &&);
+
+    int width() const;
+    int height() const;
+
+    const Landscape &landscape() const;
+    const std::vector<PeakInfo> &peaks() const;
+    const std::list<Line2dSegment> &contours() const;
+
+    void generatePeaks(
+        Mapper *mapper,
+        const PeakGenerationOptions &opts);
+    void extrapolatePeaks(
+        Mapper *mapper);
+    void calculateContours(
+        Mapper *mapper,
+        const std::vector<int> &levelLayout);
+
+    void swap(Terrain &);
+
+    Terrain &operator=(Terrain);    // copy-and-swap
+    ~Terrain();
+
+private:
+    TerrainImplementation *m;
+};
+
+
+} // namespace HeightMap
+
+
+namespace std {
+
+
+template <>
+inline void swap<HeightMap::Terrain>(
+    HeightMap::Terrain &a,
+    HeightMap::Terrain &b) { a.swap(b); }
+
+
+} // namespace std
+
+
+#endif // _Terrain_h_

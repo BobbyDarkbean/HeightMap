@@ -20,9 +20,11 @@ set (HMCORE_HDR internal/contouring.h
                 line2dsegment.h
                 mapper.h
                 peakgenerationoptions.h
-                peakinfo.h)
+                peakinfo.h
+                terrain.h)
 set (HMCORE_SRC landscape.cpp
-                mapper.cpp)
+                mapper.cpp
+                terrain.cpp)
 
 if (${UNIX} OR ${MINGW})
     set (CMAKE_CXX_FLAGS "-Wall -O3 -pedantic -s -std=c++11")
