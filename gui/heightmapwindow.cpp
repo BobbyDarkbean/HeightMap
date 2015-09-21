@@ -9,7 +9,7 @@
 #include <QPixmap>
 #include "mappingthread.h"
 #include "mappingworker.h"
-#include "landscape.h"
+#include "terrain.h"
 #include "peakgenerationoptions.h"
 #include "mappingdata.h"
 #include "preferences.h"
@@ -53,10 +53,8 @@ struct HeightMapWindowImplementation
     QLabel *cntrsLabel;
 
     PeakGenerationOptions genOptions;
-    std::vector<PeakInfo> peaks;
     std::vector<int> levels;
-    std::list<Line2dSegment> contours;
-    Landscape landscape;
+    Terrain terrain;
 
     QImage imgLandscape;
     QImage imgIsobars;
@@ -84,10 +82,8 @@ HeightMapWindowImplementation::HeightMapWindowImplementation()
       lsSizeLabel(new QLabel),
       cntrsLabel(new QLabel),
       genOptions(),
-      peaks(),
       levels(),
-      contours(),
-      landscape(Preferences::DefaultLandscapeWidth, Preferences::DefaultLandscapeHeight),
+      terrain(Preferences::DefaultLandscapeWidth, Preferences::DefaultLandscapeHeight),
       imgLandscape(),
       imgIsobars(),
       imgHybrid(),
@@ -147,16 +143,18 @@ void HeightMapWindowImplementation::createActions(HeightMapWindow *master, Mappi
 
 void HeightMapWindowImplementation::provideMappingData(MappingWorker *worker)
 {
+    const int ImageFactor = 4;
+
     MappingData hmData = {
         &genOptions,
-        &peaks,
         &levels,
-        &contours,
-        &landscape,
+        &terrain,
 
         &imgLandscape,
         &imgIsobars,
-        &imgHybrid
+        &imgHybrid,
+
+        ImageFactor
     };
 
     worker->initFrom(hmData);
@@ -235,8 +233,6 @@ HeightMapWindow::HeightMapWindow(QWidget *parent)
     connect(worker, SIGNAL(contouringStarted()), this, SLOT(onContouringStarted()), Qt::BlockingQueuedConnection);
     connect(worker, SIGNAL(contouringAt(int)), this, SLOT(onContouringAt(int)));
     connect(worker, SIGNAL(contouringFinished()), this, SLOT(onContouringFinished()), Qt::BlockingQueuedConnection);
-    connect(worker, SIGNAL(offScreenDrawingStarted()), this, SLOT(onOffScreenDrawingStarted()), Qt::BlockingQueuedConnection);
-    connect(worker, SIGNAL(offScreenDrawingFinished()), this, SLOT(onOffScreenDrawingFinished()), Qt::BlockingQueuedConnection);
 
     connect(&m->procThread, SIGNAL(finished()), worker, SLOT(deleteLater()));
     m->procThread.start();
@@ -268,6 +264,8 @@ void HeightMapWindow::adjustPreferences()
     m->genOptions.maxPeak = prefs.maxPeak();
     m->genOptions.peakCount = prefs.peakCount();
 
+    m->genOptions.baseLvl = static_cast<double>(prefs.landscapeBase());
+
     m->levels.clear();
     for (int i = m->genOptions.minPeak; i <= m->genOptions.maxPeak; ++i)
         m->levels.push_back(i);
@@ -275,20 +273,18 @@ void HeightMapWindow::adjustPreferences()
 
 void HeightMapWindow::onProcessStarted()
 {
-    m->peaks.clear();
-    m->contours.clear();
-    m->landscape = Landscape(m->genOptions.hmWidth,
-                             m->genOptions.hmHeight);
+    m->terrain = Terrain(m->genOptions.hmWidth,
+                         m->genOptions.hmHeight);
 
     m->stateLabel->setText(tr("Processing..."));
     m->lsSizeLabel->setText(QString("%1%2%3")
-                            .arg(m->landscape.width())
+                            .arg(m->terrain.width())
                             .arg(QChar(0x00d7))
-                            .arg(m->landscape.height()));
+                            .arg(m->terrain.height()));
     m->lvlsLabel->setText(tr("%1 level(s)").arg(m->levels.size()));
 
     m->procBar->setValue(0);
-    m->procBar->setMaximum(m->genOptions.peakCount + m->landscape.width() - 1);
+    m->procBar->setMaximum(m->genOptions.peakCount + m->terrain.width() - 1);
     m->procBar->show();
     m->processing = true;
 }
@@ -310,7 +306,7 @@ void HeightMapWindow::onPeakGeneratingStarted()
 
 void HeightMapWindow::onPeakGeneratingFinished()
 {
-    m->pkLabel->setText(tr("%1 peak(s)").arg(m->peaks.size()));
+    m->pkLabel->setText(tr("%1 peak(s)").arg(m->terrain.peaks().size()));
 }
 
 void HeightMapWindow::onPeakExtrapolationStarted()
@@ -339,16 +335,7 @@ void HeightMapWindow::onContouringAt(int)
 
 void HeightMapWindow::onContouringFinished()
 {
-    m->cntrsLabel->setText(tr("%1 isobar segment(s)").arg(m->contours.size()));
-}
-
-void HeightMapWindow::onOffScreenDrawingStarted()
-{
-    m->procLabel->setText("Drawing an off-screen representation...");
-}
-
-void HeightMapWindow::onOffScreenDrawingFinished()
-{
+    m->cntrsLabel->setText(tr("%1 isobar segment(s)").arg(m->terrain.contours().size()));
 }
 
 void HeightMapWindow::setViewMode(QAction *viewModeAct)

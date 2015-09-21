@@ -34,8 +34,6 @@ private slots:
     void onContouringStarted();
     void onContouringAt(int);
     void onContouringFinished();
-    void onOffScreenDrawingStarted();
-    void onOffScreenDrawingFinished();
 
     void setViewMode(QAction *);
 

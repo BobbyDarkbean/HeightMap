@@ -3,9 +3,6 @@
 
 
 #include <vector>
-#include <list>
-#include "peakinfo.h"
-#include "line2dsegment.h"
 
 
 class QImage;
@@ -13,18 +10,18 @@ namespace HeightMap {
 
 
 struct PeakGenerationOptions;
-class Landscape;
+class Terrain;
 struct MappingData
 {
     PeakGenerationOptions *genOptions;
-    std::vector<PeakInfo> *peaks;
     std::vector<int> *levels;
-    std::list<Line2dSegment> *contours;
-    Landscape *landscape;
+    Terrain *terrain;
 
     QImage *imgLandscape;
     QImage *imgIsobars;
     QImage *imgHybrid;
+
+    int imageFactor;
 };
 
 

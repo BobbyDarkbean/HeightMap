@@ -1,6 +1,6 @@
 #include <QImage>
 #include <QMutex>
-#include "landscape.h"
+#include "terrain.h"
 #include "mapper.h"
 #include "mappingdata.h"
 #include "engraver.h"
@@ -14,6 +14,11 @@ namespace HeightMap {
 struct MappingWorkerImplementation
 {
     MappingWorkerImplementation();
+
+    void drawLandscape();
+    void drawIsobars();
+    void drawHybrid();
+
     ~MappingWorkerImplementation();
 
     MappingData data;
@@ -30,6 +35,40 @@ MappingWorkerImplementation::MappingWorkerImplementation()
     : data(),
       mapper(),
       mutex() { }
+
+void MappingWorkerImplementation::drawLandscape()
+{
+    Engraver engr;
+    QImage imgLs(data.terrain->width() * data.imageFactor,
+                 data.terrain->height() * data.imageFactor,
+                 QImage::Format_ARGB32_Premultiplied);
+    engr.drawLandscape(data.terrain->landscape(), &imgLs, data.imageFactor);
+
+    *data.imgLandscape = imgLs;
+}
+
+void MappingWorkerImplementation::drawIsobars()
+{
+    Engraver engr;
+    QImage imgBars(data.terrain->width() * data.imageFactor,
+                   data.terrain->height() * data.imageFactor,
+                   QImage::Format_ARGB32_Premultiplied);
+    engr.drawIsobars(data.terrain->contours(), &imgBars, true, data.imageFactor);
+
+    *data.imgIsobars = imgBars;
+}
+
+void MappingWorkerImplementation::drawHybrid()
+{
+    Engraver engr;
+    QImage imgHyb(data.terrain->width() * data.imageFactor,
+                  data.terrain->height() * data.imageFactor,
+                  QImage::Format_ARGB32_Premultiplied);
+    engr.drawLandscape(data.terrain->landscape(), &imgHyb, data.imageFactor);
+    engr.drawIsobars(data.terrain->contours(), &imgHyb, false, data.imageFactor);
+
+    *data.imgHybrid = imgHyb;
+}
 
 MappingWorkerImplementation::~MappingWorkerImplementation() { }
 
@@ -65,7 +104,6 @@ void MappingWorker::createLandscape()
     generatePeaks();
     extrapolatePeaks();
     calculateContours();
-    drawOffScreenRepresentation();
 
     emit processFinished();
 }
@@ -75,8 +113,8 @@ void MappingWorker::generatePeaks()
 {
     emit peakGeneratingStarted();
 
-    m->data.landscape->fill(64);
-    m->mapper.generatePeaks(*m->data.peaks, *m->data.genOptions);
+    m->data.terrain->fillLandscape(m->data.genOptions->baseLvl);
+    m->data.terrain->generatePeaks(&m->mapper, *m->data.genOptions);
 
     emit peakGeneratingFinished();
 }
@@ -84,43 +122,22 @@ void MappingWorker::generatePeaks()
 void MappingWorker::extrapolatePeaks()
 {
     emit peakExtrapolationStarted();
-    m->mapper.extrapolatePeaks(*m->data.landscape, *m->data.peaks);
+
+    m->data.terrain->extrapolatePeaks(&m->mapper);
+    m->drawLandscape();
+
     emit peakExtrapolationFinished();
 }
 
 void MappingWorker::calculateContours()
 {
     emit contouringStarted();
-    m->mapper.calculateContours(*m->data.landscape, *m->data.levels, *m->data.contours);
+
+    m->data.terrain->calculateContours(&m->mapper, *m->data.levels);
+    m->drawIsobars();
+    m->drawHybrid();
+
     emit contouringFinished();
-}
-
-void MappingWorker::drawOffScreenRepresentation()
-{
-    emit offScreenDrawingStarted();
-
-    Engraver engr;
-    const int ImageFactor = 4;
-
-    QImage imgLs(m->data.landscape->width() * ImageFactor,
-                 m->data.landscape->height() * ImageFactor,
-                 QImage::Format_ARGB32_Premultiplied);
-    engr.drawLandscape(*m->data.landscape, &imgLs, ImageFactor);
-    QImage imgBars(m->data.landscape->width() * ImageFactor,
-                   m->data.landscape->height() * ImageFactor,
-                   QImage::Format_ARGB32_Premultiplied);
-    engr.drawIsobars(*m->data.contours, &imgBars, true, ImageFactor);
-    QImage imgHyb(m->data.landscape->width() * ImageFactor,
-                  m->data.landscape->height() * ImageFactor,
-                  QImage::Format_ARGB32_Premultiplied);
-    engr.drawLandscape(*m->data.landscape, &imgHyb, ImageFactor);
-    engr.drawIsobars(*m->data.contours, &imgHyb, false, ImageFactor);
-
-    *m->data.imgLandscape = imgLs;
-    *m->data.imgIsobars = imgBars;
-    *m->data.imgHybrid = imgHyb;
-
-    emit offScreenDrawingFinished();
 }
 
 
