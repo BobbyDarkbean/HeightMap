@@ -7,6 +7,8 @@
 #include <QBoxLayout>
 #include <QImage>
 #include <QPixmap>
+#include <QFileDialog>
+#include <fstream>
 #include "mappingthread.h"
 #include "mappingworker.h"
 #include "terrain.h"
@@ -28,6 +30,9 @@ enum HeightMapViewMode {
     HMVM_Isobars    = 1,
     HMVM_Hybrid     = 2
 };
+
+const char *LS_TEXT_FILE_EXT = "hmlst";
+const char *PK_TEXT_FILE_EXT = "hmpkt";
 }
 
 
@@ -93,12 +98,23 @@ HeightMapWindowImplementation::HeightMapWindowImplementation()
 
 void HeightMapWindowImplementation::createActions(HeightMapWindow *master, MappingWorker *worker)
 {
+    QAction *actExportLs = new QAction(master);
+    actExportLs->setText(HeightMapWindow::tr("Export landscape..."));
+    QObject::connect(actExportLs, SIGNAL(triggered()), master, SLOT(exportLandscape()));
+
+    QAction *actExportPk = new QAction(master);
+    actExportPk->setText(HeightMapWindow::tr("Export peaks..."));
+    QObject::connect(actExportPk, SIGNAL(triggered()), master, SLOT(exportPeaks()));
+
     QAction *actExit = new QAction(master);
     actExit->setText(HeightMapWindow::tr("E&xit"));
     actExit->setShortcut(HeightMapWindow::tr("Alt+X"));
     QObject::connect(actExit, SIGNAL(triggered()), master, SLOT(close()));
 
     QMenu *mnuFile = master->menuBar()->addMenu(HeightMapWindow::tr("&File"));
+    mnuFile->addAction(actExportLs);
+    mnuFile->addAction(actExportPk);
+    mnuFile->addSeparator();
     mnuFile->addAction(actExit);
 
     QAction *actGenLs = new QAction(master);
@@ -243,6 +259,50 @@ HeightMapWindow::~HeightMapWindow()
     delete m;
 }
 
+
+void HeightMapWindow::exportLandscape()
+{
+    QFileDialog dialog(this);
+    dialog.setWindowTitle(tr("Export landscape"));
+    dialog.setAcceptMode(QFileDialog::AcceptSave);
+    dialog.setOptions(QFileDialog::DontResolveSymlinks);
+    dialog.setDirectory(QDir::home());
+    dialog.setFileMode(QFileDialog::AnyFile);
+    dialog.setNameFilter(tr("HeightMap landscape text files (*.%1)").arg(LS_TEXT_FILE_EXT));
+    dialog.setViewMode(QFileDialog::Detail);
+
+    if (!dialog.exec())
+        return;
+
+    QString filename(dialog.selectedFiles().value(0));
+
+    std::ofstream stream;
+    stream.open(filename.toStdString(), std::ios::out | std::ios::trunc);
+    m->terrain.exportLandscape(stream, 4);
+    stream.close();
+}
+
+void HeightMapWindow::exportPeaks()
+{
+    QFileDialog dialog(this);
+    dialog.setWindowTitle(tr("Export peaks"));
+    dialog.setAcceptMode(QFileDialog::AcceptSave);
+    dialog.setOptions(QFileDialog::DontResolveSymlinks);
+    dialog.setDirectory(QDir::home());
+    dialog.setFileMode(QFileDialog::AnyFile);
+    dialog.setNameFilter(tr("HeightMap peak text files (*.%1)").arg(PK_TEXT_FILE_EXT));
+    dialog.setViewMode(QFileDialog::Detail);
+
+    if (!dialog.exec())
+        return;
+
+    QString filename(dialog.selectedFiles().value(0));
+
+    std::ofstream stream;
+    stream.open(filename.toStdString(), std::ios::out | std::ios::trunc);
+    m->terrain.exportPeaks(stream);
+    stream.close();
+}
 
 void HeightMapWindow::editHeightMapSettings()
 {

@@ -19,6 +19,9 @@ public:
     ~HeightMapWindow();
 
 private slots:
+    void exportLandscape();
+    void exportPeaks();
+
     void editHeightMapSettings();
 
     void adjustPreferences();
