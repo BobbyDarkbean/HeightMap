@@ -91,7 +91,7 @@ HeightMapWindowImplementation::HeightMapWindowImplementation()
       imgLandscape(),
       imgIsobars(),
       imgHybrid(),
-      hmvm(HMVM_Isobars),
+      hmvm(HMVM_Hybrid),
       procThread(),
       processing(false) { }
 
@@ -136,9 +136,8 @@ void HeightMapWindowImplementation::createActions(HeightMapWindow *master, Mappi
     QAction *actViewModeHybrid = new QAction(agpViewMode);
     actViewModeHybrid->setText(HeightMapWindow::tr("Hybrid"));
     actViewModeHybrid->setCheckable(true);
+    actViewModeHybrid->setChecked(true);
     actViewModeHybrid->setProperty("hmvm", HMVM_Hybrid);
-
-    actViewModeIsobars->setChecked(true);
 
     QMenu *mnuView = master->menuBar()->addMenu(HeightMapWindow::tr("&View"));
     mnuView->addAction(actViewModeLandscape);
