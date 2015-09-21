@@ -81,6 +81,12 @@ void Terrain::calculateContours(
 { mapper->calculateContours(m->ls, levelLayout, m->contours); }
 
 
+void Terrain::exportLandscape(
+    std::ostream &stream,
+    int precision) const
+{ m->ls.exportTo(stream, precision); }
+
+
 void Terrain::swap(Terrain &other)
 {
     using std::swap;

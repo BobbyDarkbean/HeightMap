@@ -42,6 +42,10 @@ public:
         Mapper *mapper,
         const std::vector<int> &levelLayout);
 
+    void exportLandscape(
+        std::ostream &,
+        int precision) const;
+
     void swap(Terrain &);
 
     Terrain &operator=(Terrain);    // copy-and-swap

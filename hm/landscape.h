@@ -3,6 +3,7 @@
 
 
 #include <algorithm>
+#include <iosfwd>
 #include "hm_shared.h"
 
 
@@ -24,6 +25,9 @@ public:
 
     double *matrix();
     const double *matrix() const;
+
+    void exportTo(std::ostream &,
+                  int precision) const;
 
     void swap(Landscape &);
 
