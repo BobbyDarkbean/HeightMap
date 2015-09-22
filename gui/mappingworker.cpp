@@ -124,7 +124,7 @@ void MappingWorker::extrapolatePeaks()
 {
     emit peakExtrapolationStarted();
 
-    m->data.terrain->extrapolatePeaks(&m->mapper);
+    m->data.terrain->extrapolatePeaks(&m->mapper, m->data.genOptions->baseLvl);
     m->drawLandscape();
 
     emit peakExtrapolationFinished();
