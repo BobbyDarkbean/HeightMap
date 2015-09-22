@@ -73,8 +73,14 @@ TerrainOptionsDialog::TerrainOptionsDialog(QWidget *parent)
 int TerrainOptionsDialog::landscapeWidth() const
 { return m->wgtLsOpt->landscapeWidth(); }
 
+void TerrainOptionsDialog::setLandscapeWidth(int w)
+{ m->wgtLsOpt->setLandscapeWidth(w); }
+
 int TerrainOptionsDialog::landscapeHeight() const
 { return m->wgtLsOpt->landscapeHeight(); }
+
+void TerrainOptionsDialog::setLandscapeHeight(int h)
+{ m->wgtLsOpt->setLandscapeHeight(h); }
 
 
 TerrainOptionsDialog::~TerrainOptionsDialog()

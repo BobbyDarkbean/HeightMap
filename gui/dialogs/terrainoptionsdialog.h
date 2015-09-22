@@ -18,7 +18,10 @@ public:
     explicit TerrainOptionsDialog(QWidget *parent = 0);
 
     int landscapeWidth() const;
+    void setLandscapeWidth(int);
+
     int landscapeHeight() const;
+    void setLandscapeHeight(int);
 
     ~TerrainOptionsDialog();
 

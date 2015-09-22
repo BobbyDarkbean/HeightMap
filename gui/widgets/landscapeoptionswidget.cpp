@@ -95,8 +95,14 @@ LandscapeOptionsWidget::LandscapeOptionsWidget(QWidget *parent)
 int LandscapeOptionsWidget::landscapeWidth() const
 { return m->spnLandscapeWidth->value(); }
 
+void LandscapeOptionsWidget::setLandscapeWidth(int w)
+{ m->spnLandscapeWidth->setValue(w); }
+
 int LandscapeOptionsWidget::landscapeHeight() const
 { return m->spnLandscapeHeight->value(); }
+
+void LandscapeOptionsWidget::setLandscapeHeight(int h)
+{ m->spnLandscapeHeight->setValue(h); }
 
 
 LandscapeOptionsWidget::~LandscapeOptionsWidget()
