@@ -31,6 +31,10 @@ public:
     const std::vector<PeakInfo> &peaks() const;
     const std::list<Line2dSegment> &contours() const;
 
+    void clearLandscape();
+    void clearPeaks();
+    void clearContours();
+
     void fillLandscape(double level);
 
     void generatePeaks(Mapper *mapper,

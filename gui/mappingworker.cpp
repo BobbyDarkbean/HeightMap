@@ -113,6 +113,7 @@ void MappingWorker::generatePeaks()
 {
     emit peakGeneratingStarted();
 
+    m->data.terrain->clearPeaks();
     m->data.terrain->fillLandscape(m->data.genOptions->baseLvl);
     m->data.terrain->generatePeaks(&m->mapper, *m->data.genOptions);
 
@@ -133,6 +134,7 @@ void MappingWorker::calculateContours()
 {
     emit contouringStarted();
 
+    m->data.terrain->clearContours();
     m->data.terrain->calculateContours(&m->mapper, *m->data.levels);
     m->drawIsobars();
     m->drawHybrid();

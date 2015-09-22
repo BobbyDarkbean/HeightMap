@@ -80,6 +80,11 @@ const Landscape &Terrain::landscape() const { return m->ls; }
 const std::vector<PeakInfo> &Terrain::peaks() const { return m->peaks; }
 const std::list<Line2dSegment> &Terrain::contours() const { return m->contours; }
 
+void Terrain::clearLandscape() { fillLandscape(0.0); }
+
+void Terrain::clearPeaks() { m->peaks.clear(); }
+void Terrain::clearContours() { m->contours.clear(); }
+
 
 void Terrain::fillLandscape(
     double level)
