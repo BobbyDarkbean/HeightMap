@@ -17,6 +17,7 @@
 #include "preferences.h"
 #include "heightmapsettingsdialog.h"
 #include "heightmapapplication.h"
+#include "dialogs/terrainoptionsdialog.h"
 
 #include "heightmapwindow.h"
 
@@ -43,7 +44,9 @@ struct HeightMapWindowImplementation
     void createActions(HeightMapWindow *, MappingWorker *);
 
     void provideMappingData(MappingWorker *);
+
     void displayHeightMapImage();
+    void resetImages();
 
     ~HeightMapWindowImplementation();
 
@@ -88,7 +91,7 @@ HeightMapWindowImplementation::HeightMapWindowImplementation()
       cntrsLabel(new QLabel),
       genOptions(),
       levels(),
-      terrain(Preferences::DefaultLandscapeWidth, Preferences::DefaultLandscapeHeight),
+      terrain(hmApp->preferences().landscapeWidth(), hmApp->preferences().landscapeHeight()),
       imgLandscape(),
       imgIsobars(),
       imgHybrid(),
@@ -98,6 +101,11 @@ HeightMapWindowImplementation::HeightMapWindowImplementation()
 
 void HeightMapWindowImplementation::createActions(HeightMapWindow *master, MappingWorker *worker)
 {
+    QAction *actNewFile = new QAction(master);
+    actNewFile->setText(HeightMapWindow::tr("&New file..."));
+    actNewFile->setShortcut(HeightMapWindow::tr("Ctrl+N"));
+    QObject::connect(actNewFile, SIGNAL(triggered()), master, SLOT(newFile()));
+
     QAction *actExportLs = new QAction(master);
     actExportLs->setText(HeightMapWindow::tr("Export landscape..."));
     QObject::connect(actExportLs, SIGNAL(triggered()), master, SLOT(exportLandscape()));
@@ -112,6 +120,8 @@ void HeightMapWindowImplementation::createActions(HeightMapWindow *master, Mappi
     QObject::connect(actExit, SIGNAL(triggered()), master, SLOT(close()));
 
     QMenu *mnuFile = master->menuBar()->addMenu(HeightMapWindow::tr("&File"));
+    mnuFile->addAction(actNewFile);
+    mnuFile->addSeparator();
     mnuFile->addAction(actExportLs);
     mnuFile->addAction(actExportPk);
     mnuFile->addSeparator();
@@ -193,6 +203,17 @@ void HeightMapWindowImplementation::displayHeightMapImage()
     }
 }
 
+void HeightMapWindowImplementation::resetImages()
+{
+    imgLandscape = QImage(genOptions.hmWidth, genOptions.hmHeight, QImage::Format_ARGB32_Premultiplied);
+    imgIsobars = QImage(genOptions.hmWidth, genOptions.hmHeight, QImage::Format_ARGB32_Premultiplied);
+    imgHybrid = QImage(genOptions.hmWidth, genOptions.hmHeight, QImage::Format_ARGB32_Premultiplied);
+
+    imgLandscape.fill(Qt::transparent);
+    imgIsobars.fill(Qt::transparent);
+    imgHybrid.fill(Qt::transparent);
+}
+
 HeightMapWindowImplementation::~HeightMapWindowImplementation()
 {
     procThread.quit();
@@ -260,6 +281,27 @@ HeightMapWindow::~HeightMapWindow()
 }
 
 
+void HeightMapWindow::newFile()
+{
+    TerrainOptionsDialog dialog(this);
+    dialog.setWindowTitle("New file");
+    dialog.setLandscapeWidth(m->genOptions.hmWidth);
+    dialog.setLandscapeHeight(m->genOptions.hmHeight);
+    if (!dialog.exec())
+        return;
+
+    Preferences prefs = hmApp->preferences();
+    prefs.setLandscapeWidth(dialog.landscapeWidth());
+    prefs.setLandscapeHeight(dialog.landscapeHeight());
+    hmApp->setPreferences(prefs);
+
+    m->terrain = Terrain(m->genOptions.hmWidth,
+                         m->genOptions.hmHeight);
+
+    m->resetImages();
+    m->displayHeightMapImage();
+}
+
 void HeightMapWindow::exportLandscape()
 {
     QFileDialog dialog(this);
@@ -319,11 +361,9 @@ void HeightMapWindow::adjustPreferences()
     Preferences prefs = hmApp->preferences();
     m->genOptions.hmHeight = prefs.landscapeHeight();
     m->genOptions.hmWidth = prefs.landscapeWidth();
-
     m->genOptions.minPeak = prefs.minPeak();
     m->genOptions.maxPeak = prefs.maxPeak();
     m->genOptions.peakCount = prefs.peakCount();
-
     m->genOptions.baseLvl = static_cast<double>(prefs.landscapeBase());
 
     m->levels.clear();
@@ -333,9 +373,6 @@ void HeightMapWindow::adjustPreferences()
 
 void HeightMapWindow::onProcessStarted()
 {
-    m->terrain = Terrain(m->genOptions.hmWidth,
-                         m->genOptions.hmHeight);
-
     m->stateLabel->setText(tr("Processing..."));
     m->lsSizeLabel->setText(QString("%1%2%3")
                             .arg(m->terrain.width())
