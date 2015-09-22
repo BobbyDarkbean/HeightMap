@@ -9,7 +9,9 @@ find_package (Qt5Widgets REQUIRED)
 
 include_directories (../hm)
 
-set (HMGUI_HDR colormap.h
+set (HMGUI_HDR dialogs/terrainoptionsdialog.h
+               widgets/landscapeoptionswidget.h
+               colormap.h
                engraver.h
                heightmapapplication.h
                heightmapsettingsdialog.h
@@ -18,7 +20,9 @@ set (HMGUI_HDR colormap.h
                mappingthread.h
                mappingworker.h
                preferences.h)
-set (HMGUI_SRC engraver.cpp
+set (HMGUI_SRC dialogs/terrainoptionsdialog.cpp
+               widgets/landscapeoptionswidget.cpp
+               engraver.cpp
                heightmapapplication.cpp
                heightmapsettingsdialog.cpp
                heightmapwindow.cpp
