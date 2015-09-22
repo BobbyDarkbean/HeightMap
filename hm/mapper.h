@@ -40,7 +40,8 @@ public:
         PeakGenerationOptions opts);
     void extrapolatePeaks(
         Landscape &ls,
-        const std::vector<PeakInfo> &peaks);
+        const std::vector<PeakInfo> &peaks,
+        double baseLevel);
     void calculateContours(
         const Landscape &ls,
         const std::vector<int> &levelLayout,

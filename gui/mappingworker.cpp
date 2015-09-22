@@ -84,7 +84,7 @@ void MappingWorker::generatePeaks()
 void MappingWorker::extrapolatePeaks()
 {
     emit peakExtrapolationStarted();
-    m->mapper.extrapolatePeaks(*m->data.landscape, *m->data.peaks);
+    m->mapper.extrapolatePeaks(*m->data.landscape, *m->data.peaks, m->data.genOptions->baseLvl);
     emit peakExtrapolationFinished();
 }
 

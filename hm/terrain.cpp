@@ -72,8 +72,9 @@ void Terrain::generatePeaks(
 { mapper->generatePeaks(m->peaks, opts); }
 
 void Terrain::extrapolatePeaks(
-    Mapper *mapper)
-{ mapper->extrapolatePeaks(m->ls, m->peaks); }
+    Mapper *mapper,
+    double baseLevel)
+{ mapper->extrapolatePeaks(m->ls, m->peaks, baseLevel); }
 
 void Terrain::calculateContours(
     Mapper *mapper,

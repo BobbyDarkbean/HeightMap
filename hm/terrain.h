@@ -37,7 +37,8 @@ public:
         Mapper *mapper,
         const PeakGenerationOptions &opts);
     void extrapolatePeaks(
-        Mapper *mapper);
+        Mapper *mapper,
+        double baseLevel);
     void calculateContours(
         Mapper *mapper,
         const std::vector<int> &levelLayout);
