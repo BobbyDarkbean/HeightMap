@@ -9,22 +9,28 @@ find_package (Qt5Widgets REQUIRED)
 
 include_directories (../hm)
 
-set (HMGUI_HDR dialogs/terrainoptionsdialog.h
+set (HMGUI_HDR dialogs/extrapolationoptionsdialog.h
+               dialogs/generatingoptionsdialog.h
+               dialogs/terrainoptionsdialog.h
+               widgets/extrapolationoptionswidget.h
                widgets/landscapeoptionswidget.h
+               widgets/peakoptionswidget.h
                colormap.h
                engraver.h
                heightmapapplication.h
-               heightmapsettingsdialog.h
                heightmapwindow.h
                mappingdata.h
                mappingthread.h
                mappingworker.h
                preferences.h)
-set (HMGUI_SRC dialogs/terrainoptionsdialog.cpp
+set (HMGUI_SRC dialogs/extrapolationoptionsdialog.cpp
+               dialogs/generatingoptionsdialog.cpp
+               dialogs/terrainoptionsdialog.cpp
+               widgets/extrapolationoptionswidget.cpp
                widgets/landscapeoptionswidget.cpp
+               widgets/peakoptionswidget.cpp
                engraver.cpp
                heightmapapplication.cpp
-               heightmapsettingsdialog.cpp
                heightmapwindow.cpp
                main.cpp
                mappingthread.cpp

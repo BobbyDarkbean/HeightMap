@@ -15,9 +15,10 @@
 #include "peakgenerationoptions.h"
 #include "mappingdata.h"
 #include "preferences.h"
-#include "heightmapsettingsdialog.h"
 #include "heightmapapplication.h"
 #include "dialogs/terrainoptionsdialog.h"
+#include "dialogs/generatingoptionsdialog.h"
+#include "dialogs/extrapolationoptionsdialog.h"
 
 #include "heightmapwindow.h"
 
@@ -132,15 +133,27 @@ void HeightMapWindowImplementation::createActions(HeightMapWindow *master, Mappi
     actGenLs->setShortcut(HeightMapWindow::tr("Ctrl+G"));
     QObject::connect(actGenLs, SIGNAL(triggered()), worker, SLOT(createLandscape()));
 
+    QAction *actBuildLs = new QAction(master);
+    actBuildLs->setText(HeightMapWindow::tr("E&xtrapolate"));
+    actBuildLs->setShortcut(HeightMapWindow::tr("Ctrl+E"));
+    QObject::connect(actBuildLs, SIGNAL(triggered()), worker, SLOT(buildLandscapeFromPeaks()));
+
     QAction *actHmSettings = new QAction(master);
-    actHmSettings->setText(HeightMapWindow::tr("&Settings..."));
-    actHmSettings->setShortcut(HeightMapWindow::tr("Alt+F7"));
-    QObject::connect(actHmSettings, SIGNAL(triggered()), master, SLOT(editHeightMapSettings()));
+    actHmSettings->setText(HeightMapWindow::tr("&Peak settings..."));
+    actHmSettings->setShortcut(HeightMapWindow::tr("F6"));
+    QObject::connect(actHmSettings, SIGNAL(triggered()), master, SLOT(editPeakSettings()));
+
+    QAction *actExtrapolSettings = new QAction(master);
+    actExtrapolSettings->setText(HeightMapWindow::tr("Extra&polation settings..."));
+    actExtrapolSettings->setShortcut(HeightMapWindow::tr("F7"));
+    QObject::connect(actExtrapolSettings, SIGNAL(triggered()), master, SLOT(editExtrapolationSettings()));
 
     QMenu *mnuLandscape = master->menuBar()->addMenu(HeightMapWindow::tr("&Landscape"));
     mnuLandscape->addAction(actGenLs);
+    mnuLandscape->addAction(actBuildLs);
     mnuLandscape->addSeparator();
     mnuLandscape->addAction(actHmSettings);
+    mnuLandscape->addAction(actExtrapolSettings);
 
     QActionGroup *agpViewMode = new QActionGroup(master);
     QObject::connect(agpViewMode, SIGNAL(triggered(QAction *)), master, SLOT(setViewMode(QAction *)));
@@ -284,7 +297,7 @@ HeightMapWindow::~HeightMapWindow()
 void HeightMapWindow::newFile()
 {
     TerrainOptionsDialog dialog(this);
-    dialog.setWindowTitle("New file");
+    dialog.setWindowTitle(tr("New file"));
     dialog.setLandscapeWidth(m->genOptions.hmWidth);
     dialog.setLandscapeHeight(m->genOptions.hmHeight);
     if (!dialog.exec())
@@ -346,14 +359,35 @@ void HeightMapWindow::exportPeaks()
     stream.close();
 }
 
-void HeightMapWindow::editHeightMapSettings()
+void HeightMapWindow::editPeakSettings()
 {
-    HeightMapSettingsDialog dialog(this);
-    dialog.setPreferences(hmApp->preferences());
+    GeneratingOptionsDialog dialog(this);
+    dialog.setWindowTitle(tr("Peak settings"));
+    dialog.setRange(m->genOptions.minPeak, m->genOptions.maxPeak);
+    dialog.setPeakCount(m->genOptions.peakCount);
 
-    if (dialog.exec()) {
-        hmApp->setPreferences(dialog.preferences());
-    }
+    if (!dialog.exec())
+        return;
+
+    Preferences prefs = hmApp->preferences();
+    prefs.setMinPeak(dialog.minPeak());
+    prefs.setMaxPeak(dialog.maxPeak());
+    prefs.setPeakCount(dialog.peakCount());
+    hmApp->setPreferences(prefs);
+}
+
+void HeightMapWindow::editExtrapolationSettings()
+{
+    ExtrapolationOptionsDialog dialog(this);
+    dialog.setWindowTitle(tr("Extrapolation settings"));
+    dialog.setBaseLevel(m->genOptions.baseLvl);
+
+    if (!dialog.exec())
+        return;
+
+    Preferences prefs = hmApp->preferences();
+    prefs.setLandscapeBase(dialog.baseLevel());
+    hmApp->setPreferences(prefs);
 }
 
 void HeightMapWindow::adjustPreferences()

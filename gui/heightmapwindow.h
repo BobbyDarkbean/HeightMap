@@ -24,7 +24,8 @@ private slots:
     void exportLandscape();
     void exportPeaks();
 
-    void editHeightMapSettings();
+    void editPeakSettings();
+    void editExtrapolationSettings();
 
     void adjustPreferences();
 
