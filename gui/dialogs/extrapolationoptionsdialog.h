@@ -9,6 +9,7 @@
 namespace HeightMap {
 
 
+class Preferences;
 struct ExtrapolationOptionsDialogImplementation;
 class ExtrapolationOptionsDialog : public QDialog
 {
@@ -20,7 +21,13 @@ public:
     int baseLevel() const;
     void setBaseLevel(int);
 
+    const Preferences &preferences() const;
+    void setPreferences(const Preferences &);
+
     ~ExtrapolationOptionsDialog();
+
+public slots:
+    void done(int);
 
 private:
     DISABLE_COPY(ExtrapolationOptionsDialog)

@@ -1,6 +1,7 @@
 #include <QPushButton>
 #include <QFrame>
 #include <QBoxLayout>
+#include "../preferences.h"
 #include "../widgets/landscapeoptionswidget.h"
 
 #include "terrainoptionsdialog.h"
@@ -16,12 +17,17 @@ struct TerrainOptionsDialogImplementation
     void adjustControls();
     void adjustLayout(QDialog *master);
 
+    void adjustPreferences();
+    void acquirePreferences();
+
     ~TerrainOptionsDialogImplementation();
 
     LandscapeOptionsWidget *wgtLsOpt;
 
     QPushButton *btnOk;
     QPushButton *btnCancel;
+
+    Preferences prefs;
 
 private:
     DISABLE_COPY(TerrainOptionsDialogImplementation)
@@ -32,7 +38,8 @@ private:
 TerrainOptionsDialogImplementation::TerrainOptionsDialogImplementation()
     : wgtLsOpt(new LandscapeOptionsWidget),
       btnOk(new QPushButton),
-      btnCancel(new QPushButton) { }
+      btnCancel(new QPushButton),
+      prefs() { }
 
 void TerrainOptionsDialogImplementation::adjustControls()
 {
@@ -56,6 +63,18 @@ void TerrainOptionsDialogImplementation::adjustLayout(QDialog *master)
 
     TerrainOptionsDialog::connect(btnOk, SIGNAL(clicked()), master, SLOT(accept()));
     TerrainOptionsDialog::connect(btnCancel, SIGNAL(clicked()), master, SLOT(reject()));
+}
+
+void TerrainOptionsDialogImplementation::adjustPreferences()
+{
+    wgtLsOpt->setLandscapeWidth(prefs.landscapeWidth());
+    wgtLsOpt->setLandscapeHeight(prefs.landscapeHeight());
+}
+
+void TerrainOptionsDialogImplementation::acquirePreferences()
+{
+    prefs.setLandscapeWidth(wgtLsOpt->landscapeWidth());
+    prefs.setLandscapeHeight(wgtLsOpt->landscapeHeight());
 }
 
 TerrainOptionsDialogImplementation::~TerrainOptionsDialogImplementation() { }
@@ -82,10 +101,28 @@ int TerrainOptionsDialog::landscapeHeight() const
 void TerrainOptionsDialog::setLandscapeHeight(int h)
 { m->wgtLsOpt->setLandscapeHeight(h); }
 
+const Preferences &TerrainOptionsDialog::preferences() const
+{ return m->prefs; }
+
+void TerrainOptionsDialog::setPreferences(const Preferences &prefs)
+{
+    m->prefs = prefs;
+    m->adjustPreferences();
+}
+
 
 TerrainOptionsDialog::~TerrainOptionsDialog()
 {
     delete m;
+}
+
+
+void TerrainOptionsDialog::done(int r)
+{
+    if (r == Accepted)
+        m->acquirePreferences();
+
+    QDialog::done(r);
 }
 
 

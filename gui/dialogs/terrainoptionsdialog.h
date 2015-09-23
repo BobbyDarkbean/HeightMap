@@ -9,6 +9,7 @@
 namespace HeightMap {
 
 
+class Preferences;
 struct TerrainOptionsDialogImplementation;
 class TerrainOptionsDialog : public QDialog
 {
@@ -23,7 +24,13 @@ public:
     int landscapeHeight() const;
     void setLandscapeHeight(int);
 
+    const Preferences &preferences() const;
+    void setPreferences(const Preferences &);
+
     ~TerrainOptionsDialog();
+
+public slots:
+    void done(int);
 
 private:
     DISABLE_COPY(TerrainOptionsDialog)

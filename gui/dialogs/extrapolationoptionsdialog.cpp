@@ -1,6 +1,7 @@
 #include <QPushButton>
 #include <QFrame>
 #include <QBoxLayout>
+#include "../preferences.h"
 #include "../widgets/extrapolationoptionswidget.h"
 
 #include "extrapolationoptionsdialog.h"
@@ -16,12 +17,17 @@ struct ExtrapolationOptionsDialogImplementation
     void adjustControls();
     void adjustLayout(QDialog *master);
 
+    void adjustPreferences();
+    void acquirePreferences();
+
     ~ExtrapolationOptionsDialogImplementation();
 
     ExtrapolationOptionsWidget *wgtExtrapolOpt;
 
     QPushButton *btnOk;
     QPushButton *btnCancel;
+
+    Preferences prefs;
 
 private:
     DISABLE_COPY(ExtrapolationOptionsDialogImplementation)
@@ -32,7 +38,8 @@ private:
 ExtrapolationOptionsDialogImplementation::ExtrapolationOptionsDialogImplementation()
     : wgtExtrapolOpt(new ExtrapolationOptionsWidget),
       btnOk(new QPushButton),
-      btnCancel(new QPushButton) { }
+      btnCancel(new QPushButton),
+      prefs() { }
 
 void ExtrapolationOptionsDialogImplementation::adjustControls()
 {
@@ -58,6 +65,16 @@ void ExtrapolationOptionsDialogImplementation::adjustLayout(QDialog *master)
     ExtrapolationOptionsDialog::connect(btnCancel, SIGNAL(clicked()), master, SLOT(reject()));
 }
 
+void ExtrapolationOptionsDialogImplementation::adjustPreferences()
+{
+    wgtExtrapolOpt->setBaseLevel(prefs.landscapeBase());
+}
+
+void ExtrapolationOptionsDialogImplementation::acquirePreferences()
+{
+    prefs.setLandscapeBase(wgtExtrapolOpt->baseLevel());
+}
+
 ExtrapolationOptionsDialogImplementation::~ExtrapolationOptionsDialogImplementation() { }
 
 
@@ -76,10 +93,28 @@ int ExtrapolationOptionsDialog::baseLevel() const
 void ExtrapolationOptionsDialog::setBaseLevel(int level)
 { m->wgtExtrapolOpt->setBaseLevel(level); }
 
+const Preferences &ExtrapolationOptionsDialog::preferences() const
+{ return m->prefs; }
+
+void ExtrapolationOptionsDialog::setPreferences(const Preferences &prefs)
+{
+    m->prefs = prefs;
+    m->adjustPreferences();
+}
+
 
 ExtrapolationOptionsDialog::~ExtrapolationOptionsDialog()
 {
     delete m;
+}
+
+
+void ExtrapolationOptionsDialog::done(int r)
+{
+    if (r == Accepted)
+        m->acquirePreferences();
+
+    QDialog::done(r);
 }
 
 

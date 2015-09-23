@@ -310,19 +310,15 @@ HeightMapWindow::~HeightMapWindow()
 
 void HeightMapWindow::newFile()
 {
-    Preferences prefs = hmApp->preferences();
-
     TerrainOptionsDialog dialog(this);
     dialog.setWindowTitle(tr("New file"));
-    dialog.setLandscapeWidth(prefs.landscapeWidth());
-    dialog.setLandscapeHeight(prefs.landscapeHeight());
-    if (!dialog.exec())
-        return;
+    dialog.setPreferences(hmApp->preferences());
 
-    prefs.setLandscapeWidth(dialog.landscapeWidth());
-    prefs.setLandscapeHeight(dialog.landscapeHeight());
-    hmApp->setPreferences(prefs);
+    if (dialog.exec()) {
+        hmApp->setPreferences(dialog.preferences());
+    }
 
+    Preferences prefs = hmApp->preferences();
     m->terrain = Terrain(prefs.landscapeWidth(), prefs.landscapeHeight());
 
     m->resetImages();
@@ -376,54 +372,35 @@ void HeightMapWindow::exportPeaks()
 
 void HeightMapWindow::editPeakSettings()
 {
-    Preferences prefs = hmApp->preferences();
-
     GeneratingOptionsDialog dialog(this);
     dialog.setWindowTitle(tr("Peak settings"));
-    dialog.setRange(prefs.minPeak(), prefs.maxPeak());
-    dialog.setPeakCount(prefs.peakCount());
+    dialog.setPreferences(hmApp->preferences());
 
-    if (!dialog.exec())
-        return;
-
-    prefs.setMinPeak(dialog.minPeak());
-    prefs.setMaxPeak(dialog.maxPeak());
-    prefs.setPeakCount(dialog.peakCount());
-    hmApp->setPreferences(prefs);
+    if (dialog.exec()) {
+        hmApp->setPreferences(dialog.preferences());
+    }
 }
 
 void HeightMapWindow::editExtrapolationSettings()
 {
-    Preferences prefs = hmApp->preferences();
-
     ExtrapolationOptionsDialog dialog(this);
     dialog.setWindowTitle(tr("Extrapolation settings"));
-    dialog.setBaseLevel(prefs.landscapeBase());
+    dialog.setPreferences(hmApp->preferences());
 
-    if (!dialog.exec())
-        return;
-
-    prefs.setLandscapeBase(dialog.baseLevel());
-    hmApp->setPreferences(prefs);
+    if (dialog.exec()) {
+        hmApp->setPreferences(dialog.preferences());
+    }
 }
 
 void HeightMapWindow::editContouringSettings()
 {
-    Preferences prefs = hmApp->preferences();
-
     ContouringOptionsDialog dialog(this);
     dialog.setWindowTitle(tr("Contouring settings"));
-    dialog.setMinLevel(prefs.minContouringLevel());
-    dialog.setMaxLevel(prefs.maxContouringLevel());
-    dialog.setStep(prefs.contouringStep());
+    dialog.setPreferences(hmApp->preferences());
 
-    if (!dialog.exec())
-        return;
-
-    prefs.setMinContouringLevel(dialog.minLevel());
-    prefs.setMaxContouringLevel(dialog.maxLevel());
-    prefs.setContouringStep(dialog.step());
-    hmApp->setPreferences(prefs);
+    if (dialog.exec()) {
+        hmApp->setPreferences(dialog.preferences());
+    }
 }
 
 void HeightMapWindow::onProcessStarted()

@@ -1,6 +1,7 @@
 #include <QPushButton>
 #include <QFrame>
 #include <QBoxLayout>
+#include "../preferences.h"
 #include "../widgets/peakoptionswidget.h"
 
 #include "generatingoptionsdialog.h"
@@ -16,12 +17,17 @@ struct GeneratingOptionsDialogImplementation
     void adjustControls();
     void adjustLayout(QDialog *master);
 
+    void adjustPreferences();
+    void acquirePreferences();
+
     ~GeneratingOptionsDialogImplementation();
 
     PeakOptionsWidget *wgtPeakOpt;
 
     QPushButton *btnOk;
     QPushButton *btnCancel;
+
+    Preferences prefs;
 
 private:
     DISABLE_COPY(GeneratingOptionsDialogImplementation)
@@ -32,7 +38,8 @@ private:
 GeneratingOptionsDialogImplementation::GeneratingOptionsDialogImplementation()
     : wgtPeakOpt(new PeakOptionsWidget),
       btnOk(new QPushButton),
-      btnCancel(new QPushButton) { }
+      btnCancel(new QPushButton),
+      prefs() { }
 
 void GeneratingOptionsDialogImplementation::adjustControls()
 {
@@ -56,6 +63,19 @@ void GeneratingOptionsDialogImplementation::adjustLayout(QDialog *master)
 
     GeneratingOptionsDialog::connect(btnOk, SIGNAL(clicked()), master, SLOT(accept()));
     GeneratingOptionsDialog::connect(btnCancel, SIGNAL(clicked()), master, SLOT(reject()));
+}
+
+void GeneratingOptionsDialogImplementation::adjustPreferences()
+{
+    wgtPeakOpt->setRange(prefs.minPeak(), prefs.maxPeak());
+    wgtPeakOpt->setPeakCount(prefs.peakCount());
+}
+
+void GeneratingOptionsDialogImplementation::acquirePreferences()
+{
+    prefs.setMinPeak(wgtPeakOpt->minPeak());
+    prefs.setMaxPeak(wgtPeakOpt->maxPeak());
+    prefs.setPeakCount(wgtPeakOpt->peakCount());
 }
 
 GeneratingOptionsDialogImplementation::~GeneratingOptionsDialogImplementation() { }
@@ -85,10 +105,28 @@ unsigned int GeneratingOptionsDialog::peakCount() const
 void GeneratingOptionsDialog::setPeakCount(unsigned int value)
 { m->wgtPeakOpt->setPeakCount(value); }
 
+const Preferences &GeneratingOptionsDialog::preferences() const
+{ return m->prefs; }
+
+void GeneratingOptionsDialog::setPreferences(const Preferences &prefs)
+{
+    m->prefs = prefs;
+    m->adjustPreferences();
+}
+
 
 GeneratingOptionsDialog::~GeneratingOptionsDialog()
 {
     delete m;
+}
+
+
+void GeneratingOptionsDialog::done(int r)
+{
+    if (r == Accepted)
+        m->acquirePreferences();
+
+    QDialog::done(r);
 }
 
 

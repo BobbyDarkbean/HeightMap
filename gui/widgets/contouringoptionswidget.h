@@ -18,10 +18,8 @@ public:
     explicit ContouringOptionsWidget(QWidget *parent = 0);
 
     int minLevel() const;
-    void setMinLevel(int);
-
     int maxLevel() const;
-    void setMaxLevel(int);
+    void setLevelRange(int minValue, int maxValue);
 
     int step() const;
     void setStep(int);

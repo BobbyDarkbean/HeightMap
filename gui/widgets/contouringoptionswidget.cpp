@@ -108,14 +108,14 @@ ContouringOptionsWidget::ContouringOptionsWidget(QWidget *parent)
 int ContouringOptionsWidget::minLevel() const
 { return m->spnMinLevel->value(); }
 
-void ContouringOptionsWidget::setMinLevel(int level)
-{ m->spnMinLevel->setValue(level); }
-
 int ContouringOptionsWidget::maxLevel() const
 { return m->spnMaxLevel->value(); }
 
-void ContouringOptionsWidget::setMaxLevel(int level)
-{ m->spnMaxLevel->setValue(level); }
+void ContouringOptionsWidget::setLevelRange(int minValue, int maxValue)
+{
+    m->spnMinLevel->setValue(qMin(minValue, maxValue));
+    m->spnMaxLevel->setValue(qMax(minValue, maxValue));
+}
 
 int ContouringOptionsWidget::step() const
 { return m->spnStep->value(); }
