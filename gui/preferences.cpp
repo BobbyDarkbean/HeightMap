@@ -12,8 +12,8 @@ Preferences::Preferences()
       m_minPeak(DefaultMinPeak),
       m_maxPeak(DefaultMaxPeak),
       m_lsBase(DefaultLandscapeBase),
-      m_minContLevel(1),
-      m_maxContLevel(MaxLevel),
+      m_minContLevel(DefaultMinContourLevel),
+      m_maxContLevel(DefaultMaxContourLevel),
       m_contStep(DefaultContouringStep),
       m_imgFactor(DefaultImageFactor) { }
 

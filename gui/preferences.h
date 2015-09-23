@@ -23,6 +23,8 @@ public:
         DefaultMaxPeak          = 200,
         DefaultLandscapeBase    = 8,
 
+        DefaultMinContourLevel  = MinLevel + 1,
+        DefaultMaxContourLevel  = MaxLevel,
         DefaultContouringStep   = 1,
 
         DefaultImageFactor      = 4
