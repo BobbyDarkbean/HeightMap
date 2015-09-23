@@ -48,7 +48,7 @@ void Mapper::generatePeaks(
 void Mapper::extrapolatePeaks(
     Landscape &ls,
     const std::vector<PeakInfo> &peaks,
-    double baseLevel)
+    double /* baseLevel */)
 {
     /* Radial extrapolation */
 
@@ -68,7 +68,7 @@ void Mapper::extrapolatePeaks(
         double peak = i->height;
 
         // ...extrapolation radius equals peak height
-        int radius = static_cast<int>(abs(peak - baseLevel));
+        int radius = static_cast<int>(abs(peak));
 
         // ...determining bounding rectangle
         int left = max(x - radius, 0);
