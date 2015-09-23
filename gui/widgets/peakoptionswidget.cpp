@@ -2,7 +2,7 @@
 #include <QSpinBox>
 #include <QSlider>
 #include <QGroupBox>
-#include <QBoxLayout>
+#include <QLayout>
 #include "../preferences.h"
 
 #include "peakoptionswidget.h"
