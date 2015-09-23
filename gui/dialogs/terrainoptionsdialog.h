@@ -2,8 +2,8 @@
 #define _TerrainOptionsDialog_h_
 
 
-#include "hm_shared.h"
 #include <QDialog>
+#include "hm_shared.h"
 
 
 namespace HeightMap {
