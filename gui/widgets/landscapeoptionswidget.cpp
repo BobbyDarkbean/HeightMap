@@ -61,7 +61,7 @@ void LandscapeOptionsWidgetImplementation::adjustControls()
     spnLandscapeHeight->setAlignment(Qt::AlignRight);
 
     // Group-box
-    grpLandscape->setTitle(QObject::tr("Landscape"));
+    grpLandscape->setTitle(LandscapeOptionsWidget::tr("Landscape"));
 }
 
 void LandscapeOptionsWidgetImplementation::adjustLayout(QWidget *master)
