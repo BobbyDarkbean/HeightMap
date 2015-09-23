@@ -37,6 +37,7 @@ signals:
 
 public slots:
     void createLandscape();
+    void buildLandscapeFromPeaks();
 
 private:
     DISABLE_COPY(MappingWorker)

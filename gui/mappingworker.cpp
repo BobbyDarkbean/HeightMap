@@ -108,13 +108,24 @@ void MappingWorker::createLandscape()
     emit processFinished();
 }
 
+void MappingWorker::buildLandscapeFromPeaks()
+{
+    QMutexLocker lock(&m->mutex);
+
+    emit processStarted();
+
+    extrapolatePeaks();
+    calculateContours();
+
+    emit processFinished();
+}
+
 
 void MappingWorker::generatePeaks()
 {
     emit peakGeneratingStarted();
 
     m->data.terrain->clearPeaks();
-    m->data.terrain->fillLandscape(m->data.genOptions->baseLvl);
     m->data.terrain->generatePeaks(&m->mapper, *m->data.genOptions);
 
     emit peakGeneratingFinished();
@@ -124,6 +135,7 @@ void MappingWorker::extrapolatePeaks()
 {
     emit peakExtrapolationStarted();
 
+    m->data.terrain->fillLandscape(m->data.genOptions->baseLvl);
     m->data.terrain->extrapolatePeaks(&m->mapper, m->data.genOptions->baseLvl);
     m->drawLandscape();
 
