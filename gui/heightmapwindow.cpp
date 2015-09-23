@@ -49,6 +49,7 @@ struct HeightMapWindowImplementation
 
     void displayHeightMapImage();
     void resetImages();
+    void resetStatusBar();
 
     ~HeightMapWindowImplementation();
 
@@ -229,6 +230,18 @@ void HeightMapWindowImplementation::resetImages()
     imgHybrid.fill(Qt::transparent);
 }
 
+void HeightMapWindowImplementation::resetStatusBar()
+{
+    lsSizeLabel->setText(QString("%1%2%3")
+                         .arg(terrain.width())
+                         .arg(QChar(0x00d7))
+                         .arg(terrain.height()));
+
+    lvlsLabel->clear();
+    pkLabel->clear();
+    cntrsLabel->clear();
+}
+
 HeightMapWindowImplementation::~HeightMapWindowImplementation()
 {
     procThread.quit();
@@ -269,6 +282,8 @@ HeightMapWindow::HeightMapWindow(QWidget *parent)
     statusBar()->addWidget(procBarShell, 12);
     statusBar()->addWidget(m->pkLabel, 4);
     statusBar()->addWidget(m->cntrsLabel, 6);
+
+    m->resetStatusBar();
 
     connect(worker, SIGNAL(processStarted()), this, SLOT(onProcessStarted()), Qt::BlockingQueuedConnection);
     connect(worker, SIGNAL(processFinished()), this, SLOT(onProcessFinished()), Qt::BlockingQueuedConnection);
@@ -311,6 +326,7 @@ void HeightMapWindow::newFile()
     m->terrain = Terrain(prefs.landscapeWidth(), prefs.landscapeHeight());
 
     m->resetImages();
+    m->resetStatusBar();
     m->displayHeightMapImage();
 }
 
@@ -413,20 +429,17 @@ void HeightMapWindow::editContouringSettings()
 void HeightMapWindow::onProcessStarted()
 {
     m->stateLabel->setText(tr("Processing..."));
-    m->lsSizeLabel->setText(QString("%1%2%3")
-                            .arg(m->terrain.width())
-                            .arg(QChar(0x00d7))
-                            .arg(m->terrain.height()));
-
     m->procBar->setValue(0);
     m->procBar->setMaximum(hmApp->preferences().peakCount() + m->terrain.width() - 1);
     m->procBar->show();
+
     m->processing = true;
 }
 
 void HeightMapWindow::onProcessFinished()
 {
     m->processing = false;
+
     m->stateLabel->setText(tr("Done"));
     m->procLabel->clear();
     m->procBar->hide();
