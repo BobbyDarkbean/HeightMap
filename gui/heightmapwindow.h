@@ -26,8 +26,7 @@ private slots:
 
     void editPeakSettings();
     void editExtrapolationSettings();
-
-    void adjustPreferences();
+    void editContouringSettings();
 
     void onProcessStarted();
     void onProcessFinished();
@@ -38,6 +37,7 @@ private slots:
     void onPeakExtrapolated(QPoint, double);
     void onPeakExtrapolationFinished();
     void onContouringStarted();
+    void onContouringLevelsAcquired(int);
     void onContouringAt(int);
     void onContouringFinished();
 

@@ -19,6 +19,7 @@
 #include "dialogs/terrainoptionsdialog.h"
 #include "dialogs/generatingoptionsdialog.h"
 #include "dialogs/extrapolationoptionsdialog.h"
+#include "dialogs/contouringoptionsdialog.h"
 
 #include "heightmapwindow.h"
 
@@ -61,8 +62,6 @@ struct HeightMapWindowImplementation
     QLabel *lsSizeLabel;
     QLabel *cntrsLabel;
 
-    PeakGenerationOptions genOptions;
-    std::vector<int> levels;
     Terrain terrain;
 
     QImage imgLandscape;
@@ -90,8 +89,6 @@ HeightMapWindowImplementation::HeightMapWindowImplementation()
       pkLabel(new QLabel),
       lsSizeLabel(new QLabel),
       cntrsLabel(new QLabel),
-      genOptions(),
-      levels(),
       terrain(hmApp->preferences().landscapeWidth(), hmApp->preferences().landscapeHeight()),
       imgLandscape(),
       imgIsobars(),
@@ -129,14 +126,19 @@ void HeightMapWindowImplementation::createActions(HeightMapWindow *master, Mappi
     mnuFile->addAction(actExit);
 
     QAction *actGenLs = new QAction(master);
-    actGenLs->setText(HeightMapWindow::tr("&Generate"));
+    actGenLs->setText(HeightMapWindow::tr("&Generate landscape"));
     actGenLs->setShortcut(HeightMapWindow::tr("Ctrl+G"));
     QObject::connect(actGenLs, SIGNAL(triggered()), worker, SLOT(createLandscape()));
 
     QAction *actBuildLs = new QAction(master);
-    actBuildLs->setText(HeightMapWindow::tr("E&xtrapolate"));
+    actBuildLs->setText(HeightMapWindow::tr("E&xtrapolate peaks"));
     actBuildLs->setShortcut(HeightMapWindow::tr("Ctrl+E"));
     QObject::connect(actBuildLs, SIGNAL(triggered()), worker, SLOT(buildLandscapeFromPeaks()));
+
+    QAction *actCalcContours = new QAction(master);
+    actCalcContours->setText(HeightMapWindow::tr("Calculate &isobars"));
+    actCalcContours->setShortcut(HeightMapWindow::tr("Ctrl+I"));
+    QObject::connect(actCalcContours, SIGNAL(triggered()), worker, SLOT(plotIsobars()));
 
     QAction *actHmSettings = new QAction(master);
     actHmSettings->setText(HeightMapWindow::tr("&Peak settings..."));
@@ -144,16 +146,23 @@ void HeightMapWindowImplementation::createActions(HeightMapWindow *master, Mappi
     QObject::connect(actHmSettings, SIGNAL(triggered()), master, SLOT(editPeakSettings()));
 
     QAction *actExtrapolSettings = new QAction(master);
-    actExtrapolSettings->setText(HeightMapWindow::tr("Extra&polation settings..."));
+    actExtrapolSettings->setText(HeightMapWindow::tr("&Extrapolation settings..."));
     actExtrapolSettings->setShortcut(HeightMapWindow::tr("F7"));
     QObject::connect(actExtrapolSettings, SIGNAL(triggered()), master, SLOT(editExtrapolationSettings()));
+
+    QAction *actContourSettings = new QAction(master);
+    actContourSettings->setText(HeightMapWindow::tr("&Contouring settings..."));
+    actContourSettings->setShortcut(HeightMapWindow::tr("F8"));
+    QObject::connect(actContourSettings, SIGNAL(triggered()), master, SLOT(editContouringSettings()));
 
     QMenu *mnuLandscape = master->menuBar()->addMenu(HeightMapWindow::tr("&Landscape"));
     mnuLandscape->addAction(actGenLs);
     mnuLandscape->addAction(actBuildLs);
+    mnuLandscape->addAction(actCalcContours);
     mnuLandscape->addSeparator();
     mnuLandscape->addAction(actHmSettings);
     mnuLandscape->addAction(actExtrapolSettings);
+    mnuLandscape->addAction(actContourSettings);
 
     QActionGroup *agpViewMode = new QActionGroup(master);
     QObject::connect(agpViewMode, SIGNAL(triggered(QAction *)), master, SLOT(setViewMode(QAction *)));
@@ -182,18 +191,11 @@ void HeightMapWindowImplementation::createActions(HeightMapWindow *master, Mappi
 
 void HeightMapWindowImplementation::provideMappingData(MappingWorker *worker)
 {
-    const int ImageFactor = 4;
-
     MappingData hmData = {
-        &genOptions,
-        &levels,
         &terrain,
-
         &imgLandscape,
         &imgIsobars,
-        &imgHybrid,
-
-        ImageFactor
+        &imgHybrid
     };
 
     worker->initFrom(hmData);
@@ -218,9 +220,9 @@ void HeightMapWindowImplementation::displayHeightMapImage()
 
 void HeightMapWindowImplementation::resetImages()
 {
-    imgLandscape = QImage(genOptions.hmWidth, genOptions.hmHeight, QImage::Format_ARGB32_Premultiplied);
-    imgIsobars = QImage(genOptions.hmWidth, genOptions.hmHeight, QImage::Format_ARGB32_Premultiplied);
-    imgHybrid = QImage(genOptions.hmWidth, genOptions.hmHeight, QImage::Format_ARGB32_Premultiplied);
+    imgLandscape = QImage(terrain.width(), terrain.height(), QImage::Format_ARGB32_Premultiplied);
+    imgIsobars = QImage(terrain.width(), terrain.height(), QImage::Format_ARGB32_Premultiplied);
+    imgHybrid = QImage(terrain.width(), terrain.height(), QImage::Format_ARGB32_Premultiplied);
 
     imgLandscape.fill(Qt::transparent);
     imgIsobars.fill(Qt::transparent);
@@ -238,8 +240,6 @@ HeightMapWindow::HeightMapWindow(QWidget *parent)
     : QMainWindow(parent),
       m(new HeightMapWindowImplementation)
 {
-    adjustPreferences();
-
     MappingWorker *worker = new MappingWorker;
     m->provideMappingData(worker);
     worker->moveToThread(&m->procThread);
@@ -270,8 +270,6 @@ HeightMapWindow::HeightMapWindow(QWidget *parent)
     statusBar()->addWidget(m->pkLabel, 4);
     statusBar()->addWidget(m->cntrsLabel, 6);
 
-    connect(hmApp, SIGNAL(preferencesChanged()), this, SLOT(adjustPreferences()));
-
     connect(worker, SIGNAL(processStarted()), this, SLOT(onProcessStarted()), Qt::BlockingQueuedConnection);
     connect(worker, SIGNAL(processFinished()), this, SLOT(onProcessFinished()), Qt::BlockingQueuedConnection);
 
@@ -281,6 +279,7 @@ HeightMapWindow::HeightMapWindow(QWidget *parent)
     connect(worker, SIGNAL(peakExtrapolated(QPoint, double)), this, SLOT(onPeakExtrapolated(QPoint, double)));
     connect(worker, SIGNAL(peakExtrapolationFinished()), this, SLOT(onPeakExtrapolationFinished()), Qt::BlockingQueuedConnection);
     connect(worker, SIGNAL(contouringStarted()), this, SLOT(onContouringStarted()), Qt::BlockingQueuedConnection);
+    connect(worker, SIGNAL(contouringLevelsAcquired(int)), this, SLOT(onContouringLevelsAcquired(int)), Qt::BlockingQueuedConnection);
     connect(worker, SIGNAL(contouringAt(int)), this, SLOT(onContouringAt(int)));
     connect(worker, SIGNAL(contouringFinished()), this, SLOT(onContouringFinished()), Qt::BlockingQueuedConnection);
 
@@ -296,20 +295,20 @@ HeightMapWindow::~HeightMapWindow()
 
 void HeightMapWindow::newFile()
 {
+    Preferences prefs = hmApp->preferences();
+
     TerrainOptionsDialog dialog(this);
     dialog.setWindowTitle(tr("New file"));
-    dialog.setLandscapeWidth(m->genOptions.hmWidth);
-    dialog.setLandscapeHeight(m->genOptions.hmHeight);
+    dialog.setLandscapeWidth(prefs.landscapeWidth());
+    dialog.setLandscapeHeight(prefs.landscapeHeight());
     if (!dialog.exec())
         return;
 
-    Preferences prefs = hmApp->preferences();
     prefs.setLandscapeWidth(dialog.landscapeWidth());
     prefs.setLandscapeHeight(dialog.landscapeHeight());
     hmApp->setPreferences(prefs);
 
-    m->terrain = Terrain(m->genOptions.hmWidth,
-                         m->genOptions.hmHeight);
+    m->terrain = Terrain(prefs.landscapeWidth(), prefs.landscapeHeight());
 
     m->resetImages();
     m->displayHeightMapImage();
@@ -361,15 +360,16 @@ void HeightMapWindow::exportPeaks()
 
 void HeightMapWindow::editPeakSettings()
 {
+    Preferences prefs = hmApp->preferences();
+
     GeneratingOptionsDialog dialog(this);
     dialog.setWindowTitle(tr("Peak settings"));
-    dialog.setRange(m->genOptions.minPeak, m->genOptions.maxPeak);
-    dialog.setPeakCount(m->genOptions.peakCount);
+    dialog.setRange(prefs.minPeak(), prefs.maxPeak());
+    dialog.setPeakCount(prefs.peakCount());
 
     if (!dialog.exec())
         return;
 
-    Preferences prefs = hmApp->preferences();
     prefs.setMinPeak(dialog.minPeak());
     prefs.setMaxPeak(dialog.maxPeak());
     prefs.setPeakCount(dialog.peakCount());
@@ -378,31 +378,36 @@ void HeightMapWindow::editPeakSettings()
 
 void HeightMapWindow::editExtrapolationSettings()
 {
+    Preferences prefs = hmApp->preferences();
+
     ExtrapolationOptionsDialog dialog(this);
     dialog.setWindowTitle(tr("Extrapolation settings"));
-    dialog.setBaseLevel(m->genOptions.baseLvl);
+    dialog.setBaseLevel(prefs.landscapeBase());
 
     if (!dialog.exec())
         return;
 
-    Preferences prefs = hmApp->preferences();
     prefs.setLandscapeBase(dialog.baseLevel());
     hmApp->setPreferences(prefs);
 }
 
-void HeightMapWindow::adjustPreferences()
+void HeightMapWindow::editContouringSettings()
 {
     Preferences prefs = hmApp->preferences();
-    m->genOptions.hmHeight = prefs.landscapeHeight();
-    m->genOptions.hmWidth = prefs.landscapeWidth();
-    m->genOptions.minPeak = prefs.minPeak();
-    m->genOptions.maxPeak = prefs.maxPeak();
-    m->genOptions.peakCount = prefs.peakCount();
-    m->genOptions.baseLvl = static_cast<double>(prefs.landscapeBase());
 
-    m->levels.clear();
-    for (int i = m->genOptions.minPeak; i <= m->genOptions.maxPeak; ++i)
-        m->levels.push_back(i);
+    ContouringOptionsDialog dialog(this);
+    dialog.setWindowTitle(tr("Contouring settings"));
+    dialog.setMinLevel(prefs.minContouringLevel());
+    dialog.setMaxLevel(prefs.maxContouringLevel());
+    dialog.setStep(prefs.contouringStep());
+
+    if (!dialog.exec())
+        return;
+
+    prefs.setMinContouringLevel(dialog.minLevel());
+    prefs.setMaxContouringLevel(dialog.maxLevel());
+    prefs.setContouringStep(dialog.step());
+    hmApp->setPreferences(prefs);
 }
 
 void HeightMapWindow::onProcessStarted()
@@ -412,10 +417,9 @@ void HeightMapWindow::onProcessStarted()
                             .arg(m->terrain.width())
                             .arg(QChar(0x00d7))
                             .arg(m->terrain.height()));
-    m->lvlsLabel->setText(tr("%1 level(s)").arg(m->levels.size()));
 
     m->procBar->setValue(0);
-    m->procBar->setMaximum(m->genOptions.peakCount + m->terrain.width() - 1);
+    m->procBar->setMaximum(hmApp->preferences().peakCount() + m->terrain.width() - 1);
     m->procBar->show();
     m->processing = true;
 }
@@ -457,6 +461,11 @@ void HeightMapWindow::onPeakExtrapolationFinished()
 void HeightMapWindow::onContouringStarted()
 {
     m->procLabel->setText("Calculating contours...");
+}
+
+void HeightMapWindow::onContouringLevelsAcquired(int levels)
+{
+    m->lvlsLabel->setText(tr("%1 level(s)").arg(levels));
 }
 
 void HeightMapWindow::onContouringAt(int)

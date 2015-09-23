@@ -32,12 +32,14 @@ signals:
     void peakExtrapolated(QPoint, double);
     void peakExtrapolationFinished();
     void contouringStarted();
+    void contouringLevelsAcquired(int);
     void contouringAt(int);
     void contouringFinished();
 
 public slots:
     void createLandscape();
     void buildLandscapeFromPeaks();
+    void plotIsobars();
 
 private:
     DISABLE_COPY(MappingWorker)
