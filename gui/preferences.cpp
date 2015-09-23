@@ -12,6 +12,9 @@ Preferences::Preferences()
       m_minPeak(DefaultMinPeak),
       m_maxPeak(DefaultMaxPeak),
       m_lsBase(DefaultLandscapeBase),
+      m_minContLevel(1),
+      m_maxContLevel(MaxLevel),
+      m_contStep(DefaultContouringStep),
       m_imgFactor(DefaultImageFactor) { }
 
 
@@ -33,8 +36,18 @@ void Preferences::setMaxPeak(int maxPeak)
 void Preferences::setLandscapeBase(int lsBase)
 { m_lsBase = qBound<int>(MinLevel, lsBase, MaxLevel); }
 
+void Preferences::setMinContouringLevel(int minContLevel)
+{ m_minContLevel = qBound<int>(1, minContLevel, MaxLevel); }
+
+void Preferences::setMaxContouringLevel(int maxContLevel)
+{ m_maxContLevel = qBound<int>(1, maxContLevel, MaxLevel); }
+
+void Preferences::setContouringStep(int contStep)
+{ m_contStep = qBound<int>(1, contStep, MaxLevel); }
+
 void Preferences::setImageFactor(int imgFactor)
 { m_imgFactor = qMax(1, imgFactor); }
+
 
 bool Preferences::equals(const Preferences &other) const
 {
@@ -44,6 +57,9 @@ bool Preferences::equals(const Preferences &other) const
         && (m_minPeak == other.m_minPeak)
         && (m_maxPeak == other.m_maxPeak)
         && (m_lsBase == other.m_lsBase)
+        && (m_minContLevel == other.m_minContLevel)
+        && (m_maxContLevel == other.m_maxContLevel)
+        && (m_contStep == other.m_contStep)
         && (m_imgFactor == other.m_imgFactor);
 }
 

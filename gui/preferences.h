@@ -23,6 +23,8 @@ public:
         DefaultMaxPeak          = 200,
         DefaultLandscapeBase    = 8,
 
+        DefaultContouringStep   = 1,
+
         DefaultImageFactor      = 4
     };
 
@@ -46,6 +48,15 @@ public:
     int landscapeBase() const;
     void setLandscapeBase(int);
 
+    int minContouringLevel() const;
+    void setMinContouringLevel(int);
+
+    int maxContouringLevel() const;
+    void setMaxContouringLevel(int);
+
+    int contouringStep() const;
+    void setContouringStep(int);
+
     int imageFactor() const;
     void setImageFactor(int);
 
@@ -58,6 +69,9 @@ private:
     int m_minPeak;
     int m_maxPeak;
     int m_lsBase;
+    int m_minContLevel;
+    int m_maxContLevel;
+    int m_contStep;
     int m_imgFactor;
 };
 
@@ -79,6 +93,15 @@ inline int Preferences::maxPeak() const
 
 inline int Preferences::landscapeBase() const
 { return m_lsBase; }
+
+inline int Preferences::minContouringLevel() const
+{ return m_minContLevel; }
+
+inline int Preferences::maxContouringLevel() const
+{ return m_maxContLevel; }
+
+inline int Preferences::contouringStep() const
+{ return m_contStep; }
 
 inline int Preferences::imageFactor() const
 { return m_imgFactor; }
