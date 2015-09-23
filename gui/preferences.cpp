@@ -24,7 +24,7 @@ void Preferences::setLandscapeWidth(int lsWidth)
 void Preferences::setLandscapeHeight(int lsHeight)
 { m_lsHeight = qBound<int>(MinLandscapeDim, lsHeight, MaxLandscapeDim); }
 
-void Preferences::setPeakCount(int peaks)
+void Preferences::setPeakCount(unsigned int peaks)
 { m_peaks = peaks; }
 
 void Preferences::setMinPeak(int minPeak)

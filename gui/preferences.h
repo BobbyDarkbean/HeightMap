@@ -38,8 +38,8 @@ public:
     int landscapeHeight() const;
     void setLandscapeHeight(int);
 
-    int peakCount() const;
-    void setPeakCount(int);
+    unsigned int peakCount() const;
+    void setPeakCount(unsigned int);
 
     int minPeak() const;
     void setMinPeak(int);
@@ -67,7 +67,7 @@ public:
 private:
     int m_lsWidth;
     int m_lsHeight;
-    int m_peaks;
+    unsigned int m_peaks;
     int m_minPeak;
     int m_maxPeak;
     int m_lsBase;
@@ -84,7 +84,7 @@ inline int Preferences::landscapeWidth() const
 inline int Preferences::landscapeHeight() const
 { return m_lsHeight; }
 
-inline int Preferences::peakCount() const
+inline unsigned int Preferences::peakCount() const
 { return m_peaks; }
 
 inline int Preferences::minPeak() const

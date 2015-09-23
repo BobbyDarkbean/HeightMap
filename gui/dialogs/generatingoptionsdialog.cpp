@@ -79,10 +79,10 @@ int GeneratingOptionsDialog::maxPeak() const
 void GeneratingOptionsDialog::setRange(int minValue, int maxValue)
 { m->wgtPeakOpt->setRange(minValue, maxValue); }
 
-int GeneratingOptionsDialog::peakCount() const
+unsigned int GeneratingOptionsDialog::peakCount() const
 { return m->wgtPeakOpt->peakCount(); }
 
-void GeneratingOptionsDialog::setPeakCount(int value)
+void GeneratingOptionsDialog::setPeakCount(unsigned int value)
 { m->wgtPeakOpt->setPeakCount(value); }
 
 

@@ -154,11 +154,11 @@ void PeakOptionsWidget::setRange(int minValue, int maxValue)
     m->spnMaxPeak->setValue(qMax(minValue, maxValue));
 }
 
-int PeakOptionsWidget::peakCount() const
-{ return m->spnPeakCount->value(); }
+unsigned int PeakOptionsWidget::peakCount() const
+{ return static_cast<int>(m->spnPeakCount->value()); }
 
-void PeakOptionsWidget::setPeakCount(int value)
-{ m->spnPeakCount->setValue(value); }
+void PeakOptionsWidget::setPeakCount(unsigned int value)
+{ m->spnPeakCount->setValue(static_cast<int>(value)); }
 
 
 PeakOptionsWidget::~PeakOptionsWidget()

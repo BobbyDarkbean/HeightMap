@@ -23,8 +23,8 @@ public:
     int maxPeak() const;
     void setRange(int minValue, int maxValue);
 
-    int peakCount() const;
-    void setPeakCount(int);
+    unsigned int peakCount() const;
+    void setPeakCount(unsigned int);
 
     ~PeakOptionsWidget();
 

@@ -430,7 +430,7 @@ void HeightMapWindow::onProcessStarted()
 {
     m->stateLabel->setText(tr("Processing..."));
     m->procBar->setValue(0);
-    m->procBar->setMaximum(hmApp->preferences().peakCount() + m->terrain.width() - 1);
+    m->procBar->setMaximum(static_cast<int>(hmApp->preferences().peakCount()) + m->terrain.width() - 1);
     m->procBar->show();
 
     m->processing = true;

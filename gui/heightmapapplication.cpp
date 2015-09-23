@@ -28,7 +28,7 @@ HeightMapApplicationImplementation::HeightMapApplicationImplementation()
     QSettings settings(IniFilename, QSettings::IniFormat);
     prefs.setLandscapeWidth(qvariant_cast<int>(settings.value("landscape/width", Preferences::DefaultLandscapeWidth)));
     prefs.setLandscapeHeight(qvariant_cast<int>(settings.value("landscape/height", Preferences::DefaultLandscapeHeight)));
-    prefs.setPeakCount(qvariant_cast<int>(settings.value("peaks/count", Preferences::DefaultPeakCount)));
+    prefs.setPeakCount(qvariant_cast<unsigned int>(settings.value("peaks/count", Preferences::DefaultPeakCount)));
     prefs.setMinPeak(qvariant_cast<int>(settings.value("peaks/minpeak", Preferences::DefaultMinPeak)));
     prefs.setMaxPeak(qvariant_cast<int>(settings.value("peaks/maxpeak", Preferences::DefaultMaxPeak)));
     prefs.setLandscapeBase(qvariant_cast<int>(settings.value("extrapolation/base", Preferences::DefaultLandscapeBase)));
