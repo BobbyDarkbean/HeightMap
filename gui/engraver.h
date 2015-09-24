@@ -2,7 +2,9 @@
 #define _Engraver_h_
 
 
+#include <vector>
 #include <list>
+#include "peakinfo.h"
 #include "line2dsegment.h"
 
 
@@ -19,6 +21,10 @@ class Engraver
 public:
     Engraver();
 
+    void drawPeaks(
+        const std::vector<PeakInfo> &peaks,
+        QImage *image,
+        int imageFactor);
     void drawLandscape(
         const Landscape &ls,
         QImage *image,

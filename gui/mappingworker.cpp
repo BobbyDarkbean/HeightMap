@@ -20,6 +20,7 @@ struct MappingWorkerImplementation
     PeakGenerationOptions genOptions() const;
     void fillLevels(std::vector<int> &levels);
 
+    void drawPeaks();
     void drawLandscape();
     void drawIsobars();
     void drawHybrid();
@@ -62,6 +63,19 @@ void MappingWorkerImplementation::fillLevels(std::vector<int> &levels)
 
     for (int i = minLvl; i <= maxLvl; i += step)
         levels.push_back(i);
+}
+
+void MappingWorkerImplementation::drawPeaks()
+{
+    Engraver engr;
+    int imageFactor = hmApp->preferences().imageFactor();
+
+    QImage imgPk(data.terrain->width() * imageFactor,
+                 data.terrain->height() * imageFactor,
+                 QImage::Format_ARGB32_Premultiplied);
+    engr.drawPeaks(data.terrain->peaks(), &imgPk, imageFactor);
+
+    *data.imgPeaks = imgPk;
 }
 
 void MappingWorkerImplementation::drawLandscape()
@@ -172,6 +186,7 @@ void MappingWorker::generatePeaks()
 
     m->data.terrain->clearPeaks();
     m->data.terrain->generatePeaks(&m->mapper, m->genOptions());
+    m->drawPeaks();
 
     emit peakGeneratingFinished();
 }

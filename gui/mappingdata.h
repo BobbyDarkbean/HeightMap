@@ -11,6 +11,7 @@ struct MappingData
 {
     Terrain *terrain;
 
+    QImage *imgPeaks;
     QImage *imgLandscape;
     QImage *imgIsobars;
     QImage *imgHybrid;

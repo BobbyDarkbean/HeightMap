@@ -12,7 +12,6 @@
 #include "mappingthread.h"
 #include "mappingworker.h"
 #include "terrain.h"
-#include "peakgenerationoptions.h"
 #include "mappingdata.h"
 #include "preferences.h"
 #include "heightmapapplication.h"
@@ -29,9 +28,10 @@ namespace HeightMap {
 
 namespace {
 enum HeightMapViewMode {
-    HMVM_Landscape  = 0,
-    HMVM_Isobars    = 1,
-    HMVM_Hybrid     = 2
+    HMVM_Peaks      = 0,
+    HMVM_Landscape  = 1,
+    HMVM_Isobars    = 2,
+    HMVM_Hybrid     = 3
 };
 
 const char *LS_TEXT_FILE_EXT = "hmlst";
@@ -65,6 +65,7 @@ struct HeightMapWindowImplementation
 
     Terrain terrain;
 
+    QImage imgPeaks;
     QImage imgLandscape;
     QImage imgIsobars;
     QImage imgHybrid;
@@ -91,6 +92,7 @@ HeightMapWindowImplementation::HeightMapWindowImplementation()
       lsSizeLabel(new QLabel),
       cntrsLabel(new QLabel),
       terrain(hmApp->preferences().landscapeWidth(), hmApp->preferences().landscapeHeight()),
+      imgPeaks(),
       imgLandscape(),
       imgIsobars(),
       imgHybrid(),
@@ -168,6 +170,11 @@ void HeightMapWindowImplementation::createActions(HeightMapWindow *master, Mappi
     QActionGroup *agpViewMode = new QActionGroup(master);
     QObject::connect(agpViewMode, SIGNAL(triggered(QAction *)), master, SLOT(setViewMode(QAction *)));
 
+    QAction *actViewModePeaks = new QAction(agpViewMode);
+    actViewModePeaks->setText(HeightMapWindow::tr("Peaks"));
+    actViewModePeaks->setCheckable(true);
+    actViewModePeaks->setProperty("hmvm", HMVM_Peaks);
+
     QAction *actViewModeLandscape = new QAction(agpViewMode);
     actViewModeLandscape->setText(HeightMapWindow::tr("Landscape"));
     actViewModeLandscape->setCheckable(true);
@@ -185,6 +192,7 @@ void HeightMapWindowImplementation::createActions(HeightMapWindow *master, Mappi
     actViewModeHybrid->setProperty("hmvm", HMVM_Hybrid);
 
     QMenu *mnuView = master->menuBar()->addMenu(HeightMapWindow::tr("&View"));
+    mnuView->addAction(actViewModePeaks);
     mnuView->addAction(actViewModeLandscape);
     mnuView->addAction(actViewModeIsobars);
     mnuView->addAction(actViewModeHybrid);
@@ -194,6 +202,7 @@ void HeightMapWindowImplementation::provideMappingData(MappingWorker *worker)
 {
     MappingData hmData = {
         &terrain,
+        &imgPeaks,
         &imgLandscape,
         &imgIsobars,
         &imgHybrid
@@ -205,6 +214,9 @@ void HeightMapWindowImplementation::provideMappingData(MappingWorker *worker)
 void HeightMapWindowImplementation::displayHeightMapImage()
 {
     switch (hmvm) {
+    case HMVM_Peaks:
+        hmImgLabel->setPixmap(QPixmap::fromImage(imgPeaks));
+        break;
     case HMVM_Landscape:
         hmImgLabel->setPixmap(QPixmap::fromImage(imgLandscape));
         break;
