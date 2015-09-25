@@ -1,6 +1,7 @@
 #include <cmath>
 #include "internal/contouring.h"
 #include "landscape.h"
+#include "extrapolator.h"
 
 #include "mapper.h"
 
@@ -48,11 +49,10 @@ void Mapper::generatePeaks(
 void Mapper::extrapolatePeaks(
     Landscape &ls,
     const std::vector<PeakInfo> &peaks,
-    double /* baseLevel */)
+    Extrapolator *extrapolator)
 {
     /* Radial extrapolation */
 
-    using std::abs;
     using std::min;
     using std::max;
     using std::sqrt;
@@ -68,7 +68,7 @@ void Mapper::extrapolatePeaks(
         double peak = i->height;
 
         // ...extrapolation radius equals peak height
-        int radius = static_cast<int>(abs(peak));
+        int radius = extrapolator->radius(peak);
 
         // ...determining bounding rectangle
         int left = max(x - radius, 0);
@@ -90,14 +90,7 @@ void Mapper::extrapolatePeaks(
                     continue;
 
                 double vec_len = sqrt(vec_sq);
-
-                double h = peak - vec_len;                      // extrapolated value
-                double curr_val = *(hm + j * hm_height + k);    // current value
-                double h_diff = peak - curr_val;                // current-peak difference
-                double add_val = h_diff / peak * h;             // correction value
-
-                // ...modifying current value
-                *(hm + j * hm_height + k) += add_val;
+                extrapolator->modify(*(hm + j * hm_height + k), peak, vec_len);
             }
         }
 

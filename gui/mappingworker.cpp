@@ -4,6 +4,7 @@
 #include "preferences.h"
 #include "terrain.h"
 #include "mapper.h"
+#include "extrapolator.h"
 #include "mappingdata.h"
 #include "engraver.h"
 
@@ -198,7 +199,7 @@ void MappingWorker::extrapolatePeaks()
     int baseLvl = hmApp->preferences().landscapeBase();
 
     m->data.terrain->fillLandscape(baseLvl);
-    m->data.terrain->extrapolatePeaks(&m->mapper, baseLvl);
+    m->data.terrain->extrapolatePeaks(&m->mapper, new SimpleExtrapolator);
     m->drawLandscape();
 
     emit peakExtrapolationFinished();

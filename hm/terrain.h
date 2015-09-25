@@ -16,6 +16,7 @@ namespace HeightMap {
 struct PeakGenerationOptions;
 class Landscape;
 class Mapper;
+class Extrapolator;
 struct TerrainImplementation;
 class HM_SHARED Terrain
 {
@@ -40,7 +41,7 @@ public:
     void generatePeaks(Mapper *mapper,
                        const PeakGenerationOptions &opts);
     void extrapolatePeaks(Mapper *mapper,
-                          double baseLevel);
+                          Extrapolator *extrapolator);
     void calculateContours(Mapper *mapper,
                            const std::vector<int> &levelLayout);
 

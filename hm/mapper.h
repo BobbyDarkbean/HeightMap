@@ -19,6 +19,7 @@ namespace HeightMap {
 
 
 class Landscape;
+class Extrapolator;
 class HM_SHARED Mapper
 {
     enum E {
@@ -41,7 +42,7 @@ public:
     void extrapolatePeaks(
         Landscape &ls,
         const std::vector<PeakInfo> &peaks,
-        double baseLevel);
+        Extrapolator *extrapolator);
     void calculateContours(
         const Landscape &ls,
         const std::vector<int> &levelLayout,
