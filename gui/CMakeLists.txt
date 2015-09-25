@@ -13,10 +13,15 @@ set (HMGUI_HDR dialogs/contouringoptionsdialog.h
                dialogs/extrapolationoptionsdialog.h
                dialogs/generatingoptionsdialog.h
                dialogs/terrainoptionsdialog.h
+               widgets/abstractextrapolationwidget.h
+               widgets/baselevelextrapolationwidget.h
                widgets/contouringoptionswidget.h
                widgets/extrapolationoptionswidget.h
+               widgets/fixedradiusextrapolationwidget.h
                widgets/landscapeoptionswidget.h
                widgets/peakoptionswidget.h
+               widgets/simpleextrapolationwidget.h
+               widgets/slopeextrapolationwidget.h
                colormap.h
                engraver.h
                heightmapapplication.h
@@ -29,10 +34,15 @@ set (HMGUI_SRC dialogs/contouringoptionsdialog.cpp
                dialogs/extrapolationoptionsdialog.cpp
                dialogs/generatingoptionsdialog.cpp
                dialogs/terrainoptionsdialog.cpp
+               widgets/abstractextrapolationwidget.cpp
+               widgets/baselevelextrapolationwidget.cpp
                widgets/contouringoptionswidget.cpp
                widgets/extrapolationoptionswidget.cpp
+               widgets/fixedradiusextrapolationwidget.cpp
                widgets/landscapeoptionswidget.cpp
                widgets/peakoptionswidget.cpp
+               widgets/simpleextrapolationwidget.cpp
+               widgets/slopeextrapolationwidget.cpp
                engraver.cpp
                heightmapapplication.cpp
                heightmapwindow.cpp
