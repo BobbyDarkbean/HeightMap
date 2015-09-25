@@ -13,6 +13,11 @@ set (HMGUI_HDR dialogs/contouringoptionsdialog.h
                dialogs/extrapolationoptionsdialog.h
                dialogs/generatingoptionsdialog.h
                dialogs/terrainoptionsdialog.h
+               extrapolation/baselevelextrapolationfactory.h
+               extrapolation/extrapolationfactory.h
+               extrapolation/fixedradiusextrapolationfactory.h
+               extrapolation/simpleextrapolationfactory.h
+               extrapolation/slopeextrapolationfactory.h
                widgets/abstractextrapolationwidget.h
                widgets/baselevelextrapolationwidget.h
                widgets/contouringoptionswidget.h
@@ -34,6 +39,11 @@ set (HMGUI_SRC dialogs/contouringoptionsdialog.cpp
                dialogs/extrapolationoptionsdialog.cpp
                dialogs/generatingoptionsdialog.cpp
                dialogs/terrainoptionsdialog.cpp
+               extrapolation/baselevelextrapolationfactory.cpp
+               extrapolation/extrapolationfactory.cpp
+               extrapolation/fixedradiusextrapolationfactory.cpp
+               extrapolation/simpleextrapolationfactory.cpp
+               extrapolation/slopeextrapolationfactory.cpp
                widgets/abstractextrapolationwidget.cpp
                widgets/baselevelextrapolationwidget.cpp
                widgets/contouringoptionswidget.cpp
