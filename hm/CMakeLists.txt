@@ -15,6 +15,7 @@ set (HMCORE_SOVERSION ${HMCORE_MAJOR}.${HMCORE_MINOR})
 set (HMCORE_HDR internal/contouring.h
                 event.h
                 eventservice
+                extrapolator.h
                 hm_shared.h
                 landscape.h
                 line2dsegment.h
@@ -22,7 +23,8 @@ set (HMCORE_HDR internal/contouring.h
                 peakgenerationoptions.h
                 peakinfo.h
                 terrain.h)
-set (HMCORE_SRC landscape.cpp
+set (HMCORE_SRC extrapolator.cpp
+                landscape.cpp
                 mapper.cpp
                 terrain.cpp)
 
