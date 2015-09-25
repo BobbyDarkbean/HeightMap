@@ -9,12 +9,12 @@
 #include <QPixmap>
 #include <QFileDialog>
 #include <fstream>
+#include "auxiliary/mappingdata.h"
+#include "heightmapapplication.h"
 #include "mappingthread.h"
 #include "mappingworker.h"
-#include "terrain.h"
-#include "mappingdata.h"
 #include "preferences.h"
-#include "heightmapapplication.h"
+#include "terrain.h"
 #include "dialogs/terrainoptionsdialog.h"
 #include "dialogs/generatingoptionsdialog.h"
 #include "dialogs/extrapolationoptionsdialog.h"

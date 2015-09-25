@@ -1,7 +1,7 @@
 #include <QPainter>
 #include <QImage>
 #include "landscape.h"
-#include "colormap.h"
+#include "auxiliary/colormap.h"
 
 #include "engraver.h"
 

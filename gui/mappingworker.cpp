@@ -1,11 +1,11 @@
 #include <QImage>
 #include <QMutex>
+#include "auxiliary/mappingdata.h"
 #include "heightmapapplication.h"
 #include "preferences.h"
 #include "terrain.h"
 #include "mapper.h"
 #include "extrapolator.h"
-#include "mappingdata.h"
 #include "engraver.h"
 
 #include "mappingworker.h"
