@@ -11,13 +11,25 @@ namespace HeightMap {
 class HM_SHARED Extrapolator
 {
 public:
+    Extrapolator();
+
+    double baseLevel() const;
+    void setBaseLevel(double);
+
     virtual int radius(double peak) const = 0;
     virtual void modify(double &currentValue,
                         double peak,
                         double vectorLength) = 0;
 
     virtual ~Extrapolator() = 0;
+
+private:
+    double m_baseLevel;
 };
+
+
+inline double Extrapolator::baseLevel() const
+{ return m_baseLevel; }
 
 
 class HM_SHARED SimpleExtrapolator
@@ -39,10 +51,7 @@ class HM_SHARED BaseLevelExtrapolator
         : public Extrapolator
 {
 public:
-    explicit BaseLevelExtrapolator(double baseLevel = 0.0);
-
-    double baseLevel() const;
-    void setBaseLevel(double);
+    BaseLevelExtrapolator();
 
     int radius(double peak) const;
     void modify(double &currentValue,
@@ -50,14 +59,7 @@ public:
                 double vectorLength);
 
     ~BaseLevelExtrapolator();
-
-private:
-    double m_baseLevel;
 };
-
-
-inline double BaseLevelExtrapolator::baseLevel() const
-{ return m_baseLevel; }
 
 
 class HM_SHARED SlopeExtrapolator

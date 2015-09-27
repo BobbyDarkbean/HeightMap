@@ -5,6 +5,14 @@
 namespace HeightMap {
 
 
+Extrapolator::Extrapolator()
+    : m_baseLevel(0.0) { }
+
+
+void Extrapolator::setBaseLevel(double l)
+{ m_baseLevel = l; }
+
+
 Extrapolator::~Extrapolator() { }
 
 
@@ -31,16 +39,12 @@ void SimpleExtrapolator::modify(
 SimpleExtrapolator::~SimpleExtrapolator() { }
 
 
-BaseLevelExtrapolator::BaseLevelExtrapolator(double baseLevel)
-    : Extrapolator(),
-      m_baseLevel(baseLevel) { }
+BaseLevelExtrapolator::BaseLevelExtrapolator()
+    : Extrapolator() { }
 
-
-void BaseLevelExtrapolator::setBaseLevel(double l)
-{ m_baseLevel = l; }
 
 int BaseLevelExtrapolator::radius(double peak) const
-{ return static_cast<int>(std::abs(peak - m_baseLevel)); }
+{ return static_cast<int>(std::abs(peak - baseLevel())); }
 
 void BaseLevelExtrapolator::modify(
     double &currentValue,
