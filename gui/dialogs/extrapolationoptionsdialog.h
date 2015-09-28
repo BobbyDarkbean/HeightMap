@@ -18,9 +18,6 @@ class ExtrapolationOptionsDialog : public QDialog
 public:
     explicit ExtrapolationOptionsDialog(QWidget *parent = 0);
 
-    int baseLevel() const;
-    void setBaseLevel(int);
-
     const Preferences &preferences() const;
     void setPreferences(const Preferences &);
 

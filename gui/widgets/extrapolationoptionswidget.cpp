@@ -1,7 +1,8 @@
 #include <QLabel>
-#include <QSpinBox>
-#include <QBoxLayout>
+#include <QComboBox>
 #include <QGroupBox>
+#include <QStackedWidget>
+#include <QBoxLayout>
 #include "../preferences.h"
 
 #include "extrapolationoptionswidget.h"
@@ -15,13 +16,17 @@ struct ExtrapolationOptionsWidgetImplementation
     ExtrapolationOptionsWidgetImplementation();
 
     void adjustControls();
-    void adjustLayout(QWidget *master);
+    void adjustLayout(ExtrapolationOptionsWidget *master);
 
     ~ExtrapolationOptionsWidgetImplementation();
 
+    QLabel *lblExtrapolMethod;
+    QComboBox *cmbExtrapolMethod;
+
     QGroupBox *grpExtrapolOpts;
-    QLabel *lblBaseLevel;
-    QSpinBox *spnBaseLevel;
+    QStackedWidget *stkExtrapolOpts;
+
+    QMap<QString, int> mapExtrapolNames;
 
 private:
     DISABLE_COPY(ExtrapolationOptionsWidgetImplementation)
@@ -30,37 +35,43 @@ private:
 
 
 ExtrapolationOptionsWidgetImplementation::ExtrapolationOptionsWidgetImplementation()
-    : grpExtrapolOpts(new QGroupBox),
-      lblBaseLevel(new QLabel),
-      spnBaseLevel(new QSpinBox) { }
+    : lblExtrapolMethod(new QLabel),
+      cmbExtrapolMethod(new QComboBox),
+      grpExtrapolOpts(new QGroupBox),
+      stkExtrapolOpts(new QStackedWidget),
+      mapExtrapolNames() { }
 
 void ExtrapolationOptionsWidgetImplementation::adjustControls()
 {
     // Label
-    lblBaseLevel->setText(ExtrapolationOptionsWidget::tr("Landscape base level:"));
-    lblBaseLevel->setBuddy(spnBaseLevel);
+    lblExtrapolMethod->setText(ExtrapolationOptionsWidget::tr("Extrapolation method:"));
+    lblExtrapolMethod->setBuddy(cmbExtrapolMethod);
 
-    // Spin-box
-    spnBaseLevel->setRange(Preferences::MinLevel, Preferences::MaxLevel);
-    spnBaseLevel->setSingleStep(1);
-    spnBaseLevel->setAccelerated(true);
-    spnBaseLevel->setAlignment(Qt::AlignRight);
+    // Combo-box
+    cmbExtrapolMethod->setEditable(false);
 
     // Group-box
     grpExtrapolOpts->setTitle(ExtrapolationOptionsWidget::tr("Peak extrapolation"));
 }
 
-void ExtrapolationOptionsWidgetImplementation::adjustLayout(QWidget *master)
+void ExtrapolationOptionsWidgetImplementation::adjustLayout(ExtrapolationOptionsWidget *master)
 {
-    QBoxLayout *lytBaseLevel = new QHBoxLayout(grpExtrapolOpts);
-    lytBaseLevel->addStretch();
-    lytBaseLevel->addWidget(lblBaseLevel);
-    lytBaseLevel->addWidget(spnBaseLevel);
-    lytBaseLevel->addStretch();
+    QBoxLayout *lytExtrapolMethod = new QHBoxLayout;
+    lytExtrapolMethod->addStretch();
+    lytExtrapolMethod->addWidget(lblExtrapolMethod);
+    lytExtrapolMethod->addWidget(cmbExtrapolMethod);
+    lytExtrapolMethod->addStretch();
+
+    QBoxLayout *lytExtrapolOpts = new QVBoxLayout(grpExtrapolOpts);
+    lytExtrapolOpts->addWidget(stkExtrapolOpts);
 
     QBoxLayout *lytMain = new QVBoxLayout(master);
     lytMain->addWidget(grpExtrapolOpts);
+    lytMain->addLayout(lytExtrapolMethod);
     lytMain->addStretch();
+
+    ExtrapolationOptionsWidget::connect(
+            cmbExtrapolMethod, SIGNAL(currentIndexChanged(int)), master, SLOT(setExtrapolationWidget(int)));
 }
 
 ExtrapolationOptionsWidgetImplementation::~ExtrapolationOptionsWidgetImplementation() { }
@@ -75,16 +86,46 @@ ExtrapolationOptionsWidget::ExtrapolationOptionsWidget(QWidget *parent)
 }
 
 
-int ExtrapolationOptionsWidget::baseLevel() const
-{ return m->spnBaseLevel->value(); }
+QString ExtrapolationOptionsWidget::extrapolatorName() const
+{ return m->cmbExtrapolMethod->currentText(); }
 
-void ExtrapolationOptionsWidget::setBaseLevel(int level)
-{ m->spnBaseLevel->setValue(level); }
+void ExtrapolationOptionsWidget::setExtrapolatorName(const QString &name)
+{
+    int index = m->mapExtrapolNames.value(name, -1);
+    if (0 <= index && index < m->cmbExtrapolMethod->count())
+        m->cmbExtrapolMethod->setCurrentIndex(index);
+}
+
+QWidget *ExtrapolationOptionsWidget::extrapolationWidget(const QString &keyName) const
+{
+    int index = m->mapExtrapolNames.value(keyName, -1);
+    int id = m->cmbExtrapolMethod->itemData(index).toInt();
+    if (!(0 <= id && id < m->stkExtrapolOpts->count()))
+        return nullptr;
+    return m->stkExtrapolOpts->widget(id);
+}
+
+void ExtrapolationOptionsWidget::addExtrapolationWidget(
+    const QString &keyName,
+    QWidget *w)
+{
+    int id = m->stkExtrapolOpts->addWidget(w);
+    m->mapExtrapolNames.insert(keyName, id);
+    m->cmbExtrapolMethod->addItem(keyName, id);
+}
 
 
 ExtrapolationOptionsWidget::~ExtrapolationOptionsWidget()
 {
     delete m;
+}
+
+
+void ExtrapolationOptionsWidget::setExtrapolationWidget(int index)
+{
+    int id = m->cmbExtrapolMethod->itemData(index).toInt();
+    if (0 <= id && id < m->stkExtrapolOpts->count())
+        m->stkExtrapolOpts->setCurrentIndex(id);
 }
 
 

@@ -2,6 +2,9 @@
 #define _Preferences_h_
 
 
+#include <QString>
+
+
 namespace HeightMap {
 
 
@@ -21,7 +24,6 @@ public:
         MaxLevel                = 255,
         DefaultMinPeak          = 100,
         DefaultMaxPeak          = 200,
-        DefaultLandscapeBase    = 8,
 
         DefaultMinContourLevel  = MinLevel + 1,
         DefaultMaxContourLevel  = MaxLevel,
@@ -47,8 +49,8 @@ public:
     int maxPeak() const;
     void setMaxPeak(int);
 
-    int landscapeBase() const;
-    void setLandscapeBase(int);
+    const QString &extrapolatorName() const;
+    void setExtrapolatorName(const QString &);
 
     int minContouringLevel() const;
     void setMinContouringLevel(int);
@@ -70,7 +72,7 @@ private:
     unsigned int m_peaks;
     int m_minPeak;
     int m_maxPeak;
-    int m_lsBase;
+    QString m_extrapolName;
     int m_minContLevel;
     int m_maxContLevel;
     int m_contStep;
@@ -93,8 +95,8 @@ inline int Preferences::minPeak() const
 inline int Preferences::maxPeak() const
 { return m_maxPeak; }
 
-inline int Preferences::landscapeBase() const
-{ return m_lsBase; }
+inline const QString &Preferences::extrapolatorName() const
+{ return m_extrapolName; }
 
 inline int Preferences::minContouringLevel() const
 { return m_minContLevel; }

@@ -31,7 +31,6 @@ HeightMapApplicationImplementation::HeightMapApplicationImplementation()
     prefs.setPeakCount(qvariant_cast<unsigned int>(settings.value("peaks/count", Preferences::DefaultPeakCount)));
     prefs.setMinPeak(qvariant_cast<int>(settings.value("peaks/minpeak", Preferences::DefaultMinPeak)));
     prefs.setMaxPeak(qvariant_cast<int>(settings.value("peaks/maxpeak", Preferences::DefaultMaxPeak)));
-    prefs.setLandscapeBase(qvariant_cast<int>(settings.value("extrapolation/base", Preferences::DefaultLandscapeBase)));
     prefs.setMinContouringLevel(qvariant_cast<int>(settings.value("contouring/minlevel", Preferences::DefaultMinContourLevel)));
     prefs.setMaxContouringLevel(qvariant_cast<int>(settings.value("contouring/maxlevel", Preferences::DefaultMaxContourLevel)));
     prefs.setContouringStep(qvariant_cast<int>(settings.value("contouring/step", Preferences::DefaultContouringStep)));
@@ -53,10 +52,6 @@ HeightMapApplicationImplementation::~HeightMapApplicationImplementation()
     settings.setValue("count", prefs.peakCount());
     settings.setValue("minpeak", prefs.minPeak());
     settings.setValue("maxpeak", prefs.maxPeak());
-    settings.endGroup();
-
-    settings.beginGroup("extrapolation");
-    settings.setValue("base", prefs.landscapeBase());
     settings.endGroup();
 
     settings.beginGroup("contouring");

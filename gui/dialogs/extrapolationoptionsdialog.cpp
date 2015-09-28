@@ -67,12 +67,12 @@ void ExtrapolationOptionsDialogImplementation::adjustLayout(QDialog *master)
 
 void ExtrapolationOptionsDialogImplementation::adjustPreferences()
 {
-    wgtExtrapolOpt->setBaseLevel(prefs.landscapeBase());
+    wgtExtrapolOpt->setExtrapolatorName(prefs.extrapolatorName());
 }
 
 void ExtrapolationOptionsDialogImplementation::acquirePreferences()
 {
-    prefs.setLandscapeBase(wgtExtrapolOpt->baseLevel());
+    prefs.setExtrapolatorName(wgtExtrapolOpt->extrapolatorName());
 }
 
 ExtrapolationOptionsDialogImplementation::~ExtrapolationOptionsDialogImplementation() { }
@@ -86,12 +86,6 @@ ExtrapolationOptionsDialog::ExtrapolationOptionsDialog(QWidget *parent)
     m->adjustLayout(this);
 }
 
-
-int ExtrapolationOptionsDialog::baseLevel() const
-{ return m->wgtExtrapolOpt->baseLevel(); }
-
-void ExtrapolationOptionsDialog::setBaseLevel(int level)
-{ m->wgtExtrapolOpt->setBaseLevel(level); }
 
 const Preferences &ExtrapolationOptionsDialog::preferences() const
 { return m->prefs; }

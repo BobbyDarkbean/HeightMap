@@ -51,8 +51,7 @@ PeakGenerationOptions MappingWorkerImplementation::genOptions() const
         prefs.landscapeWidth(),
         prefs.landscapeHeight(),
         prefs.minPeak(),
-        prefs.maxPeak(),
-        static_cast<double>(prefs.landscapeBase())
+        prefs.maxPeak()
     };
 }
 
@@ -196,9 +195,7 @@ void MappingWorker::extrapolatePeaks()
 {
     emit peakExtrapolationStarted();
 
-    int baseLvl = hmApp->preferences().landscapeBase();
-
-    m->data.terrain->fillLandscape(baseLvl);
+    m->data.terrain->fillLandscape((new SimpleExtrapolator)->baseLevel());
     m->data.terrain->extrapolatePeaks(&m->mapper, new SimpleExtrapolator);
     m->drawLandscape();
 

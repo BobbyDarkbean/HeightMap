@@ -12,7 +12,6 @@ struct HM_SHARED PeakGenerationOptions
 {
     unsigned int peakCount;
     int hmWidth, hmHeight, minPeak, maxPeak;
-    double baseLvl;
 };
 
 

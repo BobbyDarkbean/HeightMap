@@ -17,10 +17,16 @@ class ExtrapolationOptionsWidget : public QWidget
 public:
     explicit ExtrapolationOptionsWidget(QWidget *parent = 0);
 
-    int baseLevel() const;
-    void setBaseLevel(int);
+    QString extrapolatorName() const;
+    void setExtrapolatorName(const QString &);
+
+    QWidget *extrapolationWidget(const QString &keyName) const;
+    void addExtrapolationWidget(const QString &keyName, QWidget *);
 
     ~ExtrapolationOptionsWidget();
+
+private slots:
+    void setExtrapolationWidget(int);
 
 private:
     DISABLE_COPY(ExtrapolationOptionsWidget)
