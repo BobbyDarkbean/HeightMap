@@ -336,9 +336,10 @@ void HeightMapWindow::newFile()
     dialog.setWindowTitle(tr("New file"));
     dialog.setPreferences(hmApp->preferences());
 
-    if (dialog.exec()) {
-        hmApp->setPreferences(dialog.preferences());
-    }
+    if (!dialog.exec())
+        return;
+
+    hmApp->setPreferences(dialog.preferences());
 
     Preferences prefs = hmApp->preferences();
     m->terrain = Terrain(prefs.landscapeWidth(), prefs.landscapeHeight());
