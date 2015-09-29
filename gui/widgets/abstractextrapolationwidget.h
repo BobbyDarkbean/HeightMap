@@ -16,7 +16,10 @@ class AbstractExtrapolationWidget : public QWidget
 
 public:
     explicit AbstractExtrapolationWidget(QWidget *parent = 0);
+
     virtual Extrapolator *extrapolator() const = 0;
+    virtual void acceptSettings() = 0;
+
     ~AbstractExtrapolationWidget();
 
 private:

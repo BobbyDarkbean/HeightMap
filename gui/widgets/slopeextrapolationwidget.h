@@ -20,6 +20,8 @@ public:
     Extrapolator *extrapolator() const;
     void bindExtrapolator(SlopeExtrapolator *);
 
+    void acceptSettings();
+
     ~SlopeExtrapolationWidget();
 
 private slots:

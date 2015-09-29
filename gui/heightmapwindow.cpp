@@ -15,7 +15,6 @@
 #include "mappingworker.h"
 #include "preferences.h"
 #include "terrain.h"
-#include "widgets/abstractextrapolationwidget.h"
 #include "dialogs/terrainoptionsdialog.h"
 #include "dialogs/generatingoptionsdialog.h"
 #include "dialogs/extrapolationoptionsdialog.h"

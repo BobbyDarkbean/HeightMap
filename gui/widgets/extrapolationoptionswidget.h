@@ -9,6 +9,7 @@
 namespace HeightMap {
 
 
+class AbstractExtrapolationWidget;
 struct ExtrapolationOptionsWidgetImplementation;
 class ExtrapolationOptionsWidget : public QWidget
 {
@@ -26,7 +27,9 @@ public:
     void addExtrapolationWidget(
         const QString &name,
         const QString &description,
-        QWidget *);
+        AbstractExtrapolationWidget *);
+
+    void acceptExtrapolationSettings();
 
     ~ExtrapolationOptionsWidget();
 

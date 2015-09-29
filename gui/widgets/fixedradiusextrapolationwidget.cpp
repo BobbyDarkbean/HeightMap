@@ -26,6 +26,9 @@ struct FixedRadiusExtrapolationWidgetImplementation
     QLabel *lblFixedRadius;
     QSpinBox *spnFixedRadius;
 
+    double bl;
+    int fr;
+
     FixedRadiusExtrapolator *x;
 
 private:
@@ -39,6 +42,8 @@ FixedRadiusExtrapolationWidgetImplementation::FixedRadiusExtrapolationWidgetImpl
       spnBaseLevel(new QDoubleSpinBox),
       lblFixedRadius(new QLabel),
       spnFixedRadius(new QSpinBox),
+      bl(static_cast<double>(Preferences::MinLevel)),
+      fr(16),
       x(nullptr) { }
 
 void FixedRadiusExtrapolationWidgetImplementation::adjustControls()
@@ -113,6 +118,12 @@ void FixedRadiusExtrapolationWidget::bindExtrapolator(FixedRadiusExtrapolator *f
     m->adjustValues();
 }
 
+void FixedRadiusExtrapolationWidget::acceptSettings()
+{
+    m->x->setBaseLevel(m->bl);
+    m->x->setFixedRadius(m->fr);
+}
+
 
 FixedRadiusExtrapolationWidget::~FixedRadiusExtrapolationWidget()
 {
@@ -121,10 +132,10 @@ FixedRadiusExtrapolationWidget::~FixedRadiusExtrapolationWidget()
 
 
 void FixedRadiusExtrapolationWidget::setBaseLevel(double bl)
-{ m->x->setBaseLevel(bl); }
+{ m->bl = bl; }
 
 void FixedRadiusExtrapolationWidget::setFixedRadius(int fr)
-{ m->x->setFixedRadius(fr); }
+{ m->fr = fr; }
 
 
 } // namespace HeightMap

@@ -20,6 +20,8 @@ public:
     Extrapolator *extrapolator() const;
     void bindExtrapolator(FixedRadiusExtrapolator *);
 
+    void acceptSettings();
+
     ~FixedRadiusExtrapolationWidget();
 
 private slots:

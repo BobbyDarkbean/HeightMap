@@ -20,6 +20,8 @@ public:
     Extrapolator *extrapolator() const;
     void bindExtrapolator(BaseLevelExtrapolator *);
 
+    void acceptSettings();
+
     ~BaseLevelExtrapolationWidget();
 
 private slots:

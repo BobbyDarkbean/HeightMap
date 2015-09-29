@@ -3,6 +3,7 @@
 #include <QGroupBox>
 #include <QStackedWidget>
 #include <QBoxLayout>
+#include "abstractextrapolationwidget.h"
 #include "../preferences.h"
 
 #include "extrapolationoptionswidget.h"
@@ -126,11 +127,19 @@ QWidget *ExtrapolationOptionsWidget::extrapolationWidget(const QString &name) co
 void ExtrapolationOptionsWidget::addExtrapolationWidget(
     const QString &name,
     const QString &description,
-    QWidget *w)
+    AbstractExtrapolationWidget *w)
 {
     int id = m->stkExtrapolOpts->addWidget(w);
     m->mapExtrapolNames.insert(name, id);
     m->cmbExtrapolMethod->addItem(description, id);
+}
+
+void ExtrapolationOptionsWidget::acceptExtrapolationSettings()
+{
+    if (AbstractExtrapolationWidget *w =
+            qobject_cast<AbstractExtrapolationWidget *>(m->stkExtrapolOpts->currentWidget())) {
+        w->acceptSettings();
+    }
 }
 
 
