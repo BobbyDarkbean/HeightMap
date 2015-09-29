@@ -9,7 +9,9 @@ find_package (Qt5Widgets REQUIRED)
 
 include_directories (../hm)
 
-set (HMGUI_HDR dialogs/contouringoptionsdialog.h
+set (HMGUI_HDR auxiliary/colormap.h
+               auxiliary/mappingdata.h
+               dialogs/contouringoptionsdialog.h
                dialogs/extrapolationoptionsdialog.h
                dialogs/generatingoptionsdialog.h
                dialogs/terrainoptionsdialog.h
@@ -27,11 +29,9 @@ set (HMGUI_HDR dialogs/contouringoptionsdialog.h
                widgets/peakoptionswidget.h
                widgets/simpleextrapolationwidget.h
                widgets/slopeextrapolationwidget.h
-               colormap.h
                engraver.h
                heightmapapplication.h
                heightmapwindow.h
-               mappingdata.h
                mappingthread.h
                mappingworker.h
                preferences.h)
