@@ -22,6 +22,10 @@ public:
 
     ~SlopeExtrapolationWidget();
 
+private slots:
+    void setBaseLevel(double);
+    void setSlopeRatio(double);
+
 private:
     DISABLE_COPY(SlopeExtrapolationWidget)
     DISABLE_MOVE(SlopeExtrapolationWidget)

@@ -15,12 +15,13 @@ struct FixedRadiusExtrapolationWidgetImplementation
     FixedRadiusExtrapolationWidgetImplementation();
 
     void adjustControls();
-    void adjustLayout(QWidget *master);
+    void adjustLayout(FixedRadiusExtrapolationWidget *master);
+    void adjustValues();
 
     ~FixedRadiusExtrapolationWidgetImplementation();
 
     QLabel *lblBaseLevel;
-    QSpinBox *spnBaseLevel;
+    QDoubleSpinBox *spnBaseLevel;
 
     QLabel *lblFixedRadius;
     QSpinBox *spnFixedRadius;
@@ -35,7 +36,7 @@ private:
 
 FixedRadiusExtrapolationWidgetImplementation::FixedRadiusExtrapolationWidgetImplementation()
     : lblBaseLevel(new QLabel),
-      spnBaseLevel(new QSpinBox),
+      spnBaseLevel(new QDoubleSpinBox),
       lblFixedRadius(new QLabel),
       spnFixedRadius(new QSpinBox),
       x(nullptr) { }
@@ -50,8 +51,10 @@ void FixedRadiusExtrapolationWidgetImplementation::adjustControls()
     lblFixedRadius->setBuddy(spnFixedRadius);
 
     // Spin-boxes
-    spnBaseLevel->setRange(Preferences::MinLevel, Preferences::MaxLevel);
-    spnBaseLevel->setSingleStep(1);
+    spnBaseLevel->setDecimals(2);
+    spnBaseLevel->setRange(static_cast<double>(Preferences::MinLevel),
+                           static_cast<double>(Preferences::MaxLevel));
+    spnBaseLevel->setSingleStep(0.01);
     spnBaseLevel->setAccelerated(true);
     spnBaseLevel->setAlignment(Qt::AlignRight);
 
@@ -61,17 +64,32 @@ void FixedRadiusExtrapolationWidgetImplementation::adjustControls()
     spnFixedRadius->setAlignment(Qt::AlignRight);
 }
 
-void FixedRadiusExtrapolationWidgetImplementation::adjustLayout(QWidget *master)
+void FixedRadiusExtrapolationWidgetImplementation::adjustLayout(FixedRadiusExtrapolationWidget *master)
 {
-    QGridLayout *lytMain = new QGridLayout(master);
-    lytMain->setColumnStretch(0, 0);
-    lytMain->addWidget(lblBaseLevel, 0, 1);
-    lytMain->addWidget(spnBaseLevel, 0, 2);
-    lytMain->setColumnStretch(3, 0);
-    lytMain->setRowMinimumHeight(1, 12);
-    lytMain->addWidget(lblFixedRadius, 2, 1);
-    lytMain->addWidget(spnFixedRadius, 2, 2);
-    lytMain->setRowStretch(3, 0);
+    QGridLayout *lytContent = new QGridLayout;
+    lytContent->setColumnStretch(0, 1);
+    lytContent->addWidget(lblBaseLevel, 0, 1);
+    lytContent->setColumnStretch(2, 1);
+    lytContent->addWidget(spnBaseLevel, 0, 3);
+    lytContent->setColumnStretch(4, 1);
+    lytContent->setRowMinimumHeight(1, 12);
+    lytContent->addWidget(lblFixedRadius, 2, 1);
+    lytContent->addWidget(spnFixedRadius, 2, 3);
+
+    QBoxLayout *lytMain = new QVBoxLayout(master);
+    lytMain->addLayout(lytContent);
+    lytMain->addStretch();
+
+    FixedRadiusExtrapolationWidget::connect(
+                spnBaseLevel, SIGNAL(valueChanged(double)), master, SLOT(setBaseLevel(double)));
+    FixedRadiusExtrapolationWidget::connect(
+                spnFixedRadius, SIGNAL(valueChanged(int)), master, SLOT(setFixedRadius(int)));
+}
+
+void FixedRadiusExtrapolationWidgetImplementation::adjustValues()
+{
+    spnBaseLevel->setValue(x->baseLevel());
+    spnFixedRadius->setValue(x->fixedRadius());
 }
 
 FixedRadiusExtrapolationWidgetImplementation::~FixedRadiusExtrapolationWidgetImplementation() { }
@@ -90,13 +108,23 @@ Extrapolator *FixedRadiusExtrapolationWidget::extrapolator() const
 { return m->x; }
 
 void FixedRadiusExtrapolationWidget::bindExtrapolator(FixedRadiusExtrapolator *frx)
-{ m->x = frx; }
+{
+    m->x = frx;
+    m->adjustValues();
+}
 
 
 FixedRadiusExtrapolationWidget::~FixedRadiusExtrapolationWidget()
 {
     delete m;
 }
+
+
+void FixedRadiusExtrapolationWidget::setBaseLevel(double bl)
+{ m->x->setBaseLevel(bl); }
+
+void FixedRadiusExtrapolationWidget::setFixedRadius(int fr)
+{ m->x->setFixedRadius(fr); }
 
 
 } // namespace HeightMap

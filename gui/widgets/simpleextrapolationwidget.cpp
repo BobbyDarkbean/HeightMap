@@ -15,12 +15,13 @@ struct SimpleExtrapolationWidgetImplementation
     SimpleExtrapolationWidgetImplementation();
 
     void adjustControls();
-    void adjustLayout(QWidget *master);
+    void adjustLayout(SimpleExtrapolationWidget *master);
+    void adjustValues();
 
     ~SimpleExtrapolationWidgetImplementation();
 
     QLabel *lblBaseLevel;
-    QSpinBox *spnBaseLevel;
+    QDoubleSpinBox *spnBaseLevel;
 
     SimpleExtrapolator *x;
 
@@ -32,7 +33,7 @@ private:
 
 SimpleExtrapolationWidgetImplementation::SimpleExtrapolationWidgetImplementation()
     : lblBaseLevel(new QLabel),
-      spnBaseLevel(new QSpinBox),
+      spnBaseLevel(new QDoubleSpinBox),
       x(nullptr) { }
 
 void SimpleExtrapolationWidgetImplementation::adjustControls()
@@ -42,20 +43,34 @@ void SimpleExtrapolationWidgetImplementation::adjustControls()
     lblBaseLevel->setBuddy(spnBaseLevel);
 
     // Spin-box
-    spnBaseLevel->setRange(Preferences::MinLevel, Preferences::MaxLevel);
-    spnBaseLevel->setSingleStep(1);
+    spnBaseLevel->setDecimals(2);
+    spnBaseLevel->setRange(static_cast<double>(Preferences::MinLevel),
+                           static_cast<double>(Preferences::MaxLevel));
+    spnBaseLevel->setSingleStep(0.01);
     spnBaseLevel->setAccelerated(true);
     spnBaseLevel->setAlignment(Qt::AlignRight);
 }
 
-void SimpleExtrapolationWidgetImplementation::adjustLayout(QWidget *master)
+void SimpleExtrapolationWidgetImplementation::adjustLayout(SimpleExtrapolationWidget *master)
 {
-    QGridLayout *lytMain = new QGridLayout(master);
-    lytMain->addWidget(lblBaseLevel, 0, 1);
-    lytMain->addWidget(spnBaseLevel, 0, 2);
-    lytMain->setRowMinimumHeight(1, 12);
-    lytMain->setColumnStretch(0, 0);
-    lytMain->setColumnStretch(3, 0);
+    QGridLayout *lytContent = new QGridLayout;
+    lytContent->setColumnStretch(0, 1);
+    lytContent->addWidget(lblBaseLevel, 0, 1);
+    lytContent->setColumnStretch(2, 1);
+    lytContent->addWidget(spnBaseLevel, 0, 3);
+    lytContent->setColumnStretch(4, 1);
+
+    QBoxLayout *lytMain = new QVBoxLayout(master);
+    lytMain->addLayout(lytContent);
+    lytMain->addStretch();
+
+    SimpleExtrapolationWidget::connect(
+                spnBaseLevel, SIGNAL(valueChanged(double)), master, SLOT(setBaseLevel(double)));
+}
+
+void SimpleExtrapolationWidgetImplementation::adjustValues()
+{
+    spnBaseLevel->setValue(x->baseLevel());
 }
 
 SimpleExtrapolationWidgetImplementation::~SimpleExtrapolationWidgetImplementation() { }
@@ -74,13 +89,20 @@ Extrapolator *SimpleExtrapolationWidget::extrapolator() const
 { return m->x; }
 
 void SimpleExtrapolationWidget::bindExtrapolator(SimpleExtrapolator *sx)
-{ m->x = sx; }
+{
+    m->x = sx;
+    m->adjustValues();
+}
 
 
 SimpleExtrapolationWidget::~SimpleExtrapolationWidget()
 {
     delete m;
 }
+
+
+void SimpleExtrapolationWidget::setBaseLevel(double bl)
+{ m->x->setBaseLevel(bl); }
 
 
 } // namespace HeightMap

@@ -15,15 +15,16 @@ struct SlopeExtrapolationWidgetImplementation
     SlopeExtrapolationWidgetImplementation();
 
     void adjustControls();
-    void adjustLayout(QWidget *master);
+    void adjustLayout(SlopeExtrapolationWidget *master);
+    void adjustValues();
 
     ~SlopeExtrapolationWidgetImplementation();
 
     QLabel *lblBaseLevel;
-    QSpinBox *spnBaseLevel;
+    QDoubleSpinBox *spnBaseLevel;
 
     QLabel *lblSlope;
-    QSpinBox *spnSlope;
+    QDoubleSpinBox *spnSlope;
 
     SlopeExtrapolator *x;
 
@@ -35,9 +36,9 @@ private:
 
 SlopeExtrapolationWidgetImplementation::SlopeExtrapolationWidgetImplementation()
     : lblBaseLevel(new QLabel),
-      spnBaseLevel(new QSpinBox),
+      spnBaseLevel(new QDoubleSpinBox),
       lblSlope(new QLabel),
-      spnSlope(new QSpinBox),
+      spnSlope(new QDoubleSpinBox),
       x(nullptr) { }
 
 void SlopeExtrapolationWidgetImplementation::adjustControls()
@@ -50,28 +51,46 @@ void SlopeExtrapolationWidgetImplementation::adjustControls()
     lblSlope->setBuddy(spnSlope);
 
     // Spin-boxes
-    spnBaseLevel->setRange(Preferences::MinLevel, Preferences::MaxLevel);
-    spnBaseLevel->setSingleStep(1);
+    spnBaseLevel->setDecimals(2);
+    spnBaseLevel->setRange(static_cast<double>(Preferences::MinLevel),
+                           static_cast<double>(Preferences::MaxLevel));
+    spnBaseLevel->setSingleStep(0.01);
     spnBaseLevel->setAccelerated(true);
     spnBaseLevel->setAlignment(Qt::AlignRight);
 
-    spnSlope->setRange(1, 32);
-    spnSlope->setSingleStep(1);
+    spnSlope->setDecimals(2);
+    spnSlope->setRange(1.0, 32.0);
+    spnSlope->setSingleStep(0.01);
     spnSlope->setAccelerated(true);
     spnSlope->setAlignment(Qt::AlignRight);
 }
 
-void SlopeExtrapolationWidgetImplementation::adjustLayout(QWidget *master)
+void SlopeExtrapolationWidgetImplementation::adjustLayout(SlopeExtrapolationWidget *master)
 {
-    QGridLayout *lytMain = new QGridLayout(master);
-    lytMain->setColumnStretch(0, 0);
-    lytMain->addWidget(lblBaseLevel, 0, 1);
-    lytMain->addWidget(spnBaseLevel, 0, 2);
-    lytMain->setColumnStretch(3, 0);
-    lytMain->setRowMinimumHeight(1, 12);
-    lytMain->addWidget(lblSlope, 2, 1);
-    lytMain->addWidget(spnSlope, 2, 2);
-    lytMain->setRowStretch(3, 0);
+    QGridLayout *lytContent = new QGridLayout;
+    lytContent->setColumnStretch(0, 1);
+    lytContent->addWidget(lblBaseLevel, 0, 1);
+    lytContent->setColumnStretch(2, 1);
+    lytContent->addWidget(spnBaseLevel, 0, 3);
+    lytContent->setColumnStretch(4, 1);
+    lytContent->setRowMinimumHeight(1, 12);
+    lytContent->addWidget(lblSlope, 2, 1);
+    lytContent->addWidget(spnSlope, 2, 3);
+
+    QBoxLayout *lytMain = new QVBoxLayout(master);
+    lytMain->addLayout(lytContent);
+    lytMain->addStretch();
+
+    SlopeExtrapolationWidget::connect(
+                spnBaseLevel, SIGNAL(valueChanged(double)), master, SLOT(setBaseLevel(double)));
+    SlopeExtrapolationWidget::connect(
+                spnSlope, SIGNAL(valueChanged(double)), master, SLOT(setSlopeRatio(double)));
+}
+
+void SlopeExtrapolationWidgetImplementation::adjustValues()
+{
+    spnBaseLevel->setValue(x->baseLevel());
+    spnSlope->setValue(x->slopeRatio());
 }
 
 SlopeExtrapolationWidgetImplementation::~SlopeExtrapolationWidgetImplementation() { }
@@ -90,13 +109,23 @@ Extrapolator *SlopeExtrapolationWidget::extrapolator() const
 { return m->x; }
 
 void SlopeExtrapolationWidget::bindExtrapolator(SlopeExtrapolator *sx)
-{ m->x = sx; }
+{
+    m->x = sx;
+    m->adjustValues();
+}
 
 
 SlopeExtrapolationWidget::~SlopeExtrapolationWidget()
 {
     delete m;
 }
+
+
+void SlopeExtrapolationWidget::setBaseLevel(double bl)
+{ m->x->setBaseLevel(bl); }
+
+void SlopeExtrapolationWidget::setSlopeRatio(double sr)
+{ m->x->setSlopeRatio(sr); }
 
 
 } // namespace HeightMap

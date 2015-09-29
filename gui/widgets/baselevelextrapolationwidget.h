@@ -22,6 +22,9 @@ public:
 
     ~BaseLevelExtrapolationWidget();
 
+private slots:
+    void setBaseLevel(double);
+
 private:
     DISABLE_COPY(BaseLevelExtrapolationWidget)
     DISABLE_MOVE(BaseLevelExtrapolationWidget)

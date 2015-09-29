@@ -22,6 +22,10 @@ public:
 
     ~FixedRadiusExtrapolationWidget();
 
+private slots:
+    void setBaseLevel(double);
+    void setFixedRadius(int);
+
 private:
     DISABLE_COPY(FixedRadiusExtrapolationWidget)
     DISABLE_MOVE(FixedRadiusExtrapolationWidget)
