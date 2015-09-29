@@ -10,6 +10,8 @@ namespace HeightMap {
 
 
 class Preferences;
+class Extrapolator;
+class AbstractExtrapolationWidget;
 struct HeightMapApplicationImplementation;
 class HeightMapApplication : public QApplication
 {
@@ -20,6 +22,12 @@ public:
 
     const Preferences &preferences() const;
     void setPreferences(const Preferences &);
+
+    QStringList extrapolatorKeys() const;
+
+    AbstractExtrapolationWidget *createExtrapolationWidget(const QString &name) const;
+    QString extrapolationDescription(const QString &name) const;
+    Extrapolator *currentExtrapolator() const;
 
     ~HeightMapApplication();
 

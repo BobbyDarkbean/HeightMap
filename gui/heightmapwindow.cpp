@@ -15,6 +15,7 @@
 #include "mappingworker.h"
 #include "preferences.h"
 #include "terrain.h"
+#include "widgets/abstractextrapolationwidget.h"
 #include "dialogs/terrainoptionsdialog.h"
 #include "dialogs/generatingoptionsdialog.h"
 #include "dialogs/extrapolationoptionsdialog.h"
@@ -46,6 +47,7 @@ struct HeightMapWindowImplementation
     void createActions(HeightMapWindow *, MappingWorker *);
 
     void provideMappingData(MappingWorker *);
+    void provideExtrapolationWidgets(ExtrapolationOptionsDialog *);
 
     void displayHeightMapImage();
     void resetImages();
@@ -209,6 +211,15 @@ void HeightMapWindowImplementation::provideMappingData(MappingWorker *worker)
     };
 
     worker->initFrom(hmData);
+}
+
+void HeightMapWindowImplementation::provideExtrapolationWidgets(ExtrapolationOptionsDialog *dialog)
+{
+    QStringList xNames = hmApp->extrapolatorKeys();
+    for (QStringList::ConstIterator i = xNames.begin(); i != xNames.end(); ++i) {
+        if (AbstractExtrapolationWidget *xWidget = hmApp->createExtrapolationWidget(*i))
+            dialog->addExtrapolationWidget(*i, hmApp->extrapolationDescription(*i), xWidget);
+    }
 }
 
 void HeightMapWindowImplementation::displayHeightMapImage()
@@ -396,6 +407,7 @@ void HeightMapWindow::editPeakSettings()
 void HeightMapWindow::editExtrapolationSettings()
 {
     ExtrapolationOptionsDialog dialog(this);
+    m->provideExtrapolationWidgets(&dialog);
     dialog.setWindowTitle(tr("Extrapolation settings"));
     dialog.setPreferences(hmApp->preferences());
 

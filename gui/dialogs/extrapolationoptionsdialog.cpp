@@ -96,6 +96,15 @@ void ExtrapolationOptionsDialog::setPreferences(const Preferences &prefs)
     m->adjustPreferences();
 }
 
+QWidget *ExtrapolationOptionsDialog::extrapolationWidget(const QString &keyName) const
+{ return m->wgtExtrapolOpt->extrapolationWidget(keyName); }
+
+void ExtrapolationOptionsDialog::addExtrapolationWidget(
+    const QString &keyName,
+    const QString &description,
+    QWidget *w)
+{ m->wgtExtrapolOpt->addExtrapolationWidget(keyName, description, w); }
+
 
 ExtrapolationOptionsDialog::~ExtrapolationOptionsDialog()
 {

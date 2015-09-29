@@ -21,6 +21,12 @@ public:
     const Preferences &preferences() const;
     void setPreferences(const Preferences &);
 
+    QWidget *extrapolationWidget(const QString &keyName) const;
+    void addExtrapolationWidget(
+        const QString &keyName,
+        const QString &description,
+        QWidget *);
+
     ~ExtrapolationOptionsDialog();
 
 public slots:

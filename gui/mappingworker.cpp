@@ -195,9 +195,11 @@ void MappingWorker::extrapolatePeaks()
 {
     emit peakExtrapolationStarted();
 
-    m->data.terrain->fillLandscape((new SimpleExtrapolator)->baseLevel());
-    m->data.terrain->extrapolatePeaks(&m->mapper, new SimpleExtrapolator);
-    m->drawLandscape();
+    if (Extrapolator *extrapolator = hmApp->currentExtrapolator()) {
+        m->data.terrain->fillLandscape(extrapolator->baseLevel());
+        m->data.terrain->extrapolatePeaks(&m->mapper, extrapolator);
+        m->drawLandscape();
+    }
 
     emit peakExtrapolationFinished();
 }

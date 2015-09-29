@@ -17,11 +17,16 @@ class ExtrapolationOptionsWidget : public QWidget
 public:
     explicit ExtrapolationOptionsWidget(QWidget *parent = 0);
 
+    QSize sizeHint() const;
+
     QString extrapolatorName() const;
     void setExtrapolatorName(const QString &);
 
-    QWidget *extrapolationWidget(const QString &keyName) const;
-    void addExtrapolationWidget(const QString &keyName, QWidget *);
+    QWidget *extrapolationWidget(const QString &name) const;
+    void addExtrapolationWidget(
+        const QString &name,
+        const QString &description,
+        QWidget *);
 
     ~ExtrapolationOptionsWidget();
 
