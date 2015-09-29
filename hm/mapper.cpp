@@ -68,13 +68,14 @@ void Mapper::extrapolatePeaks(
         double peak = i->height;
 
         // ...extrapolation radius equals peak height
-        int radius = extrapolator->radius(peak);
+        double radius = extrapolator->radius(peak);
 
         // ...determining bounding rectangle
-        int left = max(x - radius, 0);
-        int right = min(x + radius, hm_width - 1);
-        int top = max(y - radius, 0);
-        int bottom = min(y + radius, hm_height - 1);
+        int r = static_cast<int>(radius);
+        int left = max(x - r, 0);
+        int right = min(x + r, hm_width - 1);
+        int top = max(y - r, 0);
+        int bottom = min(y + r, hm_height - 1);
 
         // ...for each point inside the rectangle
         for (int j = left; j <= right; ++j) {
@@ -86,7 +87,7 @@ void Mapper::extrapolatePeaks(
                         static_cast<double>(vec_y * vec_y);
 
                 // ...if outside the circle, proceeding to the next iteration
-                if (vec_sq > (peak * peak))
+                if (vec_sq > (radius * radius))
                     continue;
 
                 double vec_len = sqrt(vec_sq);

@@ -20,8 +20,8 @@ SimpleExtrapolator::SimpleExtrapolator()
     : Extrapolator() { }
 
 
-int SimpleExtrapolator::radius(double peak) const
-{ return static_cast<int>(peak); }
+double SimpleExtrapolator::radius(double peak) const
+{ return peak; }
 
 void SimpleExtrapolator::modify(
     double &currentValue,
@@ -43,8 +43,8 @@ BaseLevelExtrapolator::BaseLevelExtrapolator()
     : Extrapolator() { }
 
 
-int BaseLevelExtrapolator::radius(double peak) const
-{ return static_cast<int>(std::abs(peak - baseLevel())); }
+double BaseLevelExtrapolator::radius(double peak) const
+{ return std::abs(peak - baseLevel()); }
 
 void BaseLevelExtrapolator::modify(
     double &currentValue,
@@ -70,8 +70,8 @@ SlopeExtrapolator::SlopeExtrapolator(double slopeRatio)
 void SlopeExtrapolator::setSlopeRatio(double r)
 { m_slopeRatio = r; }
 
-int SlopeExtrapolator::radius(double peak) const
-{ return static_cast<int>(peak / m_slopeRatio); }
+double SlopeExtrapolator::radius(double peak) const
+{ return peak / m_slopeRatio; }
 
 void SlopeExtrapolator::modify(
     double &currentValue,
@@ -97,8 +97,8 @@ FixedRadiusExtrapolator::FixedRadiusExtrapolator(int fixedRadius)
 void FixedRadiusExtrapolator::setFixedRadius(int r)
 { m_fixedRadius = r; }
 
-int FixedRadiusExtrapolator::radius(double /* peak */) const
-{ return static_cast<int>(m_fixedRadius); }
+double FixedRadiusExtrapolator::radius(double /* peak */) const
+{ return m_fixedRadius; }
 
 void FixedRadiusExtrapolator::modify(
     double &currentValue,

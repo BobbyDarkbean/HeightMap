@@ -16,7 +16,7 @@ public:
     double baseLevel() const;
     void setBaseLevel(double);
 
-    virtual int radius(double peak) const = 0;
+    virtual double radius(double peak) const = 0;
     virtual void modify(double &currentValue,
                         double peak,
                         double vectorLength) = 0;
@@ -38,7 +38,7 @@ class HM_SHARED SimpleExtrapolator
 public:
     SimpleExtrapolator();
 
-    int radius(double peak) const;
+    double radius(double peak) const;
     void modify(double &currentValue,
                 double peak,
                 double vectorLength);
@@ -53,7 +53,7 @@ class HM_SHARED BaseLevelExtrapolator
 public:
     BaseLevelExtrapolator();
 
-    int radius(double peak) const;
+    double radius(double peak) const;
     void modify(double &currentValue,
                 double peak,
                 double vectorLength);
@@ -71,7 +71,7 @@ public:
     double slopeRatio() const;
     void setSlopeRatio(double);
 
-    int radius(double peak) const;
+    double radius(double peak) const;
     void modify(double &currentValue,
                 double peak,
                 double vectorLength);
@@ -96,7 +96,7 @@ public:
     int fixedRadius() const;
     void setFixedRadius(int);
 
-    int radius(double peak) const;
+    double radius(double peak) const;
     void modify(double &currentValue,
                 double peak,
                 double vectorLength);
