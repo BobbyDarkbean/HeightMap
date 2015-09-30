@@ -30,6 +30,7 @@ public:
         AbstractExtrapolationWidget *);
 
     void acceptExtrapolationSettings();
+    void retrieveExtrapolationSettings();
 
     ~ExtrapolationOptionsWidget();
 

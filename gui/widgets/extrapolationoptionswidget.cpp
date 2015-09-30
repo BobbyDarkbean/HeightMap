@@ -27,6 +27,7 @@ struct ExtrapolationOptionsWidgetImplementation
     QGroupBox *grpExtrapolOpts;
     QStackedWidget *stkExtrapolOpts;
 
+    QMap<int, AbstractExtrapolationWidget *> mapExtrapolWgts;
     QMap<QString, int> mapExtrapolNames;
 
 private:
@@ -40,6 +41,7 @@ ExtrapolationOptionsWidgetImplementation::ExtrapolationOptionsWidgetImplementati
       cmbExtrapolMethod(new QComboBox),
       grpExtrapolOpts(new QGroupBox),
       stkExtrapolOpts(new QStackedWidget),
+      mapExtrapolWgts(),
       mapExtrapolNames() { }
 
 void ExtrapolationOptionsWidgetImplementation::adjustControls()
@@ -123,6 +125,7 @@ void ExtrapolationOptionsWidget::addExtrapolationWidget(
     AbstractExtrapolationWidget *w)
 {
     int id = m->stkExtrapolOpts->addWidget(w);
+    m->mapExtrapolWgts.insert(id, w);
     m->mapExtrapolNames.insert(name, id);
     m->cmbExtrapolMethod->addItem(description, name);
 }
@@ -132,6 +135,13 @@ void ExtrapolationOptionsWidget::acceptExtrapolationSettings()
     if (AbstractExtrapolationWidget *w =
             qobject_cast<AbstractExtrapolationWidget *>(m->stkExtrapolOpts->currentWidget())) {
         w->acceptSettings();
+    }
+}
+
+void ExtrapolationOptionsWidget::retrieveExtrapolationSettings()
+{
+    for (auto i = m->mapExtrapolWgts.begin(); i != m->mapExtrapolWgts.end(); ++i) {
+        i.value()->refreshData();
     }
 }
 
