@@ -2,6 +2,7 @@
 #include <QFrame>
 #include <QBoxLayout>
 #include "../preferences.h"
+#include "../preferencescontroller.h"
 #include "../widgets/extrapolationoptionswidget.h"
 
 #include "extrapolationoptionsdialog.h"
@@ -18,7 +19,6 @@ struct ExtrapolationOptionsDialogImplementation
     void adjustLayout(QDialog *master);
 
     void adjustPreferences();
-    void acquirePreferences();
 
     ~ExtrapolationOptionsDialogImplementation();
 
@@ -27,7 +27,7 @@ struct ExtrapolationOptionsDialogImplementation
     QPushButton *btnOk;
     QPushButton *btnCancel;
 
-    Preferences prefs;
+    PreferencesController *ctrl;
 
 private:
     DISABLE_COPY(ExtrapolationOptionsDialogImplementation)
@@ -39,7 +39,7 @@ ExtrapolationOptionsDialogImplementation::ExtrapolationOptionsDialogImplementati
     : wgtExtrapolOpt(new ExtrapolationOptionsWidget),
       btnOk(new QPushButton),
       btnCancel(new QPushButton),
-      prefs() { }
+      ctrl(nullptr) { }
 
 void ExtrapolationOptionsDialogImplementation::adjustControls()
 {
@@ -67,12 +67,11 @@ void ExtrapolationOptionsDialogImplementation::adjustLayout(QDialog *master)
 
 void ExtrapolationOptionsDialogImplementation::adjustPreferences()
 {
+    Preferences prefs = *ctrl->preferences();
     wgtExtrapolOpt->setExtrapolatorName(prefs.extrapolatorName());
-}
 
-void ExtrapolationOptionsDialogImplementation::acquirePreferences()
-{
-    prefs.setExtrapolatorName(wgtExtrapolOpt->extrapolatorName());
+    ExtrapolationOptionsDialog::connect(
+                wgtExtrapolOpt, SIGNAL(extrapolatorNameChanged(QString)), ctrl, SLOT(setExtrapolatorName(QString)));
 }
 
 ExtrapolationOptionsDialogImplementation::~ExtrapolationOptionsDialogImplementation() { }
@@ -87,12 +86,12 @@ ExtrapolationOptionsDialog::ExtrapolationOptionsDialog(QWidget *parent)
 }
 
 
-const Preferences &ExtrapolationOptionsDialog::preferences() const
-{ return m->prefs; }
+PreferencesController *ExtrapolationOptionsDialog::preferencesController() const
+{ return m->ctrl; }
 
-void ExtrapolationOptionsDialog::setPreferences(const Preferences &prefs)
+void ExtrapolationOptionsDialog::setPreferencesController(PreferencesController *ctrl)
 {
-    m->prefs = prefs;
+    m->ctrl = ctrl;
     m->adjustPreferences();
 }
 
@@ -116,7 +115,6 @@ void ExtrapolationOptionsDialog::done(int r)
 {
     if (r == Accepted) {
         m->wgtExtrapolOpt->acceptExtrapolationSettings();
-        m->acquirePreferences();
     }
 
     QDialog::done(r);

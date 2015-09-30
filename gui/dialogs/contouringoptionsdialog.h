@@ -9,7 +9,7 @@
 namespace HeightMap {
 
 
-class Preferences;
+class PreferencesController;
 struct ContouringOptionsDialogImplementation;
 class ContouringOptionsDialog : public QDialog
 {
@@ -25,13 +25,10 @@ public:
     int step() const;
     void setStep(int);
 
-    const Preferences &preferences() const;
-    void setPreferences(const Preferences &);
+    PreferencesController *preferencesController() const;
+    void setPreferencesController(PreferencesController *);
 
     ~ContouringOptionsDialog();
-
-public slots:
-    void done(int);
 
 private:
     DISABLE_COPY(ContouringOptionsDialog)

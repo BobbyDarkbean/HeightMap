@@ -2,6 +2,7 @@
 #include <QFrame>
 #include <QBoxLayout>
 #include "../preferences.h"
+#include "../preferencescontroller.h"
 #include "../widgets/peakoptionswidget.h"
 
 #include "generatingoptionsdialog.h"
@@ -18,7 +19,6 @@ struct GeneratingOptionsDialogImplementation
     void adjustLayout(QDialog *master);
 
     void adjustPreferences();
-    void acquirePreferences();
 
     ~GeneratingOptionsDialogImplementation();
 
@@ -27,7 +27,7 @@ struct GeneratingOptionsDialogImplementation
     QPushButton *btnOk;
     QPushButton *btnCancel;
 
-    Preferences prefs;
+    PreferencesController *ctrl;
 
 private:
     DISABLE_COPY(GeneratingOptionsDialogImplementation)
@@ -39,7 +39,7 @@ GeneratingOptionsDialogImplementation::GeneratingOptionsDialogImplementation()
     : wgtPeakOpt(new PeakOptionsWidget),
       btnOk(new QPushButton),
       btnCancel(new QPushButton),
-      prefs() { }
+      ctrl(nullptr) { }
 
 void GeneratingOptionsDialogImplementation::adjustControls()
 {
@@ -67,15 +67,13 @@ void GeneratingOptionsDialogImplementation::adjustLayout(QDialog *master)
 
 void GeneratingOptionsDialogImplementation::adjustPreferences()
 {
+    Preferences prefs = *ctrl->preferences();
     wgtPeakOpt->setRange(prefs.minPeak(), prefs.maxPeak());
     wgtPeakOpt->setPeakCount(prefs.peakCount());
-}
 
-void GeneratingOptionsDialogImplementation::acquirePreferences()
-{
-    prefs.setMinPeak(wgtPeakOpt->minPeak());
-    prefs.setMaxPeak(wgtPeakOpt->maxPeak());
-    prefs.setPeakCount(wgtPeakOpt->peakCount());
+    GeneratingOptionsDialog::connect(wgtPeakOpt, SIGNAL(minPeakChanged(int)), ctrl, SLOT(setMinPeak(int)));
+    GeneratingOptionsDialog::connect(wgtPeakOpt, SIGNAL(maxPeakChanged(int)), ctrl, SLOT(setMaxPeak(int)));
+    GeneratingOptionsDialog::connect(wgtPeakOpt, SIGNAL(peakCountChanged(int)), ctrl, SLOT(setPeakCount(int)));
 }
 
 GeneratingOptionsDialogImplementation::~GeneratingOptionsDialogImplementation() { }
@@ -105,12 +103,12 @@ unsigned int GeneratingOptionsDialog::peakCount() const
 void GeneratingOptionsDialog::setPeakCount(unsigned int value)
 { m->wgtPeakOpt->setPeakCount(value); }
 
-const Preferences &GeneratingOptionsDialog::preferences() const
-{ return m->prefs; }
+PreferencesController *GeneratingOptionsDialog::preferencesController() const
+{ return m->ctrl; }
 
-void GeneratingOptionsDialog::setPreferences(const Preferences &prefs)
+void GeneratingOptionsDialog::setPreferencesController(PreferencesController *ctrl)
 {
-    m->prefs = prefs;
+    m->ctrl = ctrl;
     m->adjustPreferences();
 }
 
@@ -118,15 +116,6 @@ void GeneratingOptionsDialog::setPreferences(const Preferences &prefs)
 GeneratingOptionsDialog::~GeneratingOptionsDialog()
 {
     delete m;
-}
-
-
-void GeneratingOptionsDialog::done(int r)
-{
-    if (r == Accepted)
-        m->acquirePreferences();
-
-    QDialog::done(r);
 }
 
 

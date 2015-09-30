@@ -2,6 +2,7 @@
 #include <QFrame>
 #include <QBoxLayout>
 #include "../preferences.h"
+#include "../preferencescontroller.h"
 #include "../widgets/contouringoptionswidget.h"
 
 #include "contouringoptionsdialog.h"
@@ -18,7 +19,6 @@ struct ContouringOptionsDialogImplementation
     void adjustLayout(QDialog *master);
 
     void adjustPreferences();
-    void acquirePreferences();
 
     ~ContouringOptionsDialogImplementation();
 
@@ -27,7 +27,7 @@ struct ContouringOptionsDialogImplementation
     QPushButton *btnOk;
     QPushButton *btnCancel;
 
-    Preferences prefs;
+    PreferencesController *ctrl;
 
 private:
     DISABLE_COPY(ContouringOptionsDialogImplementation)
@@ -39,7 +39,7 @@ ContouringOptionsDialogImplementation::ContouringOptionsDialogImplementation()
     : wgtContourOpt(new ContouringOptionsWidget),
       btnOk(new QPushButton),
       btnCancel(new QPushButton),
-      prefs() { }
+      ctrl(nullptr) { }
 
 void ContouringOptionsDialogImplementation::adjustControls()
 {
@@ -67,15 +67,13 @@ void ContouringOptionsDialogImplementation::adjustLayout(QDialog *master)
 
 void ContouringOptionsDialogImplementation::adjustPreferences()
 {
+    Preferences prefs = *ctrl->preferences();
     wgtContourOpt->setLevelRange(prefs.minContouringLevel(), prefs.maxContouringLevel());
     wgtContourOpt->setStep(prefs.contouringStep());
-}
 
-void ContouringOptionsDialogImplementation::acquirePreferences()
-{
-    prefs.setMinContouringLevel(wgtContourOpt->minLevel());
-    prefs.setMaxContouringLevel(wgtContourOpt->maxLevel());
-    prefs.setContouringStep(wgtContourOpt->step());
+    ContouringOptionsDialog::connect(wgtContourOpt, SIGNAL(minLevelChanged(int)), ctrl, SLOT(setMinContouringLevel(int)));
+    ContouringOptionsDialog::connect(wgtContourOpt, SIGNAL(maxLevelChanged(int)), ctrl, SLOT(setMaxContouringLevel(int)));
+    ContouringOptionsDialog::connect(wgtContourOpt, SIGNAL(stepChanged(int)), ctrl, SLOT(setContouringStep(int)));
 }
 
 ContouringOptionsDialogImplementation::~ContouringOptionsDialogImplementation() { }
@@ -105,12 +103,12 @@ int ContouringOptionsDialog::step() const
 void ContouringOptionsDialog::setStep(int value)
 { m->wgtContourOpt->setStep(value); }
 
-const Preferences &ContouringOptionsDialog::preferences() const
-{ return m->prefs; }
+PreferencesController *ContouringOptionsDialog::preferencesController() const
+{ return m->ctrl; }
 
-void ContouringOptionsDialog::setPreferences(const Preferences &prefs)
+void ContouringOptionsDialog::setPreferencesController(PreferencesController *ctrl)
 {
-    m->prefs = prefs;
+    m->ctrl = ctrl;
     m->adjustPreferences();
 }
 
@@ -118,15 +116,6 @@ void ContouringOptionsDialog::setPreferences(const Preferences &prefs)
 ContouringOptionsDialog::~ContouringOptionsDialog()
 {
     delete m;
-}
-
-
-void ContouringOptionsDialog::done(int r)
-{
-    if (r == Accepted)
-        m->acquirePreferences();
-
-    QDialog::done(r);
 }
 
 

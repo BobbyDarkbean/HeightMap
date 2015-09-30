@@ -9,7 +9,7 @@
 namespace HeightMap {
 
 
-class Preferences;
+class PreferencesController;
 struct GeneratingOptionsDialogImplementation;
 class GeneratingOptionsDialog : public QDialog
 {
@@ -25,13 +25,10 @@ public:
     unsigned int peakCount() const;
     void setPeakCount(unsigned int);
 
-    const Preferences &preferences() const;
-    void setPreferences(const Preferences &);
+    PreferencesController *preferencesController() const;
+    void setPreferencesController(PreferencesController *);
 
     ~GeneratingOptionsDialog();
-
-public slots:
-    void done(int);
 
 private:
     DISABLE_COPY(GeneratingOptionsDialog)
