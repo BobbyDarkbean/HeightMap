@@ -34,7 +34,8 @@ set (HMGUI_HDR auxiliary/colormap.h
                heightmapwindow.h
                mappingthread.h
                mappingworker.h
-               preferences.h)
+               preferences.h
+               preferencescontroller.h)
 set (HMGUI_SRC dialogs/contouringoptionsdialog.cpp
                dialogs/extrapolationoptionsdialog.cpp
                dialogs/generatingoptionsdialog.cpp
@@ -59,7 +60,8 @@ set (HMGUI_SRC dialogs/contouringoptionsdialog.cpp
                main.cpp
                mappingthread.cpp
                mappingworker.cpp
-               preferences.cpp)
+               preferences.cpp
+               preferencescontroller.cpp)
 
 set (CMAKE_INCLUDE_CURRENT_DIR ON)
 set (CMAKE_AUTOMOC ON)
