@@ -14,7 +14,7 @@ struct ContouringOptionsWidgetImplementation
 {
     ContouringOptionsWidgetImplementation();
 
-    void adjustControls();
+    void adjustControls(ContouringOptionsWidget *master);
     void adjustLayout(QWidget *master);
 
     ~ContouringOptionsWidgetImplementation();
@@ -42,7 +42,7 @@ ContouringOptionsWidgetImplementation::ContouringOptionsWidgetImplementation()
       lblStep(new QLabel),
       spnStep(new QSpinBox) { }
 
-void ContouringOptionsWidgetImplementation::adjustControls()
+void ContouringOptionsWidgetImplementation::adjustControls(ContouringOptionsWidget *master)
 {
     // Labels
     lblMinLevel->setText(ContouringOptionsWidget::tr("Min. level"));
@@ -72,6 +72,10 @@ void ContouringOptionsWidgetImplementation::adjustControls()
 
     // Group-box
     grpLevelOpts->setTitle(ContouringOptionsWidget::tr("Levels"));
+
+    QObject::connect(spnMinLevel, SIGNAL(valueChanged(int)), master, SIGNAL(minLevelChanged(int)));
+    QObject::connect(spnMaxLevel, SIGNAL(valueChanged(int)), master, SIGNAL(maxLevelChanged(int)));
+    QObject::connect(spnStep, SIGNAL(valueChanged(int)), master, SIGNAL(stepChanged(int)));
 }
 
 void ContouringOptionsWidgetImplementation::adjustLayout(QWidget *master)
@@ -100,7 +104,7 @@ ContouringOptionsWidget::ContouringOptionsWidget(QWidget *parent)
     : QWidget(parent),
       m(new ContouringOptionsWidgetImplementation)
 {
-    m->adjustControls();
+    m->adjustControls(this);
     m->adjustLayout(this);
 }
 

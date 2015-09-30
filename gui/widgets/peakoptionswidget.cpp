@@ -15,7 +15,7 @@ struct PeakOptionsWidgetImplementation
 {
     PeakOptionsWidgetImplementation();
 
-    void adjustControls();
+    void adjustControls(PeakOptionsWidget *master);
     void adjustLayout(QWidget *master);
 
     ~PeakOptionsWidgetImplementation();
@@ -49,7 +49,7 @@ PeakOptionsWidgetImplementation::PeakOptionsWidgetImplementation()
       sldPeakCount(new QSlider),
       spnPeakCount(new QSpinBox) { }
 
-void PeakOptionsWidgetImplementation::adjustControls()
+void PeakOptionsWidgetImplementation::adjustControls(PeakOptionsWidget *master)
 {
     // Labels
     lblMinPeak->setText(PeakOptionsWidget::tr("Min. peak:"));
@@ -104,6 +104,10 @@ void PeakOptionsWidgetImplementation::adjustControls()
     QObject::connect(sldMinPeak, SIGNAL(valueChanged(int)), spnMinPeak, SLOT(setValue(int)));
     QObject::connect(sldMaxPeak, SIGNAL(valueChanged(int)), spnMaxPeak, SLOT(setValue(int)));
     QObject::connect(sldPeakCount, SIGNAL(valueChanged(int)), spnPeakCount, SLOT(setValue(int)));
+
+    QObject::connect(spnMinPeak, SIGNAL(valueChanged(int)), master, SIGNAL(minPeakChanged(int)));
+    QObject::connect(spnMaxPeak, SIGNAL(valueChanged(int)), master, SIGNAL(maxPeakChanged(int)));
+    QObject::connect(spnPeakCount, SIGNAL(valueChanged(int)), master, SIGNAL(peakCountChanged(int)));
 }
 
 void PeakOptionsWidgetImplementation::adjustLayout(QWidget *master)
@@ -133,7 +137,7 @@ PeakOptionsWidget::PeakOptionsWidget(QWidget *parent)
     : QWidget(parent),
       m(new PeakOptionsWidgetImplementation)
 {
-    m->adjustControls();
+    m->adjustControls(this);
     m->adjustLayout(this);
 }
 

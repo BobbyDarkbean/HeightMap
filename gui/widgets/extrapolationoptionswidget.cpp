@@ -100,25 +100,18 @@ QSize ExtrapolationOptionsWidget::sizeHint() const
 
 
 QString ExtrapolationOptionsWidget::extrapolatorName() const
-{
-    int index = m->cmbExtrapolMethod->currentIndex();
-    int id = m->cmbExtrapolMethod->itemData(index).toInt();
-    if (!(0 <= id && id < m->mapExtrapolNames.size()))
-        return QString();
-    return m->mapExtrapolNames.key(id, QString());
-}
+{ return m->cmbExtrapolMethod->currentData().toString(); }
 
 void ExtrapolationOptionsWidget::setExtrapolatorName(const QString &name)
 {
-    int index = m->mapExtrapolNames.value(name, -1);
-    if (0 <= index && index < m->cmbExtrapolMethod->count())
+    int index = m->cmbExtrapolMethod->findData(name);
+    if (index != -1)
         m->cmbExtrapolMethod->setCurrentIndex(index);
 }
 
 QWidget *ExtrapolationOptionsWidget::extrapolationWidget(const QString &name) const
 {
-    int index = m->mapExtrapolNames.value(name, -1);
-    int id = m->cmbExtrapolMethod->itemData(index).toInt();
+    int id = m->mapExtrapolNames.value(name, -1);
     if (!(0 <= id && id < m->stkExtrapolOpts->count()))
         return nullptr;
     return m->stkExtrapolOpts->widget(id);
@@ -131,7 +124,7 @@ void ExtrapolationOptionsWidget::addExtrapolationWidget(
 {
     int id = m->stkExtrapolOpts->addWidget(w);
     m->mapExtrapolNames.insert(name, id);
-    m->cmbExtrapolMethod->addItem(description, id);
+    m->cmbExtrapolMethod->addItem(description, name);
 }
 
 void ExtrapolationOptionsWidget::acceptExtrapolationSettings()
@@ -151,9 +144,13 @@ ExtrapolationOptionsWidget::~ExtrapolationOptionsWidget()
 
 void ExtrapolationOptionsWidget::setExtrapolationWidget(int index)
 {
-    int id = m->cmbExtrapolMethod->itemData(index).toInt();
-    if (0 <= id && id < m->stkExtrapolOpts->count())
+    QString name = m->cmbExtrapolMethod->itemData(index).toString();
+    int id = m->mapExtrapolNames.value(name, -1);
+    if (0 <= id && id < m->stkExtrapolOpts->count()
+            && id != m->stkExtrapolOpts->currentIndex()) {
         m->stkExtrapolOpts->setCurrentIndex(id);
+        emit extrapolatorNameChanged(extrapolatorName());
+    }
 }
 
 

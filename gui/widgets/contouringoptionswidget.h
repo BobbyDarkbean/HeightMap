@@ -26,6 +26,11 @@ public:
 
     ~ContouringOptionsWidget();
 
+signals:
+    void minLevelChanged(int);
+    void maxLevelChanged(int);
+    void stepChanged(int);
+
 private:
     DISABLE_COPY(ContouringOptionsWidget)
     DISABLE_MOVE(ContouringOptionsWidget)

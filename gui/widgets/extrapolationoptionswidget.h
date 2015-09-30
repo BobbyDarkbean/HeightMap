@@ -33,6 +33,9 @@ public:
 
     ~ExtrapolationOptionsWidget();
 
+signals:
+    void extrapolatorNameChanged(QString);
+
 private slots:
     void setExtrapolationWidget(int);
 

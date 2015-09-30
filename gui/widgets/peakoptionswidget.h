@@ -28,6 +28,11 @@ public:
 
     ~PeakOptionsWidget();
 
+signals:
+    void minPeakChanged(int);
+    void maxPeakChanged(int);
+    void peakCountChanged(int);
+
 private:
     DISABLE_COPY(PeakOptionsWidget)
     DISABLE_MOVE(PeakOptionsWidget)
