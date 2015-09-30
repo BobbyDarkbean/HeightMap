@@ -24,6 +24,7 @@ struct BaseLevelExtrapolationWidgetImplementation
     QDoubleSpinBox *spnBaseLevel;
 
     double bl;
+    bool infl;
 
     BaseLevelExtrapolator *x;
 
@@ -37,6 +38,7 @@ BaseLevelExtrapolationWidgetImplementation::BaseLevelExtrapolationWidgetImplemen
     : lblBaseLevel(new QLabel),
       spnBaseLevel(new QDoubleSpinBox),
       bl(static_cast<double>(Preferences::MinLevel)),
+      infl(false),
       x(nullptr) { }
 
 void BaseLevelExtrapolationWidgetImplementation::adjustControls()
@@ -97,6 +99,12 @@ void BaseLevelExtrapolationWidget::bindExtrapolator(BaseLevelExtrapolator *blx)
     m->adjustValues();
 }
 
+bool BaseLevelExtrapolationWidget::directInfluence() const
+{ return m->infl; }
+
+void BaseLevelExtrapolationWidget::setDirectInfluence(bool infl)
+{ m->infl = infl; }
+
 void BaseLevelExtrapolationWidget::acceptSettings()
 { m->x->setBaseLevel(m->bl); }
 
@@ -108,7 +116,11 @@ BaseLevelExtrapolationWidget::~BaseLevelExtrapolationWidget()
 
 
 void BaseLevelExtrapolationWidget::setBaseLevel(double bl)
-{ m->bl = bl; }
+{
+    m->bl = bl;
+    if (m->infl)
+        m->x->setBaseLevel(m->bl);
+}
 
 
 } // namespace HeightMap

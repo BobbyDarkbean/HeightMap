@@ -20,6 +20,9 @@ public:
     Extrapolator *extrapolator() const;
     void bindExtrapolator(FixedRadiusExtrapolator *);
 
+    bool directInfluence() const;
+    void setDirectInfluence(bool);
+
     void acceptSettings();
 
     ~FixedRadiusExtrapolationWidget();

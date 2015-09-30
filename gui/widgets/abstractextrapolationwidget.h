@@ -18,6 +18,10 @@ public:
     explicit AbstractExtrapolationWidget(QWidget *parent = 0);
 
     virtual Extrapolator *extrapolator() const = 0;
+
+    virtual bool directInfluence() const = 0;
+    virtual void setDirectInfluence(bool) = 0;
+
     virtual void acceptSettings() = 0;
 
     ~AbstractExtrapolationWidget();
