@@ -4,6 +4,7 @@
 #include <QAction>
 #include <QMenuBar>
 #include <QStatusBar>
+#include <QDockWidget>
 #include <QBoxLayout>
 #include <QImage>
 #include <QPixmap>
@@ -14,7 +15,12 @@
 #include "mappingthread.h"
 #include "mappingworker.h"
 #include "preferences.h"
+#include "preferencescontroller.h"
 #include "terrain.h"
+#include "widgets/abstractextrapolationwidget.h"
+#include "widgets/peakoptionswidget.h"
+#include "widgets/extrapolationoptionswidget.h"
+#include "widgets/contouringoptionswidget.h"
 #include "dialogs/terrainoptionsdialog.h"
 #include "dialogs/generatingoptionsdialog.h"
 #include "dialogs/extrapolationoptionsdialog.h"
@@ -44,6 +50,8 @@ struct HeightMapWindowImplementation
     HeightMapWindowImplementation();
 
     void createActions(HeightMapWindow *, MappingWorker *);
+    void createWidgets();
+    void createDocks(HeightMapWindow *master);
 
     void provideMappingData(MappingWorker *);
     void provideExtrapolationWidgets(ExtrapolationOptionsDialog *);
@@ -55,6 +63,14 @@ struct HeightMapWindowImplementation
     ~HeightMapWindowImplementation();
 
     QLabel *hmImgLabel;
+
+    PeakOptionsWidget *wgtPeakGenerating;
+    ExtrapolationOptionsWidget *wgtExtrapolation;
+    ContouringOptionsWidget *wgtContouring;
+
+    QDockWidget *dckPeakGenerating;
+    QDockWidget *dckExtrapolation;
+    QDockWidget *dckContouring;
 
     QLabel *stateLabel;
     QLabel *lvlsLabel;
@@ -197,6 +213,66 @@ void HeightMapWindowImplementation::createActions(HeightMapWindow *master, Mappi
     mnuView->addAction(actViewModeLandscape);
     mnuView->addAction(actViewModeIsobars);
     mnuView->addAction(actViewModeHybrid);
+
+    QMenu *mnuWindows = master->menuBar()->addMenu(HeightMapWindow::tr("&Windows"));
+    mnuWindows->addAction(dckPeakGenerating->toggleViewAction());
+    mnuWindows->addAction(dckExtrapolation->toggleViewAction());
+    mnuWindows->addAction(dckContouring->toggleViewAction());
+}
+
+void HeightMapWindowImplementation::createWidgets()
+{
+    Preferences prefs = hmApp->preferences();
+    PreferencesController *ctrl = hmApp->preferencesController();
+
+    wgtPeakGenerating = new PeakOptionsWidget;
+    wgtPeakGenerating->setRange(prefs.minPeak(), prefs.maxPeak());
+    wgtPeakGenerating->setPeakCount(prefs.peakCount());
+
+    wgtExtrapolation = new ExtrapolationOptionsWidget;
+
+    QStringList xNames = hmApp->extrapolatorKeys();
+    for (QStringList::ConstIterator i = xNames.begin(); i != xNames.end(); ++i) {
+        if (AbstractExtrapolationWidget *xWidget = hmApp->createExtrapolationWidget(*i)) {
+            xWidget->setDirectInfluence(true);
+            wgtExtrapolation->addExtrapolationWidget(*i, hmApp->extrapolationDescription(*i), xWidget);
+        }
+    }
+
+    wgtExtrapolation->setExtrapolatorName(prefs.extrapolatorName());
+
+    wgtContouring = new ContouringOptionsWidget;
+    wgtContouring->setLevelRange(prefs.minContouringLevel(), prefs.maxContouringLevel());
+    wgtContouring->setStep(prefs.contouringStep());
+
+    HeightMapWindow::connect(wgtPeakGenerating, SIGNAL(minPeakChanged(int)), ctrl, SLOT(setMinPeak(int)));
+    HeightMapWindow::connect(wgtPeakGenerating, SIGNAL(maxPeakChanged(int)), ctrl, SLOT(setMaxPeak(int)));
+    HeightMapWindow::connect(wgtPeakGenerating, SIGNAL(peakCountChanged(int)), ctrl, SLOT(setPeakCount(int)));
+
+    HeightMapWindow::connect(
+                wgtExtrapolation, SIGNAL(extrapolatorNameChanged(QString)), ctrl, SLOT(setExtrapolatorName(QString)));
+
+    HeightMapWindow::connect(wgtContouring, SIGNAL(minLevelChanged(int)), ctrl, SLOT(setMinContouringLevel(int)));
+    HeightMapWindow::connect(wgtContouring, SIGNAL(maxLevelChanged(int)), ctrl, SLOT(setMaxContouringLevel(int)));
+    HeightMapWindow::connect(wgtContouring, SIGNAL(stepChanged(int)), ctrl, SLOT(setContouringStep(int)));
+}
+
+void HeightMapWindowImplementation::createDocks(HeightMapWindow *master)
+{
+    dckPeakGenerating = new QDockWidget(master);
+    dckPeakGenerating->setWindowTitle(HeightMapWindow::tr("Peak settings"));
+    dckPeakGenerating->setWidget(wgtPeakGenerating);
+    master->addDockWidget(Qt::LeftDockWidgetArea, dckPeakGenerating);
+
+    dckExtrapolation = new QDockWidget(master);
+    dckExtrapolation->setWindowTitle(HeightMapWindow::tr("Extrapolation settings"));
+    dckExtrapolation->setWidget(wgtExtrapolation);
+    master->addDockWidget(Qt::LeftDockWidgetArea, dckExtrapolation);
+
+    dckContouring = new QDockWidget(master);
+    dckContouring->setWindowTitle(HeightMapWindow::tr("Contouring settings"));
+    dckContouring->setWidget(wgtContouring);
+    master->addDockWidget(Qt::LeftDockWidgetArea, dckContouring);
 }
 
 void HeightMapWindowImplementation::provideMappingData(MappingWorker *worker)
@@ -279,6 +355,8 @@ HeightMapWindow::HeightMapWindow(QWidget *parent)
     m->provideMappingData(worker);
     worker->moveToThread(&m->procThread);
 
+    m->createWidgets();
+    m->createDocks(this);
     m->createActions(this, worker);
 
     m->hmImgLabel->setAlignment(Qt::AlignCenter);
@@ -306,6 +384,8 @@ HeightMapWindow::HeightMapWindow(QWidget *parent)
     statusBar()->addWidget(m->cntrsLabel, 6);
 
     m->resetStatusBar();
+
+    connect(hmApp, SIGNAL(preferencesChanged()), this, SLOT(adjustPreferences()));
 
     connect(worker, SIGNAL(processStarted()), this, SLOT(onProcessStarted()), Qt::BlockingQueuedConnection);
     connect(worker, SIGNAL(processFinished()), this, SLOT(onProcessFinished()), Qt::BlockingQueuedConnection);
@@ -395,36 +475,63 @@ void HeightMapWindow::exportPeaks()
 
 void HeightMapWindow::editPeakSettings()
 {
+    Preferences prefs(hmApp->preferences());
+
+    PreferencesController ctrl;
+    ctrl.setPreferences(&prefs);
+
     GeneratingOptionsDialog dialog(this);
     dialog.setWindowTitle(tr("Peak settings"));
-    dialog.setPreferences(hmApp->preferences());
+    dialog.setPreferencesController(&ctrl);
 
     if (dialog.exec()) {
-        hmApp->setPreferences(dialog.preferences());
+        hmApp->setPreferences(prefs);
     }
 }
 
 void HeightMapWindow::editExtrapolationSettings()
 {
+    Preferences prefs(hmApp->preferences());
+
+    PreferencesController ctrl;
+    ctrl.setPreferences(&prefs);
+
     ExtrapolationOptionsDialog dialog(this);
     m->provideExtrapolationWidgets(&dialog);
     dialog.setWindowTitle(tr("Extrapolation settings"));
-    dialog.setPreferences(hmApp->preferences());
+    dialog.setPreferencesController(&ctrl);
 
     if (dialog.exec()) {
-        hmApp->setPreferences(dialog.preferences());
+        hmApp->setPreferences(prefs);
     }
 }
 
 void HeightMapWindow::editContouringSettings()
 {
+    Preferences prefs(hmApp->preferences());
+
+    PreferencesController ctrl;
+    ctrl.setPreferences(&prefs);
+
     ContouringOptionsDialog dialog(this);
     dialog.setWindowTitle(tr("Contouring settings"));
-    dialog.setPreferences(hmApp->preferences());
+    dialog.setPreferencesController(&ctrl);
 
     if (dialog.exec()) {
-        hmApp->setPreferences(dialog.preferences());
+        hmApp->setPreferences(prefs);
     }
+}
+
+void HeightMapWindow::adjustPreferences()
+{
+    Preferences prefs(hmApp->preferences());
+
+    m->wgtPeakGenerating->setRange(prefs.minPeak(), prefs.maxPeak());
+    m->wgtPeakGenerating->setPeakCount(prefs.peakCount());
+    m->wgtExtrapolation->retrieveExtrapolationSettings();
+    m->wgtExtrapolation->setExtrapolatorName(prefs.extrapolatorName());
+    m->wgtContouring->setLevelRange(prefs.minContouringLevel(), prefs.maxContouringLevel());
+    m->wgtContouring->setStep(prefs.contouringStep());
 }
 
 void HeightMapWindow::onProcessStarted()

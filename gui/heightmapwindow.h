@@ -28,6 +28,8 @@ private slots:
     void editExtrapolationSettings();
     void editContouringSettings();
 
+    void adjustPreferences();
+
     void onProcessStarted();
     void onProcessFinished();
 
