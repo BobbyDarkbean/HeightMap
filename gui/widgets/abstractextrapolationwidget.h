@@ -22,6 +22,7 @@ public:
     virtual bool directInfluence() const = 0;
     virtual void setDirectInfluence(bool) = 0;
 
+    virtual void refreshData() = 0;
     virtual void acceptSettings() = 0;
 
     ~AbstractExtrapolationWidget();

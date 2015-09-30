@@ -117,7 +117,7 @@ Extrapolator *FixedRadiusExtrapolationWidget::extrapolator() const
 void FixedRadiusExtrapolationWidget::bindExtrapolator(FixedRadiusExtrapolator *frx)
 {
     m->x = frx;
-    m->adjustValues();
+    refreshData();
 }
 
 bool FixedRadiusExtrapolationWidget::directInfluence() const
@@ -125,6 +125,9 @@ bool FixedRadiusExtrapolationWidget::directInfluence() const
 
 void FixedRadiusExtrapolationWidget::setDirectInfluence(bool infl)
 { m->infl = infl; }
+
+void FixedRadiusExtrapolationWidget::refreshData()
+{ m->adjustValues(); }
 
 void FixedRadiusExtrapolationWidget::acceptSettings()
 {

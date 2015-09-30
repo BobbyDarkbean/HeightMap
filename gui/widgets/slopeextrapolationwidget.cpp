@@ -118,7 +118,7 @@ Extrapolator *SlopeExtrapolationWidget::extrapolator() const
 void SlopeExtrapolationWidget::bindExtrapolator(SlopeExtrapolator *sx)
 {
     m->x = sx;
-    m->adjustValues();
+    refreshData();
 }
 
 bool SlopeExtrapolationWidget::directInfluence() const
@@ -126,6 +126,9 @@ bool SlopeExtrapolationWidget::directInfluence() const
 
 void SlopeExtrapolationWidget::setDirectInfluence(bool infl)
 { m->infl = infl; }
+
+void SlopeExtrapolationWidget::refreshData()
+{ m->adjustValues(); }
 
 void SlopeExtrapolationWidget::acceptSettings()
 {

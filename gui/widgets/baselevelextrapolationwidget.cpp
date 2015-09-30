@@ -96,7 +96,7 @@ Extrapolator *BaseLevelExtrapolationWidget::extrapolator() const
 void BaseLevelExtrapolationWidget::bindExtrapolator(BaseLevelExtrapolator *blx)
 {
     m->x = blx;
-    m->adjustValues();
+    refreshData();
 }
 
 bool BaseLevelExtrapolationWidget::directInfluence() const
@@ -104,6 +104,9 @@ bool BaseLevelExtrapolationWidget::directInfluence() const
 
 void BaseLevelExtrapolationWidget::setDirectInfluence(bool infl)
 { m->infl = infl; }
+
+void BaseLevelExtrapolationWidget::refreshData()
+{ m->adjustValues(); }
 
 void BaseLevelExtrapolationWidget::acceptSettings()
 { m->x->setBaseLevel(m->bl); }

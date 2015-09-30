@@ -96,7 +96,7 @@ Extrapolator *SimpleExtrapolationWidget::extrapolator() const
 void SimpleExtrapolationWidget::bindExtrapolator(SimpleExtrapolator *sx)
 {
     m->x = sx;
-    m->adjustValues();
+    refreshData();
 }
 
 bool SimpleExtrapolationWidget::directInfluence() const
@@ -104,6 +104,9 @@ bool SimpleExtrapolationWidget::directInfluence() const
 
 void SimpleExtrapolationWidget::setDirectInfluence(bool infl)
 { m->infl = infl; }
+
+void SimpleExtrapolationWidget::refreshData()
+{ m->adjustValues(); }
 
 void SimpleExtrapolationWidget::acceptSettings()
 { m->x->setBaseLevel(m->bl); }
