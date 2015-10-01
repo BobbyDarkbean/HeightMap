@@ -319,10 +319,12 @@ void HeightMapWindowImplementation::displayHeightMapImage()
 
 void HeightMapWindowImplementation::resetImages()
 {
+    imgPeaks = QImage(terrain.width(), terrain.height(), QImage::Format_ARGB32_Premultiplied);
     imgLandscape = QImage(terrain.width(), terrain.height(), QImage::Format_ARGB32_Premultiplied);
     imgIsobars = QImage(terrain.width(), terrain.height(), QImage::Format_ARGB32_Premultiplied);
     imgHybrid = QImage(terrain.width(), terrain.height(), QImage::Format_ARGB32_Premultiplied);
 
+    imgPeaks.fill(Qt::transparent);
     imgLandscape.fill(Qt::transparent);
     imgIsobars.fill(Qt::transparent);
     imgHybrid.fill(Qt::transparent);
