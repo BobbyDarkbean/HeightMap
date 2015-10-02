@@ -209,7 +209,6 @@ void HeightMapWindowImplementation::createWidgets()
     QStringList xNames = hmApp->extrapolatorKeys();
     for (QStringList::ConstIterator i = xNames.begin(); i != xNames.end(); ++i) {
         if (AbstractExtrapolationWidget *xWidget = hmApp->createExtrapolationWidget(*i)) {
-            xWidget->setDirectInfluence(true);
             wgtExtrapolation->addExtrapolationWidget(*i, hmApp->extrapolationDescription(*i), xWidget);
         }
     }

@@ -28,7 +28,6 @@ struct SlopeExtrapolationWidgetImplementation
 
     double bl;
     double sr;
-    bool infl;
 
     SlopeExtrapolator *x;
 
@@ -45,7 +44,6 @@ SlopeExtrapolationWidgetImplementation::SlopeExtrapolationWidgetImplementation()
       spnSlope(new QDoubleSpinBox),
       bl(static_cast<double>(Preferences::MinLevel)),
       sr(1.0),
-      infl(false),
       x(nullptr) { }
 
 void SlopeExtrapolationWidgetImplementation::adjustControls()
@@ -121,12 +119,6 @@ void SlopeExtrapolationWidget::bindExtrapolator(SlopeExtrapolator *sx)
     refreshData();
 }
 
-bool SlopeExtrapolationWidget::directInfluence() const
-{ return m->infl; }
-
-void SlopeExtrapolationWidget::setDirectInfluence(bool infl)
-{ m->infl = infl; }
-
 void SlopeExtrapolationWidget::refreshData()
 { m->adjustValues(); }
 
@@ -146,15 +138,11 @@ SlopeExtrapolationWidget::~SlopeExtrapolationWidget()
 void SlopeExtrapolationWidget::setBaseLevel(double bl)
 {
     m->bl = bl;
-    if (m->infl)
-        m->x->setBaseLevel(m->bl);
 }
 
 void SlopeExtrapolationWidget::setSlopeRatio(double sr)
 {
     m->sr = sr;
-    if (m->infl)
-        m->x->setSlopeRatio(m->sr);
 }
 
 

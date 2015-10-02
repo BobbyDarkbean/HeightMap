@@ -20,9 +20,6 @@ public:
     Extrapolator *extrapolator() const;
     void bindExtrapolator(SimpleExtrapolator *);
 
-    bool directInfluence() const;
-    void setDirectInfluence(bool);
-
     void refreshData();
     void acceptSettings();
 

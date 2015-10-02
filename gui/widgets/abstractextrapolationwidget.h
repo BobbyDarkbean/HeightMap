@@ -19,9 +19,6 @@ public:
 
     virtual Extrapolator *extrapolator() const = 0;
 
-    virtual bool directInfluence() const = 0;
-    virtual void setDirectInfluence(bool) = 0;
-
     virtual void refreshData() = 0;
     virtual void acceptSettings() = 0;
 
