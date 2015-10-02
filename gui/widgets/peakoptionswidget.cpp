@@ -142,10 +142,6 @@ PeakOptionsWidget::PeakOptionsWidget(QWidget *parent)
 }
 
 
-QSize PeakOptionsWidget::sizeHint() const
-{ return QSize(540, 120); }
-
-
 int PeakOptionsWidget::minPeak() const
 { return qMin(m->spnMinPeak->value(), m->spnMaxPeak->value()); }
 

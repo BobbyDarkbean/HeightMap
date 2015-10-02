@@ -88,6 +88,12 @@ GeneratingOptionsDialog::GeneratingOptionsDialog(QWidget *parent)
 }
 
 
+QSize GeneratingOptionsDialog::sizeHint() const
+{
+    return QSize(540, 120);
+}
+
+
 int GeneratingOptionsDialog::minPeak() const
 { return m->wgtPeakOpt->minPeak(); }
 

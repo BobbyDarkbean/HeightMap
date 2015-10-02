@@ -18,8 +18,6 @@ class ExtrapolationOptionsWidget : public QWidget
 public:
     explicit ExtrapolationOptionsWidget(QWidget *parent = 0);
 
-    QSize sizeHint() const;
-
     QString extrapolatorName() const;
     void setExtrapolatorName(const QString &);
 

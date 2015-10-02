@@ -18,6 +18,8 @@ class GeneratingOptionsDialog : public QDialog
 public:
     explicit GeneratingOptionsDialog(QWidget *parent = 0);
 
+    QSize sizeHint() const;
+
     int minPeak() const;
     int maxPeak() const;
     void setRange(int minValue, int maxValue);

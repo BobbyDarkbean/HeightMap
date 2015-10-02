@@ -95,12 +95,6 @@ ExtrapolationOptionsWidget::ExtrapolationOptionsWidget(QWidget *parent)
 }
 
 
-QSize ExtrapolationOptionsWidget::sizeHint() const
-{
-    return QSize(360, 160);
-}
-
-
 QString ExtrapolationOptionsWidget::extrapolatorName() const
 { return m->cmbExtrapolMethod->currentData().toString(); }
 
