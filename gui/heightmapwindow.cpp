@@ -504,6 +504,7 @@ void HeightMapWindow::editExtrapolationSettings()
     dialog.setPreferencesController(&ctrl);
 
     if (dialog.exec()) {
+        m->wgtExtrapolation->retrieveExtrapolationSettings();
         hmApp->setPreferences(prefs);
     }
 }
@@ -530,7 +531,6 @@ void HeightMapWindow::adjustPreferences()
 
     m->wgtPeakGenerating->setRange(prefs.minPeak(), prefs.maxPeak());
     m->wgtPeakGenerating->setPeakCount(prefs.peakCount());
-    m->wgtExtrapolation->retrieveExtrapolationSettings();
     m->wgtExtrapolation->setExtrapolatorName(prefs.extrapolatorName());
     m->wgtContouring->setLevelRange(prefs.minContouringLevel(), prefs.maxContouringLevel());
     m->wgtContouring->setStep(prefs.contouringStep());
