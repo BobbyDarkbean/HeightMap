@@ -114,7 +114,7 @@ ExtrapolationOptionsDialog::~ExtrapolationOptionsDialog()
 void ExtrapolationOptionsDialog::done(int r)
 {
     if (r == Accepted) {
-        m->wgtExtrapolOpt->acceptExtrapolationSettings();
+        m->wgtExtrapolOpt->acceptCurrentExtrapolation();
     }
 
     QDialog::done(r);

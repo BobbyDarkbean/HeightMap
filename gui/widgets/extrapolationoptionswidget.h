@@ -29,6 +29,7 @@ public:
         const QString &description,
         AbstractExtrapolationWidget *);
 
+    void acceptCurrentExtrapolation();
     void acceptExtrapolationSettings();
     void retrieveExtrapolationSettings();
 

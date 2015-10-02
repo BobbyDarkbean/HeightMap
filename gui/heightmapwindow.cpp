@@ -410,6 +410,8 @@ void HeightMapWindow::editPeakSettings()
 
 void HeightMapWindow::editExtrapolationSettings()
 {
+    m->wgtExtrapolation->acceptExtrapolationSettings();
+
     Preferences prefs(hmApp->preferences());
 
     PreferencesController ctrl;

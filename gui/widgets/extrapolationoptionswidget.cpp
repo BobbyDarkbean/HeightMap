@@ -130,11 +130,18 @@ void ExtrapolationOptionsWidget::addExtrapolationWidget(
     m->cmbExtrapolMethod->addItem(description, name);
 }
 
+void ExtrapolationOptionsWidget::acceptCurrentExtrapolation()
+{
+    int id = m->mapExtrapolNames.value(extrapolatorName(), -1);
+    if (AbstractExtrapolationWidget *w = m->mapExtrapolWgts.value(id, nullptr)) {
+        w->acceptSettings();
+    }
+}
+
 void ExtrapolationOptionsWidget::acceptExtrapolationSettings()
 {
-    if (AbstractExtrapolationWidget *w =
-            qobject_cast<AbstractExtrapolationWidget *>(m->stkExtrapolOpts->currentWidget())) {
-        w->acceptSettings();
+    for (auto i = m->mapExtrapolWgts.begin(); i != m->mapExtrapolWgts.end(); ++i) {
+        i.value()->acceptSettings();
     }
 }
 
