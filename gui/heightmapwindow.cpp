@@ -276,7 +276,10 @@ void HeightMapWindowImplementation::resetStatusBar()
     cntrsLabel->setText(QString());
 }
 
-HeightMapWindowImplementation::~HeightMapWindowImplementation() { }
+HeightMapWindowImplementation::~HeightMapWindowImplementation()
+{
+    wgtExtrapolation->acceptExtrapolationSettings();
+}
 
 
 HeightMapWindow::HeightMapWindow(QWidget *parent)
@@ -321,6 +324,7 @@ HeightMapWindow::HeightMapWindow(QWidget *parent)
     connect(logic, &HeightMapLogic::peakGeneratingStarted,      this, &HeightMapWindow::onPeakGeneratingStarted);
     connect(logic, &HeightMapLogic::peakGeneratingFinished,     this, &HeightMapWindow::onPeakGeneratingFinished);
     connect(logic, &HeightMapLogic::peakExtrapolationStarted,   this, &HeightMapWindow::onPeakExtrapolationStarted);
+    connect(logic, &HeightMapLogic::peakExtrapolationAcquiring, this, &HeightMapWindow::onPeakExtrapolationAcquiring);
     connect(logic, &HeightMapLogic::peakExtrapolated,           this, &HeightMapWindow::onPeakExtrapolated);
     connect(logic, &HeightMapLogic::peakExtrapolationFinished,  this, &HeightMapWindow::onPeakExtrapolationFinished);
     connect(logic, &HeightMapLogic::contouringStarted,          this, &HeightMapWindow::onContouringStarted);
@@ -498,6 +502,11 @@ void HeightMapWindow::onPeakGeneratingFinished()
 void HeightMapWindow::onPeakExtrapolationStarted()
 {
     m->procLabel->setText("Extrapolating peaks...");
+}
+
+void HeightMapWindow::onPeakExtrapolationAcquiring()
+{
+    m->wgtExtrapolation->acceptExtrapolationSettings();
 }
 
 void HeightMapWindow::onPeakExtrapolated(QPoint, double)
