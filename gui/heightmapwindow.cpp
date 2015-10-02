@@ -50,7 +50,7 @@ struct HeightMapWindowImplementation
 
     ~HeightMapWindowImplementation();
 
-    QLabel *hmImgLabel;
+    QLabel *lblHmImg;
 
     PeakOptionsWidget *wgtPeakGenerating;
     ExtrapolationOptionsWidget *wgtExtrapolation;
@@ -60,13 +60,13 @@ struct HeightMapWindowImplementation
     QDockWidget *dckExtrapolation;
     QDockWidget *dckContouring;
 
-    QLabel *stateLabel;
-    QLabel *lvlsLabel;
-    QLabel *procLabel;
-    QProgressBar *procBar;
-    QLabel *pkLabel;
-    QLabel *lsSizeLabel;
-    QLabel *cntrsLabel;
+    QLabel *lblState;
+    QLabel *lblLandscape;
+    QLabel *lblLevels;
+    QLabel *lblProcess;
+    QProgressBar *prgProcess;
+    QLabel *lblPeaks;
+    QLabel *lblIsobars;
 
     HeightMapViewMode hmvm;
 
@@ -79,14 +79,20 @@ private:
 
 
 HeightMapWindowImplementation::HeightMapWindowImplementation()
-    : hmImgLabel(new QLabel),
-      stateLabel(new QLabel),
-      lvlsLabel(new QLabel),
-      procLabel(new QLabel),
-      procBar(new QProgressBar),
-      pkLabel(new QLabel),
-      lsSizeLabel(new QLabel),
-      cntrsLabel(new QLabel),
+    : lblHmImg(new QLabel),
+      wgtPeakGenerating(nullptr),
+      wgtExtrapolation(nullptr),
+      wgtContouring(nullptr),
+      dckPeakGenerating(nullptr),
+      dckExtrapolation(nullptr),
+      dckContouring(nullptr),
+      lblState(new QLabel),
+      lblLandscape(new QLabel),
+      lblLevels(new QLabel),
+      lblProcess(new QLabel),
+      prgProcess(new QProgressBar),
+      lblPeaks(new QLabel),
+      lblIsobars(new QLabel),
       hmvm(HMVM_Hybrid),
       processing(false) { }
 
@@ -260,20 +266,20 @@ void HeightMapWindowImplementation::provideExtrapolationWidgets(ExtrapolationOpt
 
 void HeightMapWindowImplementation::displayHeightMapImage()
 {
-    hmImgLabel->setPixmap(QPixmap::fromImage(hmApp->logic()->heightMapImage(hmvm)));
+    lblHmImg->setPixmap(QPixmap::fromImage(hmApp->logic()->heightMapImage(hmvm)));
 }
 
 void HeightMapWindowImplementation::resetStatusBar()
 {
     Terrain *terrain = hmApp->logic()->terrain();
-    lsSizeLabel->setText(QString("%1%2%3")
-                         .arg(terrain->width())
-                         .arg(QChar(0x00d7))
-                         .arg(terrain->height()));
+    lblLandscape->setText(QString("%1%2%3")
+                          .arg(terrain->width())
+                          .arg(QChar(0x00d7))
+                          .arg(terrain->height()));
 
-    lvlsLabel->setText(QString());
-    pkLabel->setText(QString());
-    cntrsLabel->setText(QString());
+    lblLevels->setText(QString());
+    lblPeaks->setText(QString());
+    lblIsobars->setText(QString());
 }
 
 HeightMapWindowImplementation::~HeightMapWindowImplementation()
@@ -290,29 +296,29 @@ HeightMapWindow::HeightMapWindow(QWidget *parent)
     m->createDocks(this);
     m->createActions(this);
 
-    m->hmImgLabel->setAlignment(Qt::AlignCenter);
+    m->lblHmImg->setAlignment(Qt::AlignCenter);
 
     QScrollArea *scrollArea = new QScrollArea(this);
     scrollArea->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     scrollArea->setWidgetResizable(true);
-    scrollArea->setWidget(m->hmImgLabel);
+    scrollArea->setWidget(m->lblHmImg);
     setCentralWidget(scrollArea);
 
     QWidget *procBarShell = new QWidget(this);
     QBoxLayout *procBarLayout = new QHBoxLayout(procBarShell);
     procBarLayout->setMargin(0);
-    procBarLayout->addWidget(m->procBar);
-    procBarShell->setMaximumHeight(m->procLabel->sizeHint().height());
+    procBarLayout->addWidget(m->prgProcess);
+    procBarShell->setMaximumHeight(m->lblProcess->sizeHint().height());
 
-    m->procBar->hide();
+    m->prgProcess->hide();
 
-    statusBar()->addWidget(m->stateLabel, 6);
-    statusBar()->addWidget(m->lsSizeLabel, 3);
-    statusBar()->addWidget(m->lvlsLabel, 3);
-    statusBar()->addWidget(m->procLabel, 8);
+    statusBar()->addWidget(m->lblState, 6);
+    statusBar()->addWidget(m->lblLandscape, 3);
+    statusBar()->addWidget(m->lblLevels, 3);
+    statusBar()->addWidget(m->lblProcess, 8);
     statusBar()->addWidget(procBarShell, 12);
-    statusBar()->addWidget(m->pkLabel, 4);
-    statusBar()->addWidget(m->cntrsLabel, 6);
+    statusBar()->addWidget(m->lblPeaks, 4);
+    statusBar()->addWidget(m->lblIsobars, 6);
 
     connect(hmApp, &HeightMapApplication::preferencesChanged,   this, &HeightMapWindow::adjustPreferences);
 
@@ -469,10 +475,10 @@ void HeightMapWindow::onProcessStarted()
 {
     Terrain *terrain = hmApp->logic()->terrain();
 
-    m->stateLabel->setText(tr("Processing..."));
-    m->procBar->setValue(0);
-    m->procBar->setMaximum(static_cast<int>(hmApp->preferences().peakCount()) + terrain->width() - 1);
-    m->procBar->show();
+    m->lblState->setText(tr("Processing..."));
+    m->prgProcess->setValue(0);
+    m->prgProcess->setMaximum(static_cast<int>(hmApp->preferences().peakCount()) + terrain->width() - 1);
+    m->prgProcess->show();
 
     m->processing = true;
 }
@@ -481,27 +487,27 @@ void HeightMapWindow::onProcessFinished()
 {
     m->processing = false;
 
-    m->stateLabel->setText(tr("Done"));
-    m->procLabel->clear();
-    m->procBar->hide();
+    m->lblState->setText(tr("Done"));
+    m->lblProcess->clear();
+    m->prgProcess->hide();
 
     m->displayHeightMapImage();
 }
 
 void HeightMapWindow::onPeakGeneratingStarted()
 {
-    m->procLabel->setText("Generating peaks...");
+    m->lblProcess->setText("Generating peaks...");
 }
 
 void HeightMapWindow::onPeakGeneratingFinished()
 {
     Terrain *terrain = hmApp->logic()->terrain();
-    m->pkLabel->setText(tr("%1 peak(s)").arg(terrain->peaks().size()));
+    m->lblPeaks->setText(tr("%1 peak(s)").arg(terrain->peaks().size()));
 }
 
 void HeightMapWindow::onPeakExtrapolationStarted()
 {
-    m->procLabel->setText("Extrapolating peaks...");
+    m->lblProcess->setText("Extrapolating peaks...");
 }
 
 void HeightMapWindow::onPeakExtrapolationAcquiring()
@@ -511,7 +517,7 @@ void HeightMapWindow::onPeakExtrapolationAcquiring()
 
 void HeightMapWindow::onPeakExtrapolated(QPoint, double)
 {
-    m->procBar->setValue(m->procBar->value() + 1);
+    m->prgProcess->setValue(m->prgProcess->value() + 1);
 }
 
 void HeightMapWindow::onPeakExtrapolationFinished()
@@ -520,23 +526,23 @@ void HeightMapWindow::onPeakExtrapolationFinished()
 
 void HeightMapWindow::onContouringStarted()
 {
-    m->procLabel->setText("Calculating contours...");
+    m->lblProcess->setText("Calculating contours...");
 }
 
 void HeightMapWindow::onContouringLevelsAcquired(int levels)
 {
-    m->lvlsLabel->setText(tr("%1 level(s)").arg(levels));
+    m->lblLevels->setText(tr("%1 level(s)").arg(levels));
 }
 
 void HeightMapWindow::onContouringAt(int)
 {
-    m->procBar->setValue(m->procBar->value() + 1);
+    m->prgProcess->setValue(m->prgProcess->value() + 1);
 }
 
 void HeightMapWindow::onContouringFinished()
 {
     Terrain *terrain = hmApp->logic()->terrain();
-    m->cntrsLabel->setText(tr("%1 isobar segment(s)").arg(terrain->contours().size()));
+    m->lblIsobars->setText(tr("%1 isobar segment(s)").arg(terrain->contours().size()));
 }
 
 void HeightMapWindow::setViewMode(QAction *viewModeAct)
