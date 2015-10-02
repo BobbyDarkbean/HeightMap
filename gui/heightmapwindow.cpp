@@ -337,9 +337,9 @@ void HeightMapWindowImplementation::resetStatusBar()
                          .arg(QChar(0x00d7))
                          .arg(terrain.height()));
 
-    lvlsLabel->clear();
-    pkLabel->clear();
-    cntrsLabel->clear();
+    lvlsLabel->setText(QString());
+    pkLabel->setText(QString());
+    cntrsLabel->setText(QString());
 }
 
 HeightMapWindowImplementation::~HeightMapWindowImplementation()
@@ -364,7 +364,7 @@ HeightMapWindow::HeightMapWindow(QWidget *parent)
     m->hmImgLabel->setAlignment(Qt::AlignCenter);
 
     QScrollArea *scrollArea = new QScrollArea(this);
-    scrollArea->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
+    scrollArea->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     scrollArea->setWidgetResizable(true);
     scrollArea->setWidget(m->hmImgLabel);
     setCentralWidget(scrollArea);
@@ -384,8 +384,6 @@ HeightMapWindow::HeightMapWindow(QWidget *parent)
     statusBar()->addWidget(procBarShell, 12);
     statusBar()->addWidget(m->pkLabel, 4);
     statusBar()->addWidget(m->cntrsLabel, 6);
-
-    m->resetStatusBar();
 
     connect(hmApp, SIGNAL(preferencesChanged()), this, SLOT(adjustPreferences()));
 
