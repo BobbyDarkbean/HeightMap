@@ -18,7 +18,7 @@ public:
     explicit HeightMapWindow(QWidget *parent = 0);
     ~HeightMapWindow();
 
-private slots:
+public slots:
     void newFile();
 
     void exportLandscape();
@@ -30,9 +30,9 @@ private slots:
 
     void adjustPreferences();
 
+    void resetTerrainData();
     void onProcessStarted();
     void onProcessFinished();
-
     void onPeakGeneratingStarted();
     void onPeakGeneratingFinished();
     void onPeakExtrapolationStarted();

@@ -6,11 +6,8 @@ class QImage;
 namespace HeightMap {
 
 
-class Terrain;
 struct MappingData
 {
-    Terrain *terrain;
-
     QImage *imgPeaks;
     QImage *imgLandscape;
     QImage *imgIsobars;

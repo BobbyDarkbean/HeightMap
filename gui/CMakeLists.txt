@@ -31,12 +31,15 @@ set (HMGUI_HDR auxiliary/colormap.h
                widgets/slopeextrapolationwidget.h
                engraver.h
                heightmapapplication.h
+               heightmaplogic.h
+               heightmapviewmode.h
                heightmapwindow.h
                mappingthread.h
                mappingworker.h
                preferences.h
                preferencescontroller.h
                trigger.h)
+
 set (HMGUI_SRC dialogs/contouringoptionsdialog.cpp
                dialogs/extrapolationoptionsdialog.cpp
                dialogs/generatingoptionsdialog.cpp
@@ -57,6 +60,7 @@ set (HMGUI_SRC dialogs/contouringoptionsdialog.cpp
                widgets/slopeextrapolationwidget.cpp
                engraver.cpp
                heightmapapplication.cpp
+               heightmaplogic.cpp
                heightmapwindow.cpp
                main.cpp
                mappingthread.cpp

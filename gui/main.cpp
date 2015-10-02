@@ -1,5 +1,7 @@
 #include "heightmapapplication.h"
+#include "heightmaplogic.h"
 #include "heightmapwindow.h"
+
 
 int main(int argc, char **argv)
 {
@@ -10,5 +12,6 @@ int main(int argc, char **argv)
     w.setWindowTitle(app.applicationName());
     w.showMaximized();
 
+    app.logic()->newTerrain();
     return app.exec();
 }

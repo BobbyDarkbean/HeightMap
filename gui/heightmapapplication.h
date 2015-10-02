@@ -13,6 +13,7 @@ class Preferences;
 class PreferencesController;
 class Extrapolator;
 class AbstractExtrapolationWidget;
+class HeightMapLogic;
 struct HeightMapApplicationImplementation;
 class HeightMapApplication : public QApplication
 {
@@ -25,6 +26,8 @@ public:
     void setPreferences(const Preferences &);
 
     PreferencesController *preferencesController() const;
+
+    HeightMapLogic *logic() const;
 
     QStringList extrapolatorKeys() const;
 

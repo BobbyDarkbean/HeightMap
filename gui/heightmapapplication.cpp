@@ -5,6 +5,7 @@
 #include "extrapolation/slopeextrapolationfactory.h"
 #include "extrapolation/baselevelextrapolationfactory.h"
 #include "extrapolation/fixedradiusextrapolationfactory.h"
+#include "heightmaplogic.h"
 
 #include "heightmapapplication.h"
 
@@ -16,6 +17,8 @@ struct HeightMapApplicationImplementation
 {
     HeightMapApplicationImplementation();
     ~HeightMapApplicationImplementation();
+
+    HeightMapLogic *logic;
 
     Preferences prefs;
     PreferencesController *ctrl;
@@ -30,7 +33,8 @@ private:
 
 
 HeightMapApplicationImplementation::HeightMapApplicationImplementation()
-    : prefs(),
+    : logic(nullptr),
+      prefs(),
       ctrl(nullptr),
       extrapolations(),
       IniFilename(QApplication::applicationDirPath() + "/hmcfg.ini")
@@ -94,6 +98,8 @@ HeightMapApplication::HeightMapApplication(int &argc, char **argv)
     : QApplication(argc, argv),
       m(new HeightMapApplicationImplementation)
 {
+    m->logic = new HeightMapLogic(this);
+
     m->ctrl = new PreferencesController(this);
     m->ctrl->setPreferences(&m->prefs);
 }
@@ -112,6 +118,11 @@ void HeightMapApplication::setPreferences(const Preferences &prefs)
 
 PreferencesController *HeightMapApplication::preferencesController() const
 { return m->ctrl; }
+
+
+HeightMapLogic *HeightMapApplication::logic() const
+{ return m->logic; }
+
 
 QStringList HeightMapApplication::extrapolatorKeys() const
 {

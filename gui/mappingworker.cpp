@@ -1,6 +1,7 @@
 #include <QImage>
 #include <QMutex>
 #include "auxiliary/mappingdata.h"
+#include "heightmaplogic.h"
 #include "heightmapapplication.h"
 #include "preferences.h"
 #include "terrain.h"
@@ -67,53 +68,57 @@ void MappingWorkerImplementation::fillLevels(std::vector<int> &levels)
 
 void MappingWorkerImplementation::drawPeaks()
 {
+    Terrain *terrain = hmApp->logic()->terrain();
     Engraver engr;
     int imageFactor = hmApp->preferences().imageFactor();
 
-    QImage imgPk(data.terrain->width() * imageFactor,
-                 data.terrain->height() * imageFactor,
+    QImage imgPk(terrain->width() * imageFactor,
+                 terrain->height() * imageFactor,
                  QImage::Format_ARGB32_Premultiplied);
-    engr.drawPeaks(data.terrain->peaks(), &imgPk, imageFactor);
+    engr.drawPeaks(terrain->peaks(), &imgPk, imageFactor);
 
     *data.imgPeaks = imgPk;
 }
 
 void MappingWorkerImplementation::drawLandscape()
 {
+    Terrain *terrain = hmApp->logic()->terrain();
     Engraver engr;
     int imageFactor = hmApp->preferences().imageFactor();
 
-    QImage imgLs(data.terrain->width() * imageFactor,
-                 data.terrain->height() * imageFactor,
+    QImage imgLs(terrain->width() * imageFactor,
+                 terrain->height() * imageFactor,
                  QImage::Format_ARGB32_Premultiplied);
-    engr.drawLandscape(data.terrain->landscape(), &imgLs, imageFactor);
+    engr.drawLandscape(terrain->landscape(), &imgLs, imageFactor);
 
     *data.imgLandscape = imgLs;
 }
 
 void MappingWorkerImplementation::drawIsobars()
 {
+    Terrain *terrain = hmApp->logic()->terrain();
     Engraver engr;
     int imageFactor = hmApp->preferences().imageFactor();
 
-    QImage imgBars(data.terrain->width() * imageFactor,
-                   data.terrain->height() * imageFactor,
+    QImage imgBars(terrain->width() * imageFactor,
+                   terrain->height() * imageFactor,
                    QImage::Format_ARGB32_Premultiplied);
-    engr.drawIsobars(data.terrain->contours(), &imgBars, true, imageFactor);
+    engr.drawIsobars(terrain->contours(), &imgBars, true, imageFactor);
 
     *data.imgIsobars = imgBars;
 }
 
 void MappingWorkerImplementation::drawHybrid()
 {
+    Terrain *terrain = hmApp->logic()->terrain();
     Engraver engr;
     int imageFactor = hmApp->preferences().imageFactor();
 
-    QImage imgHyb(data.terrain->width() * imageFactor,
-                  data.terrain->height() * imageFactor,
+    QImage imgHyb(terrain->width() * imageFactor,
+                  terrain->height() * imageFactor,
                   QImage::Format_ARGB32_Premultiplied);
-    engr.drawLandscape(data.terrain->landscape(), &imgHyb, imageFactor);
-    engr.drawIsobars(data.terrain->contours(), &imgHyb, false, imageFactor);
+    engr.drawLandscape(terrain->landscape(), &imgHyb, imageFactor);
+    engr.drawIsobars(terrain->contours(), &imgHyb, false, imageFactor);
 
     *data.imgHybrid = imgHyb;
 }
@@ -184,8 +189,9 @@ void MappingWorker::generatePeaks()
 {
     emit peakGeneratingStarted();
 
-    m->data.terrain->clearPeaks();
-    m->data.terrain->generatePeaks(&m->mapper, m->genOptions());
+    Terrain *terrain = hmApp->logic()->terrain();
+    terrain->clearPeaks();
+    terrain->generatePeaks(&m->mapper, m->genOptions());
     m->drawPeaks();
 
     emit peakGeneratingFinished();
@@ -196,8 +202,9 @@ void MappingWorker::extrapolatePeaks()
     emit peakExtrapolationStarted();
 
     if (Extrapolator *extrapolator = hmApp->currentExtrapolator()) {
-        m->data.terrain->fillLandscape(extrapolator->baseLevel());
-        m->data.terrain->extrapolatePeaks(&m->mapper, extrapolator);
+        Terrain *terrain = hmApp->logic()->terrain();
+        terrain->fillLandscape(extrapolator->baseLevel());
+        terrain->extrapolatePeaks(&m->mapper, extrapolator);
         m->drawLandscape();
     }
 
@@ -213,8 +220,9 @@ void MappingWorker::calculateContours()
 
     emit contouringLevelsAcquired(levels.size());
 
-    m->data.terrain->clearContours();
-    m->data.terrain->calculateContours(&m->mapper, levels);
+    Terrain *terrain = hmApp->logic()->terrain();
+    terrain->clearContours();
+    terrain->calculateContours(&m->mapper, levels);
     m->drawIsobars();
     m->drawHybrid();
 
