@@ -20,6 +20,8 @@ set (HMGUI_HDR auxiliary/colormap.h
                extrapolation/fixedradiusextrapolationfactory.h
                extrapolation/simpleextrapolationfactory.h
                extrapolation/slopeextrapolationfactory.h
+               extrapolation/xreader.h
+               extrapolation/xwriter.h
                widgets/abstractextrapolationwidget.h
                widgets/baselevelextrapolationwidget.h
                widgets/contouringoptionswidget.h
@@ -49,6 +51,8 @@ set (HMGUI_SRC dialogs/contouringoptionsdialog.cpp
                extrapolation/fixedradiusextrapolationfactory.cpp
                extrapolation/simpleextrapolationfactory.cpp
                extrapolation/slopeextrapolationfactory.cpp
+               extrapolation/xreader.cpp
+               extrapolation/xwriter.cpp
                widgets/abstractextrapolationwidget.cpp
                widgets/baselevelextrapolationwidget.cpp
                widgets/contouringoptionswidget.cpp
