@@ -12,9 +12,11 @@ namespace HeightMap {
 struct SimpleExtrapolationFactoryImplementation
 {
     SimpleExtrapolationFactoryImplementation();
+    void applyProxy();
     ~SimpleExtrapolationFactoryImplementation();
 
     SimpleExtrapolator *x;
+    SimpleExtrapolator *proxy;
 
 private:
     DISABLE_COPY(SimpleExtrapolationFactoryImplementation)
@@ -23,10 +25,16 @@ private:
 
 
 SimpleExtrapolationFactoryImplementation::SimpleExtrapolationFactoryImplementation()
-    : x(new SimpleExtrapolator)
+    : x(new SimpleExtrapolator),
+      proxy(new SimpleExtrapolator)
 {
     XReader xr("xdata/sml.xml");
     x->setBaseLevel(xr.readElement("baselevel", -1.0));
+}
+
+void SimpleExtrapolationFactoryImplementation::applyProxy()
+{
+    x->setBaseLevel(proxy->baseLevel());
 }
 
 SimpleExtrapolationFactoryImplementation::~SimpleExtrapolationFactoryImplementation()
@@ -34,6 +42,7 @@ SimpleExtrapolationFactoryImplementation::~SimpleExtrapolationFactoryImplementat
     XWriter xw("xdata/sml.xml");
     xw.writeElement("baselevel", x->baseLevel());
 
+    delete proxy;
     delete x;
 }
 
@@ -52,6 +61,16 @@ AbstractExtrapolationWidget *SimpleExtrapolationFactory::createWidget() const
     widget->bindExtrapolator(m->x);
     return widget;
 }
+
+AbstractExtrapolationWidget *SimpleExtrapolationFactory::createProxyWidget() const
+{
+    SimpleExtrapolationWidget *widget = new SimpleExtrapolationWidget;
+    widget->bindExtrapolator(m->proxy);
+    return widget;
+}
+
+void SimpleExtrapolationFactory::applyProxyData()
+{ m->applyProxy(); }
 
 QString SimpleExtrapolationFactory::name() const
 { return SimpleExtrapolationWidget::tr("sml"); }

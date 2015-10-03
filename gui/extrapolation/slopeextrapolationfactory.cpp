@@ -12,9 +12,11 @@ namespace HeightMap {
 struct SlopeExtrapolationFactoryImplementation
 {
     SlopeExtrapolationFactoryImplementation();
+    void applyProxy();
     ~SlopeExtrapolationFactoryImplementation();
 
     SlopeExtrapolator *x;
+    SlopeExtrapolator *proxy;
 
 private:
     DISABLE_COPY(SlopeExtrapolationFactoryImplementation)
@@ -23,11 +25,18 @@ private:
 
 
 SlopeExtrapolationFactoryImplementation::SlopeExtrapolationFactoryImplementation()
-    : x(new SlopeExtrapolator)
+    : x(new SlopeExtrapolator),
+      proxy(new SlopeExtrapolator)
 {
     XReader xr("xdata/slp.xml");
     x->setBaseLevel(xr.readElement("baselevel", -1.0));
     x->setSlopeRatio(xr.readElement("ratio", -1.0));
+}
+
+void SlopeExtrapolationFactoryImplementation::applyProxy()
+{
+    x->setBaseLevel(proxy->baseLevel());
+    x->setSlopeRatio(proxy->slopeRatio());
 }
 
 SlopeExtrapolationFactoryImplementation::~SlopeExtrapolationFactoryImplementation()
@@ -36,6 +45,7 @@ SlopeExtrapolationFactoryImplementation::~SlopeExtrapolationFactoryImplementatio
     xw.writeElement("baselevel", x->baseLevel());
     xw.writeElement("ratio", x->slopeRatio());
 
+    delete proxy;
     delete x;
 }
 
@@ -54,6 +64,16 @@ AbstractExtrapolationWidget *SlopeExtrapolationFactory::createWidget() const
     widget->bindExtrapolator(m->x);
     return widget;
 }
+
+AbstractExtrapolationWidget *SlopeExtrapolationFactory::createProxyWidget() const
+{
+    SlopeExtrapolationWidget *widget = new SlopeExtrapolationWidget;
+    widget->bindExtrapolator(m->proxy);
+    return widget;
+}
+
+void SlopeExtrapolationFactory::applyProxyData()
+{ m->applyProxy(); }
 
 QString SlopeExtrapolationFactory::name() const
 { return SlopeExtrapolationWidget::tr("slp"); }

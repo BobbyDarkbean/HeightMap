@@ -17,7 +17,11 @@ public:
     ExtrapolationFactory();
 
     virtual Extrapolator *extrapolator() const = 0;
+
     virtual AbstractExtrapolationWidget *createWidget() const = 0;
+    virtual AbstractExtrapolationWidget *createProxyWidget() const = 0;
+
+    virtual void applyProxyData() = 0;
 
     virtual QString name() const = 0;
     virtual QString description() const = 0;

@@ -15,7 +15,11 @@ public:
     FixedRadiusExtrapolationFactory();
 
     Extrapolator *extrapolator() const;
+
     AbstractExtrapolationWidget *createWidget() const;
+    AbstractExtrapolationWidget *createProxyWidget() const;
+
+    void applyProxyData();
 
     QString name() const;
     QString description() const;

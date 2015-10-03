@@ -12,9 +12,11 @@ namespace HeightMap {
 struct BaseLevelExtrapolationFactoryImplementation
 {
     BaseLevelExtrapolationFactoryImplementation();
+    void applyProxy();
     ~BaseLevelExtrapolationFactoryImplementation();
 
     BaseLevelExtrapolator *x;
+    BaseLevelExtrapolator *proxy;
 
 private:
     DISABLE_COPY(BaseLevelExtrapolationFactoryImplementation)
@@ -23,10 +25,16 @@ private:
 
 
 BaseLevelExtrapolationFactoryImplementation::BaseLevelExtrapolationFactoryImplementation()
-    : x(new BaseLevelExtrapolator)
+    : x(new BaseLevelExtrapolator),
+      proxy(new BaseLevelExtrapolator)
 {
     XReader xr("xdata/bsl.xml");
     x->setBaseLevel(xr.readElement("baselevel", -1.0));
+}
+
+void BaseLevelExtrapolationFactoryImplementation::applyProxy()
+{
+    x->setBaseLevel(proxy->baseLevel());
 }
 
 BaseLevelExtrapolationFactoryImplementation::~BaseLevelExtrapolationFactoryImplementation()
@@ -34,6 +42,7 @@ BaseLevelExtrapolationFactoryImplementation::~BaseLevelExtrapolationFactoryImple
     XWriter xw("xdata/bsl.xml");
     xw.writeElement("baselevel", x->baseLevel());
 
+    delete proxy;
     delete x;
 }
 
@@ -52,6 +61,16 @@ AbstractExtrapolationWidget *BaseLevelExtrapolationFactory::createWidget() const
     widget->bindExtrapolator(m->x);
     return widget;
 }
+
+AbstractExtrapolationWidget *BaseLevelExtrapolationFactory::createProxyWidget() const
+{
+    BaseLevelExtrapolationWidget *widget = new BaseLevelExtrapolationWidget;
+    widget->bindExtrapolator(m->proxy);
+    return widget;
+}
+
+void BaseLevelExtrapolationFactory::applyProxyData()
+{ m->applyProxy(); }
 
 QString BaseLevelExtrapolationFactory::name() const
 { return BaseLevelExtrapolationWidget::tr("bsl"); }
