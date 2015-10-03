@@ -1,5 +1,7 @@
 #include "../widgets/baselevelextrapolationwidget.h"
 #include "extrapolator.h"
+#include "xreader.h"
+#include "xwriter.h"
 
 #include "baselevelextrapolationfactory.h"
 
@@ -23,12 +25,15 @@ private:
 BaseLevelExtrapolationFactoryImplementation::BaseLevelExtrapolationFactoryImplementation()
     : x(new BaseLevelExtrapolator)
 {
-    // read extrapolator settings from xdata/baselevel.xml
+    XReader xr("xdata/bsl.xml");
+    x->setBaseLevel(xr.readElement("baselevel", -1.0));
 }
 
 BaseLevelExtrapolationFactoryImplementation::~BaseLevelExtrapolationFactoryImplementation()
 {
-    // write extrapolator settings to xdata/baselevel.xml
+    XWriter xw("xdata/bsl.xml");
+    xw.writeElement("baselevel", x->baseLevel());
+
     delete x;
 }
 

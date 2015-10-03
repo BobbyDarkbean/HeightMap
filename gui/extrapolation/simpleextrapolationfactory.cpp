@@ -1,5 +1,7 @@
 #include "../widgets/simpleextrapolationwidget.h"
 #include "extrapolator.h"
+#include "xreader.h"
+#include "xwriter.h"
 
 #include "simpleextrapolationfactory.h"
 
@@ -23,12 +25,15 @@ private:
 SimpleExtrapolationFactoryImplementation::SimpleExtrapolationFactoryImplementation()
     : x(new SimpleExtrapolator)
 {
-    // read extrapolator settings from xdata/simple.xml
+    XReader xr("xdata/sml.xml");
+    x->setBaseLevel(xr.readElement("baselevel", -1.0));
 }
 
 SimpleExtrapolationFactoryImplementation::~SimpleExtrapolationFactoryImplementation()
 {
-    // write extrapolator settings to xdata/simple.xml
+    XWriter xw("xdata/sml.xml");
+    xw.writeElement("baselevel", x->baseLevel());
+
     delete x;
 }
 

@@ -1,5 +1,7 @@
 #include "../widgets/slopeextrapolationwidget.h"
 #include "extrapolator.h"
+#include "xreader.h"
+#include "xwriter.h"
 
 #include "slopeextrapolationfactory.h"
 
@@ -23,12 +25,17 @@ private:
 SlopeExtrapolationFactoryImplementation::SlopeExtrapolationFactoryImplementation()
     : x(new SlopeExtrapolator)
 {
-    // read extrapolator settings from xdata/slope.xml
+    XReader xr("xdata/slp.xml");
+    x->setBaseLevel(xr.readElement("baselevel", -1.0));
+    x->setSlopeRatio(xr.readElement("ratio", -1.0));
 }
 
 SlopeExtrapolationFactoryImplementation::~SlopeExtrapolationFactoryImplementation()
 {
-    // write extrapolator settings to xdata/slope.xml
+    XWriter xw("xdata/slp.xml");
+    xw.writeElement("baselevel", x->baseLevel());
+    xw.writeElement("ratio", x->slopeRatio());
+
     delete x;
 }
 

@@ -40,12 +40,15 @@ HeightMapApplicationImplementation::HeightMapApplicationImplementation()
       IniFilename(QApplication::applicationDirPath() + "/hmcfg.ini")
 {
     ExtrapolationFactory *xFactorySimple = new SimpleExtrapolationFactory;
-    ExtrapolationFactory *xFactorySlope = new SlopeExtrapolationFactory;
-    ExtrapolationFactory *xFactoryBaseLevel = new BaseLevelExtrapolationFactory;
-    ExtrapolationFactory *xFactoryFixedRadius = new FixedRadiusExtrapolationFactory;
     extrapolations.insert(xFactorySimple->name(), xFactorySimple);
+
+    ExtrapolationFactory *xFactorySlope = new SlopeExtrapolationFactory;
     extrapolations.insert(xFactorySlope->name(), xFactorySlope);
+
+    ExtrapolationFactory *xFactoryBaseLevel = new BaseLevelExtrapolationFactory;
     extrapolations.insert(xFactoryBaseLevel->name(), xFactoryBaseLevel);
+
+    ExtrapolationFactory *xFactoryFixedRadius = new FixedRadiusExtrapolationFactory;
     extrapolations.insert(xFactoryFixedRadius->name(), xFactoryFixedRadius);
 
     QSettings settings(IniFilename, QSettings::IniFormat);
@@ -91,6 +94,10 @@ HeightMapApplicationImplementation::~HeightMapApplicationImplementation()
     settings.beginGroup("appearance");
     settings.setValue("imgfactor", prefs.imageFactor());
     settings.endGroup();
+
+    for (auto i = extrapolations.constBegin(); i != extrapolations.constEnd(); ++i) {
+        delete i.value();
+    }
 }
 
 

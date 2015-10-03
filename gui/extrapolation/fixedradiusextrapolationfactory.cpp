@@ -1,5 +1,7 @@
 #include "../widgets/fixedradiusextrapolationwidget.h"
 #include "extrapolator.h"
+#include "xreader.h"
+#include "xwriter.h"
 
 #include "fixedradiusextrapolationfactory.h"
 
@@ -23,12 +25,17 @@ private:
 FixedRadiusExtrapolationFactoryImplementation::FixedRadiusExtrapolationFactoryImplementation()
     : x(new FixedRadiusExtrapolator)
 {
-    // read extrapolator settings from xdata/fixedradius.xml
+    XReader xr("xdata/fxr.xml");
+    x->setBaseLevel(xr.readElement("baselevel", -1.0));
+    x->setFixedRadius(xr.readElement("radius", -1.0));
 }
 
 FixedRadiusExtrapolationFactoryImplementation::~FixedRadiusExtrapolationFactoryImplementation()
 {
-    // write extrapolator settings to xdata/fixedradius.xml
+    XWriter xw("xdata/fxr.xml");
+    xw.writeElement("baselevel", x->baseLevel());
+    xw.writeElement("radius", x->fixedRadius());
+
     delete x;
 }
 
