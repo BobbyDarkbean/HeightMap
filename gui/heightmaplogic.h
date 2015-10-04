@@ -35,7 +35,6 @@ signals:
     void peakGeneratingStarted();
     void peakGeneratingFinished();
     void peakExtrapolationStarted();
-    void peakExtrapolationAcquiring();
     void peakExtrapolated(QPoint, double);
     void peakExtrapolationFinished();
     void contouringStarted();

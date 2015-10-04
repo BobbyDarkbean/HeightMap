@@ -29,6 +29,7 @@ public slots:
     void editContouringSettings();
 
     void adjustPreferences();
+    void adjustExtrapolationData(QString);
 
     void resetTerrainData();
     void onProcessStarted();
@@ -36,7 +37,6 @@ public slots:
     void onPeakGeneratingStarted();
     void onPeakGeneratingFinished();
     void onPeakExtrapolationStarted();
-    void onPeakExtrapolationAcquiring();
     void onPeakExtrapolated(QPoint, double);
     void onPeakExtrapolationFinished();
     void onContouringStarted();

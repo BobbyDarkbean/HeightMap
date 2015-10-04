@@ -202,8 +202,6 @@ void MappingWorker::extrapolatePeaks()
     emit peakExtrapolationStarted();
 
     if (Extrapolator *extrapolator = hmApp->currentExtrapolator()) {
-        emit peakExtrapolationAcquiring();
-
         Terrain *terrain = hmApp->logic()->terrain();
         terrain->fillLandscape(extrapolator->baseLevel());
         terrain->extrapolatePeaks(&m->mapper, extrapolator);

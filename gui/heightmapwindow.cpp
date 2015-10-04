@@ -213,10 +213,9 @@ void HeightMapWindowImplementation::createWidgets()
     wgtExtrapolation = new ExtrapolationOptionsWidget;
 
     QStringList xNames = hmApp->extrapolatorKeys();
-    for (QStringList::ConstIterator i = xNames.begin(); i != xNames.end(); ++i) {
-        if (AbstractExtrapolationWidget *xWidget = hmApp->createExtrapolationWidget(*i)) {
-            wgtExtrapolation->addExtrapolationWidget(*i, hmApp->extrapolationDescription(*i), xWidget);
-        }
+    foreach (QString name, xNames) {
+        if (ExtrapolationFactory *f = hmApp->extrapolationFactory(name))
+            wgtExtrapolation->addExtrapolationWidget(f, false);
     }
 
     wgtExtrapolation->setExtrapolatorName(prefs.extrapolatorName());
@@ -258,9 +257,9 @@ void HeightMapWindowImplementation::createDocks(HeightMapWindow *master)
 void HeightMapWindowImplementation::provideExtrapolationWidgets(ExtrapolationOptionsDialog *dialog)
 {
     QStringList xNames = hmApp->extrapolatorKeys();
-    for (QStringList::ConstIterator i = xNames.begin(); i != xNames.end(); ++i) {
-        if (AbstractExtrapolationWidget *xWidget = hmApp->createExtrapolationWidget(*i))
-            dialog->addExtrapolationWidget(*i, hmApp->extrapolationDescription(*i), xWidget);
+    foreach (QString name, xNames) {
+        if (ExtrapolationFactory *f = hmApp->extrapolationFactory(name))
+            dialog->addExtrapolationWidget(f);
     }
 }
 
@@ -318,6 +317,7 @@ HeightMapWindow::HeightMapWindow(QWidget *parent)
     statusBar()->addWidget(m->lblIsobars, 6);
 
     connect(hmApp, &HeightMapApplication::preferencesChanged,   this, &HeightMapWindow::adjustPreferences);
+    connect(hmApp, &HeightMapApplication::extrapolationDataChanged, this, &HeightMapWindow::adjustExtrapolationData);
 
     HeightMapLogic *logic = hmApp->logic();
 
@@ -327,7 +327,6 @@ HeightMapWindow::HeightMapWindow(QWidget *parent)
     connect(logic, &HeightMapLogic::peakGeneratingStarted,      this, &HeightMapWindow::onPeakGeneratingStarted);
     connect(logic, &HeightMapLogic::peakGeneratingFinished,     this, &HeightMapWindow::onPeakGeneratingFinished);
     connect(logic, &HeightMapLogic::peakExtrapolationStarted,   this, &HeightMapWindow::onPeakExtrapolationStarted);
-    connect(logic, &HeightMapLogic::peakExtrapolationAcquiring, this, &HeightMapWindow::onPeakExtrapolationAcquiring);
     connect(logic, &HeightMapLogic::peakExtrapolated,           this, &HeightMapWindow::onPeakExtrapolated);
     connect(logic, &HeightMapLogic::peakExtrapolationFinished,  this, &HeightMapWindow::onPeakExtrapolationFinished);
     connect(logic, &HeightMapLogic::contouringStarted,          this, &HeightMapWindow::onContouringStarted);
@@ -428,7 +427,7 @@ void HeightMapWindow::editExtrapolationSettings()
     dialog.setPreferencesController(&ctrl);
 
     if (dialog.exec()) {
-        m->wgtExtrapolation->retrieveExtrapolationSettings();
+        hmApp->applyProxyExtrapolator(dialog.extrapolatorName());
         hmApp->setPreferences(prefs);
     }
 }
@@ -458,6 +457,11 @@ void HeightMapWindow::adjustPreferences()
     m->wgtExtrapolation->setExtrapolatorName(prefs.extrapolatorName());
     m->wgtContouring->setLevelRange(prefs.minContouringLevel(), prefs.maxContouringLevel());
     m->wgtContouring->setStep(prefs.contouringStep());
+}
+
+void HeightMapWindow::adjustExtrapolationData(QString)
+{
+    m->wgtExtrapolation->retrieveExtrapolationSettings();
 }
 
 void HeightMapWindow::resetTerrainData()
@@ -503,10 +507,6 @@ void HeightMapWindow::onPeakGeneratingFinished()
 void HeightMapWindow::onPeakExtrapolationStarted()
 {
     m->lblProcess->setText("Extrapolating peaks...");
-}
-
-void HeightMapWindow::onPeakExtrapolationAcquiring()
-{
 }
 
 void HeightMapWindow::onPeakExtrapolated(QPoint, double)

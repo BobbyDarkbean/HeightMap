@@ -4,6 +4,7 @@
 #include <QStackedWidget>
 #include <QBoxLayout>
 #include "abstractextrapolationwidget.h"
+#include "../extrapolation/extrapolationfactory.h"
 #include "../preferences.h"
 
 #include "extrapolationoptionswidget.h"
@@ -28,7 +29,7 @@ struct ExtrapolationOptionsWidgetImplementation
     QStackedWidget *stkExtrapolOpts;
 
     QMap<int, AbstractExtrapolationWidget *> mapExtrapolWgts;
-    QMap<QString, int> mapExtrapolNames;
+    QMap<QString, int> mapExtrapolId;
 
 private:
     DISABLE_COPY(ExtrapolationOptionsWidgetImplementation)
@@ -42,7 +43,7 @@ ExtrapolationOptionsWidgetImplementation::ExtrapolationOptionsWidgetImplementati
       grpExtrapolOpts(new QGroupBox),
       stkExtrapolOpts(new QStackedWidget),
       mapExtrapolWgts(),
-      mapExtrapolNames() { }
+      mapExtrapolId() { }
 
 void ExtrapolationOptionsWidgetImplementation::adjustControls()
 {
@@ -107,20 +108,21 @@ void ExtrapolationOptionsWidget::setExtrapolatorName(const QString &name)
 
 QWidget *ExtrapolationOptionsWidget::extrapolationWidget(const QString &name) const
 {
-    int id = m->mapExtrapolNames.value(name, -1);
+    int id = m->mapExtrapolId.value(name, -1);
     if (!(0 <= id && id < m->stkExtrapolOpts->count()))
         return nullptr;
     return m->stkExtrapolOpts->widget(id);
 }
 
-void ExtrapolationOptionsWidget::addExtrapolationWidget(
-    const QString &name,
-    const QString &description,
-    AbstractExtrapolationWidget *w)
+void ExtrapolationOptionsWidget::addExtrapolationWidget(ExtrapolationFactory *f, bool proxy)
 {
+    AbstractExtrapolationWidget *w = proxy ? f->createProxyWidget() : f->createWidget();
+    QString name = f->name();
+    QString description = f->description();
+
     int id = m->stkExtrapolOpts->addWidget(w);
     m->mapExtrapolWgts.insert(id, w);
-    m->mapExtrapolNames.insert(name, id);
+    m->mapExtrapolId.insert(name, id);
     m->cmbExtrapolMethod->addItem(description, name);
 }
 
@@ -141,7 +143,7 @@ ExtrapolationOptionsWidget::~ExtrapolationOptionsWidget()
 void ExtrapolationOptionsWidget::setExtrapolationWidget(int index)
 {
     QString name = m->cmbExtrapolMethod->itemData(index).toString();
-    int id = m->mapExtrapolNames.value(name, -1);
+    int id = m->mapExtrapolId.value(name, -1);
     if (0 <= id && id < m->stkExtrapolOpts->count()
             && id != m->stkExtrapolOpts->currentIndex()) {
         m->stkExtrapolOpts->setCurrentIndex(id);

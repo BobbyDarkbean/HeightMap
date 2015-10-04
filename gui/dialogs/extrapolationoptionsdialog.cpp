@@ -3,6 +3,7 @@
 #include <QBoxLayout>
 #include "../preferences.h"
 #include "../preferencescontroller.h"
+#include "../extrapolation/extrapolationfactory.h"
 #include "../widgets/extrapolationoptionswidget.h"
 
 #include "extrapolationoptionsdialog.h"
@@ -86,6 +87,12 @@ ExtrapolationOptionsDialog::ExtrapolationOptionsDialog(QWidget *parent)
 }
 
 
+QString ExtrapolationOptionsDialog::extrapolatorName() const
+{ return m->wgtExtrapolOpt->extrapolatorName(); }
+
+void ExtrapolationOptionsDialog::setExtrapolatorName(const QString &name)
+{ m->wgtExtrapolOpt->setExtrapolatorName(name); }
+
 PreferencesController *ExtrapolationOptionsDialog::preferencesController() const
 { return m->ctrl; }
 
@@ -98,11 +105,8 @@ void ExtrapolationOptionsDialog::setPreferencesController(PreferencesController 
 QWidget *ExtrapolationOptionsDialog::extrapolationWidget(const QString &keyName) const
 { return m->wgtExtrapolOpt->extrapolationWidget(keyName); }
 
-void ExtrapolationOptionsDialog::addExtrapolationWidget(
-    const QString &keyName,
-    const QString &description,
-    AbstractExtrapolationWidget *w)
-{ m->wgtExtrapolOpt->addExtrapolationWidget(keyName, description, w); }
+void ExtrapolationOptionsDialog::addExtrapolationWidget(ExtrapolationFactory *f)
+{ m->wgtExtrapolOpt->addExtrapolationWidget(f, true); }
 
 
 ExtrapolationOptionsDialog::~ExtrapolationOptionsDialog()

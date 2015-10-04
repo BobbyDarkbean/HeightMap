@@ -136,32 +136,31 @@ QStringList HeightMapApplication::extrapolatorKeys() const
     return m->extrapolations.keys();
 }
 
-AbstractExtrapolationWidget *HeightMapApplication::createExtrapolationWidget(const QString &name) const
-{
-    if (ExtrapolationFactory *f = m->extrapolations.value(name, nullptr)) {
-        return f->createWidget();
-    }
-
-    return nullptr;
-}
-
-QString HeightMapApplication::extrapolationDescription(const QString &name) const
-{
-    if (ExtrapolationFactory *f = m->extrapolations.value(name, nullptr)) {
-        return f->description();
-    }
-
-    return QString();
-}
+ExtrapolationFactory *HeightMapApplication::extrapolationFactory(const QString &name) const
+{ return m->extrapolations.value(name, nullptr); }
 
 Extrapolator *HeightMapApplication::currentExtrapolator() const
 {
-    QString currentExtrapolatorName = preferences().extrapolatorName();
-    if (ExtrapolationFactory *f = m->extrapolations.value(currentExtrapolatorName, nullptr)) {
+    QString currentName = preferences().extrapolatorName();
+    if (ExtrapolationFactory *f = extrapolationFactory(currentName)) {
         return f->extrapolator();
     }
 
     return nullptr;
+}
+
+void HeightMapApplication::applyProxyExtrapolator(const QString &name)
+{
+    for (auto i = m->extrapolations.constBegin(); i != m->extrapolations.constEnd(); ++i) {
+        if (ExtrapolationFactory *f = i.value()) {
+            if (i.key() == name) {
+                f->applyProxyData();
+                emit extrapolationDataChanged(name);
+            } else {
+                f->resetProxyData();
+            }
+        }
+    }
 }
 
 
