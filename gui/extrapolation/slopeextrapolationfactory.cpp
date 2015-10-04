@@ -12,7 +12,10 @@ namespace HeightMap {
 struct SlopeExtrapolationFactoryImplementation
 {
     SlopeExtrapolationFactoryImplementation();
+
     void applyProxy();
+    void resetProxy();
+
     ~SlopeExtrapolationFactoryImplementation();
 
     SlopeExtrapolator *x;
@@ -39,6 +42,12 @@ void SlopeExtrapolationFactoryImplementation::applyProxy()
     x->setSlopeRatio(proxy->slopeRatio());
 }
 
+void SlopeExtrapolationFactoryImplementation::resetProxy()
+{
+    proxy->setBaseLevel(x->baseLevel());
+    proxy->setSlopeRatio(x->slopeRatio());
+}
+
 SlopeExtrapolationFactoryImplementation::~SlopeExtrapolationFactoryImplementation()
 {
     XWriter xw("xdata/slp.xml");
@@ -62,18 +71,25 @@ AbstractExtrapolationWidget *SlopeExtrapolationFactory::createWidget() const
 {
     SlopeExtrapolationWidget *widget = new SlopeExtrapolationWidget;
     widget->bindExtrapolator(m->x);
+
     return widget;
 }
 
 AbstractExtrapolationWidget *SlopeExtrapolationFactory::createProxyWidget() const
 {
+    m->resetProxy();
+
     SlopeExtrapolationWidget *widget = new SlopeExtrapolationWidget;
     widget->bindExtrapolator(m->proxy);
+
     return widget;
 }
 
 void SlopeExtrapolationFactory::applyProxyData()
 { m->applyProxy(); }
+
+void SlopeExtrapolationFactory::resetProxyData()
+{ m->resetProxy(); }
 
 QString SlopeExtrapolationFactory::name() const
 { return SlopeExtrapolationWidget::tr("slp"); }

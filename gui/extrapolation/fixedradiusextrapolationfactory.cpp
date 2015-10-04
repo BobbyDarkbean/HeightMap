@@ -12,7 +12,10 @@ namespace HeightMap {
 struct FixedRadiusExtrapolationFactoryImplementation
 {
     FixedRadiusExtrapolationFactoryImplementation();
+
     void applyProxy();
+    void resetProxy();
+
     ~FixedRadiusExtrapolationFactoryImplementation();
 
     FixedRadiusExtrapolator *x;
@@ -39,6 +42,12 @@ void FixedRadiusExtrapolationFactoryImplementation::applyProxy()
     x->setFixedRadius(proxy->fixedRadius());
 }
 
+void FixedRadiusExtrapolationFactoryImplementation::resetProxy()
+{
+    proxy->setBaseLevel(x->baseLevel());
+    proxy->setFixedRadius(x->fixedRadius());
+}
+
 FixedRadiusExtrapolationFactoryImplementation::~FixedRadiusExtrapolationFactoryImplementation()
 {
     XWriter xw("xdata/fxr.xml");
@@ -62,18 +71,25 @@ AbstractExtrapolationWidget *FixedRadiusExtrapolationFactory::createWidget() con
 {
     FixedRadiusExtrapolationWidget *widget = new FixedRadiusExtrapolationWidget;
     widget->bindExtrapolator(m->x);
+
     return widget;
 }
 
 AbstractExtrapolationWidget *FixedRadiusExtrapolationFactory::createProxyWidget() const
 {
+    m->resetProxy();
+
     FixedRadiusExtrapolationWidget *widget = new FixedRadiusExtrapolationWidget;
     widget->bindExtrapolator(m->proxy);
+
     return widget;
 }
 
 void FixedRadiusExtrapolationFactory::applyProxyData()
 { m->applyProxy(); }
+
+void FixedRadiusExtrapolationFactory::resetProxyData()
+{ m->resetProxy(); }
 
 QString FixedRadiusExtrapolationFactory::name() const
 { return FixedRadiusExtrapolationWidget::tr("fxr"); }

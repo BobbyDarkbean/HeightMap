@@ -12,7 +12,10 @@ namespace HeightMap {
 struct SimpleExtrapolationFactoryImplementation
 {
     SimpleExtrapolationFactoryImplementation();
+
     void applyProxy();
+    void resetProxy();
+
     ~SimpleExtrapolationFactoryImplementation();
 
     SimpleExtrapolator *x;
@@ -37,6 +40,11 @@ void SimpleExtrapolationFactoryImplementation::applyProxy()
     x->setBaseLevel(proxy->baseLevel());
 }
 
+void SimpleExtrapolationFactoryImplementation::resetProxy()
+{
+    proxy->setBaseLevel(x->baseLevel());
+}
+
 SimpleExtrapolationFactoryImplementation::~SimpleExtrapolationFactoryImplementation()
 {
     XWriter xw("xdata/sml.xml");
@@ -59,18 +67,25 @@ AbstractExtrapolationWidget *SimpleExtrapolationFactory::createWidget() const
 {
     SimpleExtrapolationWidget *widget = new SimpleExtrapolationWidget;
     widget->bindExtrapolator(m->x);
+
     return widget;
 }
 
 AbstractExtrapolationWidget *SimpleExtrapolationFactory::createProxyWidget() const
 {
+    m->resetProxy();
+
     SimpleExtrapolationWidget *widget = new SimpleExtrapolationWidget;
     widget->bindExtrapolator(m->proxy);
+
     return widget;
 }
 
 void SimpleExtrapolationFactory::applyProxyData()
 { m->applyProxy(); }
+
+void SimpleExtrapolationFactory::resetProxyData()
+{ m->resetProxy(); }
 
 QString SimpleExtrapolationFactory::name() const
 { return SimpleExtrapolationWidget::tr("sml"); }

@@ -12,7 +12,10 @@ namespace HeightMap {
 struct BaseLevelExtrapolationFactoryImplementation
 {
     BaseLevelExtrapolationFactoryImplementation();
+
     void applyProxy();
+    void resetProxy();
+
     ~BaseLevelExtrapolationFactoryImplementation();
 
     BaseLevelExtrapolator *x;
@@ -37,6 +40,11 @@ void BaseLevelExtrapolationFactoryImplementation::applyProxy()
     x->setBaseLevel(proxy->baseLevel());
 }
 
+void BaseLevelExtrapolationFactoryImplementation::resetProxy()
+{
+    proxy->setBaseLevel(x->baseLevel());
+}
+
 BaseLevelExtrapolationFactoryImplementation::~BaseLevelExtrapolationFactoryImplementation()
 {
     XWriter xw("xdata/bsl.xml");
@@ -59,18 +67,25 @@ AbstractExtrapolationWidget *BaseLevelExtrapolationFactory::createWidget() const
 {
     BaseLevelExtrapolationWidget *widget = new BaseLevelExtrapolationWidget;
     widget->bindExtrapolator(m->x);
+
     return widget;
 }
 
 AbstractExtrapolationWidget *BaseLevelExtrapolationFactory::createProxyWidget() const
 {
+    m->resetProxy();
+
     BaseLevelExtrapolationWidget *widget = new BaseLevelExtrapolationWidget;
     widget->bindExtrapolator(m->proxy);
+
     return widget;
 }
 
 void BaseLevelExtrapolationFactory::applyProxyData()
 { m->applyProxy(); }
+
+void BaseLevelExtrapolationFactory::resetProxyData()
+{ m->resetProxy(); }
 
 QString BaseLevelExtrapolationFactory::name() const
 { return BaseLevelExtrapolationWidget::tr("bsl"); }
