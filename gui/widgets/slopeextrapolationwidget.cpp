@@ -26,9 +26,6 @@ struct SlopeExtrapolationWidgetImplementation
     QLabel *lblSlope;
     QDoubleSpinBox *spnSlope;
 
-    double bl;
-    double sr;
-
     SlopeExtrapolator *x;
 
 private:
@@ -42,8 +39,6 @@ SlopeExtrapolationWidgetImplementation::SlopeExtrapolationWidgetImplementation()
       spnBaseLevel(new QDoubleSpinBox),
       lblSlope(new QLabel),
       spnSlope(new QDoubleSpinBox),
-      bl(static_cast<double>(Preferences::MinLevel)),
-      sr(1.0),
       x(nullptr) { }
 
 void SlopeExtrapolationWidgetImplementation::adjustControls()
@@ -122,12 +117,6 @@ void SlopeExtrapolationWidget::bindExtrapolator(SlopeExtrapolator *sx)
 void SlopeExtrapolationWidget::refreshData()
 { m->adjustValues(); }
 
-void SlopeExtrapolationWidget::acceptSettings()
-{
-    m->x->setBaseLevel(m->bl);
-    m->x->setSlopeRatio(m->sr);
-}
-
 
 SlopeExtrapolationWidget::~SlopeExtrapolationWidget()
 {
@@ -137,12 +126,12 @@ SlopeExtrapolationWidget::~SlopeExtrapolationWidget()
 
 void SlopeExtrapolationWidget::setBaseLevel(double bl)
 {
-    m->bl = bl;
+    m->x->setBaseLevel(bl);
 }
 
 void SlopeExtrapolationWidget::setSlopeRatio(double sr)
 {
-    m->sr = sr;
+    m->x->setSlopeRatio(sr);
 }
 
 

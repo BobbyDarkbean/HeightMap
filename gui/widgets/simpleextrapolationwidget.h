@@ -21,7 +21,6 @@ public:
     void bindExtrapolator(SimpleExtrapolator *);
 
     void refreshData();
-    void acceptSettings();
 
     ~SimpleExtrapolationWidget();
 

@@ -21,7 +21,6 @@ public:
     void bindExtrapolator(SlopeExtrapolator *);
 
     void refreshData();
-    void acceptSettings();
 
     ~SlopeExtrapolationWidget();
 

@@ -30,9 +30,6 @@ public:
 
     ~ExtrapolationOptionsDialog();
 
-public slots:
-    void done(int);
-
 private:
     DISABLE_COPY(ExtrapolationOptionsDialog)
     DISABLE_MOVE(ExtrapolationOptionsDialog)

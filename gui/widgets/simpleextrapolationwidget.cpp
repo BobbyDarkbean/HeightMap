@@ -23,8 +23,6 @@ struct SimpleExtrapolationWidgetImplementation
     QLabel *lblBaseLevel;
     QDoubleSpinBox *spnBaseLevel;
 
-    double bl;
-
     SimpleExtrapolator *x;
 
 private:
@@ -36,7 +34,6 @@ private:
 SimpleExtrapolationWidgetImplementation::SimpleExtrapolationWidgetImplementation()
     : lblBaseLevel(new QLabel),
       spnBaseLevel(new QDoubleSpinBox),
-      bl(static_cast<double>(Preferences::MinLevel)),
       x(nullptr) { }
 
 void SimpleExtrapolationWidgetImplementation::adjustControls()
@@ -100,9 +97,6 @@ void SimpleExtrapolationWidget::bindExtrapolator(SimpleExtrapolator *sx)
 void SimpleExtrapolationWidget::refreshData()
 { m->adjustValues(); }
 
-void SimpleExtrapolationWidget::acceptSettings()
-{ m->x->setBaseLevel(m->bl); }
-
 
 SimpleExtrapolationWidget::~SimpleExtrapolationWidget()
 {
@@ -112,7 +106,7 @@ SimpleExtrapolationWidget::~SimpleExtrapolationWidget()
 
 void SimpleExtrapolationWidget::setBaseLevel(double bl)
 {
-    m->bl = bl;
+    m->x->setBaseLevel(bl);
 }
 
 

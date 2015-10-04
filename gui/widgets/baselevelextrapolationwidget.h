@@ -21,7 +21,6 @@ public:
     void bindExtrapolator(BaseLevelExtrapolator *);
 
     void refreshData();
-    void acceptSettings();
 
     ~BaseLevelExtrapolationWidget();
 

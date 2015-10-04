@@ -124,21 +124,6 @@ void ExtrapolationOptionsWidget::addExtrapolationWidget(
     m->cmbExtrapolMethod->addItem(description, name);
 }
 
-void ExtrapolationOptionsWidget::acceptCurrentExtrapolation()
-{
-    int id = m->mapExtrapolNames.value(extrapolatorName(), -1);
-    if (AbstractExtrapolationWidget *w = m->mapExtrapolWgts.value(id, nullptr)) {
-        w->acceptSettings();
-    }
-}
-
-void ExtrapolationOptionsWidget::acceptExtrapolationSettings()
-{
-    for (auto i = m->mapExtrapolWgts.begin(); i != m->mapExtrapolWgts.end(); ++i) {
-        i.value()->acceptSettings();
-    }
-}
-
 void ExtrapolationOptionsWidget::retrieveExtrapolationSettings()
 {
     for (auto i = m->mapExtrapolWgts.begin(); i != m->mapExtrapolWgts.end(); ++i) {

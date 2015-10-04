@@ -282,10 +282,7 @@ void HeightMapWindowImplementation::resetStatusBar()
     lblIsobars->setText(QString());
 }
 
-HeightMapWindowImplementation::~HeightMapWindowImplementation()
-{
-    wgtExtrapolation->acceptExtrapolationSettings();
-}
+HeightMapWindowImplementation::~HeightMapWindowImplementation() { }
 
 
 HeightMapWindow::HeightMapWindow(QWidget *parent)
@@ -420,8 +417,6 @@ void HeightMapWindow::editPeakSettings()
 
 void HeightMapWindow::editExtrapolationSettings()
 {
-    m->wgtExtrapolation->acceptExtrapolationSettings();
-
     Preferences prefs(hmApp->preferences());
 
     PreferencesController ctrl;
@@ -512,7 +507,6 @@ void HeightMapWindow::onPeakExtrapolationStarted()
 
 void HeightMapWindow::onPeakExtrapolationAcquiring()
 {
-    m->wgtExtrapolation->acceptExtrapolationSettings();
 }
 
 void HeightMapWindow::onPeakExtrapolated(QPoint, double)

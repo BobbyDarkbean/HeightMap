@@ -21,7 +21,6 @@ public:
     void bindExtrapolator(FixedRadiusExtrapolator *);
 
     void refreshData();
-    void acceptSettings();
 
     ~FixedRadiusExtrapolationWidget();
 

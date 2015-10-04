@@ -111,14 +111,4 @@ ExtrapolationOptionsDialog::~ExtrapolationOptionsDialog()
 }
 
 
-void ExtrapolationOptionsDialog::done(int r)
-{
-    if (r == Accepted) {
-        m->wgtExtrapolOpt->acceptCurrentExtrapolation();
-    }
-
-    QDialog::done(r);
-}
-
-
 } // namespace HeightMap
