@@ -23,6 +23,7 @@ public:
 
     QWidget *extrapolationWidget(const QString &name) const;
     void addExtrapolationWidget(ExtrapolationFactory *, bool proxy);
+    void removeExtrapolationWidget(const QString &name);
 
     void retrieveExtrapolationSettings();
 

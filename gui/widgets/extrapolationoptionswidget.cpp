@@ -126,6 +126,21 @@ void ExtrapolationOptionsWidget::addExtrapolationWidget(ExtrapolationFactory *f,
     m->cmbExtrapolMethod->addItem(description, name);
 }
 
+void ExtrapolationOptionsWidget::removeExtrapolationWidget(const QString &name)
+{
+    if (!m->mapExtrapolId.contains(name))
+        return;
+
+    int id = m->mapExtrapolId.take(name);
+    QWidget *w = m->mapExtrapolWgts.take(id);
+
+    m->stkExtrapolOpts->removeWidget(w);
+    delete w;
+
+    int index = m->cmbExtrapolMethod->findData(name);
+    m->cmbExtrapolMethod->removeItem(index);
+}
+
 void ExtrapolationOptionsWidget::retrieveExtrapolationSettings()
 {
     for (auto i = m->mapExtrapolWgts.begin(); i != m->mapExtrapolWgts.end(); ++i) {
