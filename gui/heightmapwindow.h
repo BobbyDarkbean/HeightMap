@@ -9,6 +9,7 @@
 namespace HeightMap {
 
 
+class HeightMapLogic;
 struct HeightMapWindowImplementation;
 class HeightMapWindow : public QMainWindow
 {
@@ -16,6 +17,7 @@ class HeightMapWindow : public QMainWindow
 
 public:
     explicit HeightMapWindow(QWidget *parent = 0);
+    void init(HeightMapLogic *);
     ~HeightMapWindow();
 
 public slots:

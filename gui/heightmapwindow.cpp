@@ -13,6 +13,7 @@
 #include "heightmapapplication.h"
 #include "preferences.h"
 #include "preferencescontroller.h"
+#include "trigger.h"
 #include "terrain.h"
 #include "widgets/abstractextrapolationwidget.h"
 #include "widgets/peakoptionswidget.h"
@@ -50,6 +51,8 @@ struct HeightMapWindowImplementation
 
     ~HeightMapWindowImplementation();
 
+    HeightMapLogic *logic;
+
     QLabel *lblHmImg;
 
     PeakOptionsWidget *wgtPeakGenerating;
@@ -68,6 +71,10 @@ struct HeightMapWindowImplementation
     QLabel *lblPeaks;
     QLabel *lblIsobars;
 
+    Trigger *trgGenLs;
+    Trigger *trgBuildLs;
+    Trigger *trgCalcContours;
+
     HeightMapViewMode hmvm;
 
     bool processing;
@@ -79,7 +86,8 @@ private:
 
 
 HeightMapWindowImplementation::HeightMapWindowImplementation()
-    : lblHmImg(new QLabel),
+    : logic(),
+      lblHmImg(new QLabel),
       wgtPeakGenerating(nullptr),
       wgtExtrapolation(nullptr),
       wgtContouring(nullptr),
@@ -93,6 +101,9 @@ HeightMapWindowImplementation::HeightMapWindowImplementation()
       prgProcess(new QProgressBar),
       lblPeaks(new QLabel),
       lblIsobars(new QLabel),
+      trgGenLs(nullptr),
+      trgBuildLs(nullptr),
+      trgCalcContours(nullptr),
       hmvm(HMVM_Hybrid),
       processing(false) { }
 
@@ -203,8 +214,8 @@ void HeightMapWindowImplementation::createActions(HeightMapWindow *master)
 
 void HeightMapWindowImplementation::createWidgets()
 {
-    Preferences prefs = hmApp->preferences();
-    PreferencesController *ctrl = hmApp->preferencesController();
+    Preferences prefs = logic->preferences();
+    PreferencesController *ctrl = logic->preferencesController();
 
     wgtPeakGenerating = new PeakOptionsWidget;
     wgtPeakGenerating->setRange(prefs.minPeak(), prefs.maxPeak());
@@ -212,9 +223,9 @@ void HeightMapWindowImplementation::createWidgets()
 
     wgtExtrapolation = new ExtrapolationOptionsWidget;
 
-    QStringList xNames = hmApp->extrapolatorKeys();
+    QStringList xNames = logic->extrapolatorKeys();
     foreach (QString name, xNames) {
-        if (ExtrapolationFactory *f = hmApp->extrapolationFactory(name))
+        if (ExtrapolationFactory *f = logic->extrapolationFactory(name))
             wgtExtrapolation->addExtrapolationWidget(f, false);
     }
 
@@ -256,21 +267,21 @@ void HeightMapWindowImplementation::createDocks(HeightMapWindow *master)
 
 void HeightMapWindowImplementation::provideExtrapolationWidgets(ExtrapolationOptionsDialog *dialog)
 {
-    QStringList xNames = hmApp->extrapolatorKeys();
+    QStringList xNames = logic->extrapolatorKeys();
     foreach (QString name, xNames) {
-        if (ExtrapolationFactory *f = hmApp->extrapolationFactory(name))
+        if (ExtrapolationFactory *f = logic->extrapolationFactory(name))
             dialog->addExtrapolationWidget(f);
     }
 }
 
 void HeightMapWindowImplementation::displayHeightMapImage()
 {
-    lblHmImg->setPixmap(QPixmap::fromImage(hmApp->logic()->heightMapImage(hmvm)));
+    lblHmImg->setPixmap(QPixmap::fromImage(logic->heightMapImage(hmvm)));
 }
 
 void HeightMapWindowImplementation::resetStatusBar()
 {
-    Terrain *terrain = hmApp->logic()->terrain();
+    Terrain *terrain = logic->terrain();
     lblLandscape->setText(QString("%1%2%3")
                           .arg(terrain->width())
                           .arg(QChar(0x00d7))
@@ -288,10 +299,6 @@ HeightMapWindow::HeightMapWindow(QWidget *parent)
     : QMainWindow(parent),
       m(new HeightMapWindowImplementation)
 {
-    m->createWidgets();
-    m->createDocks(this);
-    m->createActions(this);
-
     m->lblHmImg->setAlignment(Qt::AlignCenter);
 
     QScrollArea *scrollArea = new QScrollArea(this);
@@ -315,25 +322,40 @@ HeightMapWindow::HeightMapWindow(QWidget *parent)
     statusBar()->addWidget(procBarShell, 12);
     statusBar()->addWidget(m->lblPeaks, 4);
     statusBar()->addWidget(m->lblIsobars, 6);
-
-    connect(hmApp, &HeightMapApplication::preferencesChanged,   this, &HeightMapWindow::adjustPreferences);
-    connect(hmApp, &HeightMapApplication::extrapolationDataChanged, this, &HeightMapWindow::adjustExtrapolationData);
-
-    HeightMapLogic *logic = hmApp->logic();
-
-    connect(logic, &HeightMapLogic::terrainCreated,             this, &HeightMapWindow::resetTerrainData);
-    connect(logic, &HeightMapLogic::processStarted,             this, &HeightMapWindow::onProcessStarted);
-    connect(logic, &HeightMapLogic::processFinished,            this, &HeightMapWindow::onProcessFinished);
-    connect(logic, &HeightMapLogic::peakGeneratingStarted,      this, &HeightMapWindow::onPeakGeneratingStarted);
-    connect(logic, &HeightMapLogic::peakGeneratingFinished,     this, &HeightMapWindow::onPeakGeneratingFinished);
-    connect(logic, &HeightMapLogic::peakExtrapolationStarted,   this, &HeightMapWindow::onPeakExtrapolationStarted);
-    connect(logic, &HeightMapLogic::peakExtrapolated,           this, &HeightMapWindow::onPeakExtrapolated);
-    connect(logic, &HeightMapLogic::peakExtrapolationFinished,  this, &HeightMapWindow::onPeakExtrapolationFinished);
-    connect(logic, &HeightMapLogic::contouringStarted,          this, &HeightMapWindow::onContouringStarted);
-    connect(logic, &HeightMapLogic::contouringLevelsAcquired,   this, &HeightMapWindow::onContouringLevelsAcquired);
-    connect(logic, &HeightMapLogic::contouringAt,               this, &HeightMapWindow::onContouringAt);
-    connect(logic, &HeightMapLogic::contouringFinished,         this, &HeightMapWindow::onContouringFinished);
 }
+
+
+void HeightMapWindow::init(HeightMapLogic *l)
+{
+    m->logic = l;
+
+    m->trgGenLs = new Trigger(this);
+    m->trgBuildLs = new Trigger(this);
+    m->trgCalcContours = new Trigger(this);
+
+    m->createWidgets();
+    m->createDocks(this);
+    m->createActions(this);
+
+    typedef HeightMapWindow W;
+    typedef HeightMapLogic L;
+
+    connect(m->logic, &L::preferencesChanged,           this, &W::adjustPreferences);
+    connect(m->logic, &L::extrapolationDataChanged,     this, &W::adjustExtrapolationData);
+    connect(m->logic, &L::terrainCreated,               this, &W::resetTerrainData);
+    connect(m->logic, &L::processStarted,               this, &W::onProcessStarted);
+    connect(m->logic, &L::processFinished,              this, &W::onProcessFinished);
+    connect(m->logic, &L::peakGeneratingStarted,        this, &W::onPeakGeneratingStarted);
+    connect(m->logic, &L::peakGeneratingFinished,       this, &W::onPeakGeneratingFinished);
+    connect(m->logic, &L::peakExtrapolationStarted,     this, &W::onPeakExtrapolationStarted);
+    connect(m->logic, &L::peakExtrapolated,             this, &W::onPeakExtrapolated);
+    connect(m->logic, &L::peakExtrapolationFinished,    this, &W::onPeakExtrapolationFinished);
+    connect(m->logic, &L::contouringStarted,            this, &W::onContouringStarted);
+    connect(m->logic, &L::contouringLevelsAcquired,     this, &W::onContouringLevelsAcquired);
+    connect(m->logic, &L::contouringAt,                 this, &W::onContouringAt);
+    connect(m->logic, &L::contouringFinished,           this, &W::onContouringFinished);
+}
+
 
 HeightMapWindow::~HeightMapWindow()
 {
@@ -345,13 +367,13 @@ void HeightMapWindow::newFile()
 {
     TerrainOptionsDialog dialog(this);
     dialog.setWindowTitle(tr("New file"));
-    dialog.setPreferences(hmApp->preferences());
+    dialog.setPreferences(m->logic->preferences());
 
     if (!dialog.exec())
         return;
 
-    hmApp->setPreferences(dialog.preferences());
-    hmApp->logic()->newTerrain();
+    m->logic->setPreferences(dialog.preferences());
+    m->logic->newTerrain();
 }
 
 void HeightMapWindow::exportLandscape()
@@ -372,7 +394,7 @@ void HeightMapWindow::exportLandscape()
 
     std::ofstream stream;
     stream.open(filename.toStdString(), std::ios::out | std::ios::trunc);
-    hmApp->logic()->terrain()->exportLandscape(stream, 4);
+    m->logic->terrain()->exportLandscape(stream, 4);
     stream.close();
 }
 
@@ -394,13 +416,13 @@ void HeightMapWindow::exportPeaks()
 
     std::ofstream stream;
     stream.open(filename.toStdString(), std::ios::out | std::ios::trunc);
-    hmApp->logic()->terrain()->exportPeaks(stream);
+    m->logic->terrain()->exportPeaks(stream);
     stream.close();
 }
 
 void HeightMapWindow::editPeakSettings()
 {
-    Preferences prefs(hmApp->preferences());
+    Preferences prefs(m->logic->preferences());
 
     PreferencesController ctrl;
     ctrl.setPreferences(&prefs);
@@ -410,13 +432,13 @@ void HeightMapWindow::editPeakSettings()
     dialog.setPreferencesController(&ctrl);
 
     if (dialog.exec()) {
-        hmApp->setPreferences(prefs);
+        m->logic->setPreferences(prefs);
     }
 }
 
 void HeightMapWindow::editExtrapolationSettings()
 {
-    Preferences prefs(hmApp->preferences());
+    Preferences prefs(m->logic->preferences());
 
     PreferencesController ctrl;
     ctrl.setPreferences(&prefs);
@@ -427,14 +449,14 @@ void HeightMapWindow::editExtrapolationSettings()
     dialog.setPreferencesController(&ctrl);
 
     if (dialog.exec()) {
-        hmApp->applyProxyExtrapolator(dialog.extrapolatorName());
-        hmApp->setPreferences(prefs);
+        m->logic->applyProxyExtrapolator(dialog.extrapolatorName());
+        m->logic->setPreferences(prefs);
     }
 }
 
 void HeightMapWindow::editContouringSettings()
 {
-    Preferences prefs(hmApp->preferences());
+    Preferences prefs(m->logic->preferences());
 
     PreferencesController ctrl;
     ctrl.setPreferences(&prefs);
@@ -444,13 +466,13 @@ void HeightMapWindow::editContouringSettings()
     dialog.setPreferencesController(&ctrl);
 
     if (dialog.exec()) {
-        hmApp->setPreferences(prefs);
+        m->logic->setPreferences(prefs);
     }
 }
 
 void HeightMapWindow::adjustPreferences()
 {
-    Preferences prefs(hmApp->preferences());
+    Preferences prefs(m->logic->preferences());
 
     m->wgtPeakGenerating->setRange(prefs.minPeak(), prefs.maxPeak());
     m->wgtPeakGenerating->setPeakCount(prefs.peakCount());
@@ -472,11 +494,10 @@ void HeightMapWindow::resetTerrainData()
 
 void HeightMapWindow::onProcessStarted()
 {
-    Terrain *terrain = hmApp->logic()->terrain();
-
     m->lblState->setText(tr("Processing..."));
     m->prgProcess->setValue(0);
-    m->prgProcess->setMaximum(static_cast<int>(hmApp->preferences().peakCount()) + terrain->width() - 1);
+    m->prgProcess->setMaximum(static_cast<int>(m->logic->preferences().peakCount()) +
+                              m->logic->terrain->width() - 1);
     m->prgProcess->show();
 
     m->processing = true;
@@ -500,7 +521,7 @@ void HeightMapWindow::onPeakGeneratingStarted()
 
 void HeightMapWindow::onPeakGeneratingFinished()
 {
-    Terrain *terrain = hmApp->logic()->terrain();
+    Terrain *terrain = m->logic->terrain();
     m->lblPeaks->setText(tr("%1 peak(s)").arg(terrain->peaks().size()));
 }
 
@@ -535,7 +556,7 @@ void HeightMapWindow::onContouringAt(int)
 
 void HeightMapWindow::onContouringFinished()
 {
-    Terrain *terrain = hmApp->logic()->terrain();
+    Terrain *terrain = m->logic->terrain();
     m->lblIsobars->setText(tr("%1 isobar segment(s)").arg(terrain->contours().size()));
 }
 
