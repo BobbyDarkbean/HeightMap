@@ -2,7 +2,6 @@
 #include <QMutex>
 #include "auxiliary/mappingdata.h"
 #include "heightmaplogic.h"
-#include "heightmapapplication.h"
 #include "preferences.h"
 #include "terrain.h"
 #include "mapper.h"

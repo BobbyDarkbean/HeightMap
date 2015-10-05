@@ -1,5 +1,6 @@
 #include <memory>
 
+#include <QStringList>
 #include <QMap>
 #include <QImage>
 #include "terrain.h"
@@ -10,7 +11,6 @@
 #include "preferences.h"
 #include "preferencescontroller.h"
 #include "trigger.h"
-#include "heightmapapplication.h"
 
 #include "heightmaplogic.h"
 

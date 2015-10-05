@@ -10,7 +10,6 @@
 #include <QFileDialog>
 #include <fstream>
 #include "heightmaplogic.h"
-#include "heightmapapplication.h"
 #include "preferences.h"
 #include "preferencescontroller.h"
 #include "trigger.h"
