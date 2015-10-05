@@ -16,8 +16,9 @@ struct HeightMapApplicationImplementation
 {
     HeightMapApplicationImplementation();
 
-    void loadPrefs(Preferences &);
-    void savePrefs(const Preferences &);
+    void importExtrapolations();
+    void loadPreferences();
+    void savePreferences();
 
     ~HeightMapApplicationImplementation();
 
@@ -33,25 +34,20 @@ private:
 
 HeightMapApplicationImplementation::HeightMapApplicationImplementation()
     : logic(nullptr),
-      IniFilename(QApplication::applicationDirPath() + "/hmcfg.ini")
+      IniFilename(QApplication::applicationDirPath() + "/hmcfg.ini") { }
+
+void HeightMapApplicationImplementation::importExtrapolations()
 {
-    ExtrapolationFactory *xFactorySimple = new SimpleExtrapolationFactory;
-    extrapolations.insert(xFactorySimple->name(), xFactorySimple);
-
-    ExtrapolationFactory *xFactorySlope = new SlopeExtrapolationFactory;
-    extrapolations.insert(xFactorySlope->name(), xFactorySlope);
-
-    ExtrapolationFactory *xFactoryBaseLevel = new BaseLevelExtrapolationFactory;
-    extrapolations.insert(xFactoryBaseLevel->name(), xFactoryBaseLevel);
-
-    ExtrapolationFactory *xFactoryFixedRadius = new FixedRadiusExtrapolationFactory;
-    extrapolations.insert(xFactoryFixedRadius->name(), xFactoryFixedRadius);
-
-
+    logic->addExtrapolation(new SimpleExtrapolationFactory);
+    logic->addExtrapolation(new SlopeExtrapolationFactory);
+    logic->addExtrapolation(new BaseLevelExtrapolationFactory);
+    logic->addExtrapolation(new FixedRadiusExtrapolationFactory);
 }
 
-void HeightMapApplicationImplementation::loadPrefs(Preferences &prefs)
+void HeightMapApplicationImplementation::loadPreferences()
 {
+    Preferences prefs;
+
     QSettings settings(IniFilename, QSettings::IniFormat);
     prefs.setLandscapeWidth(qvariant_cast<int>(settings.value("landscape/width", Preferences::DefaultLandscapeWidth)));
     prefs.setLandscapeHeight(qvariant_cast<int>(settings.value("landscape/height", Preferences::DefaultLandscapeHeight)));
@@ -64,11 +60,15 @@ void HeightMapApplicationImplementation::loadPrefs(Preferences &prefs)
     prefs.setContouringStep(qvariant_cast<int>(settings.value("contouring/step", Preferences::DefaultContouringStep)));
     prefs.setImageFactor(qvariant_cast<int>(settings.value("appearance/imgfactor", Preferences::DefaultImageFactor)));
 
+    logic->setPreferences(prefs);
+
     settings.sync();
 }
 
-void HeightMapApplicationImplementation::savePrefs(const Preferences &prefs)
+void HeightMapApplicationImplementation::savePreferences()
 {
+    const Preferences &prefs = logic->preferences();
+
     QSettings settings(IniFilename, QSettings::IniFormat);
 
     settings.beginGroup("landscape");
@@ -106,9 +106,8 @@ HeightMapApplication::HeightMapApplication(int &argc, char **argv)
 {
     m->logic = new HeightMapLogic(this);
 
-    Preferences prefs;
-    m->loadPrefs(prefs);
-    m->logic->setPreferences(prefs);
+    m->loadPreferences();
+    m->importExtrapolations();
 }
 
 
@@ -118,7 +117,7 @@ HeightMapLogic *HeightMapApplication::logic() const
 
 HeightMapApplication::~HeightMapApplication()
 {
-    m->savePrefs(m->logic->preferences());
+    m->savePreferences();
     delete m;
 }
 

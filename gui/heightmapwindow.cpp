@@ -135,22 +135,20 @@ void HeightMapWindowImplementation::createActions(HeightMapWindow *master)
     mnuFile->addSeparator();
     mnuFile->addAction(actExit);
 
-    HeightMapLogic *logic = hmApp->logic();
-
     QAction *actGenLs = new QAction(master);
     actGenLs->setText(HeightMapWindow::tr("&Generate landscape"));
     actGenLs->setShortcut(HeightMapWindow::tr("Ctrl+G"));
-    QObject::connect(actGenLs, &QAction::triggered, logic, &HeightMapLogic::createLandscape);
+    QObject::connect(actGenLs, &QAction::triggered, trgGenLs, &Trigger::activate);
 
     QAction *actBuildLs = new QAction(master);
     actBuildLs->setText(HeightMapWindow::tr("E&xtrapolate peaks"));
     actBuildLs->setShortcut(HeightMapWindow::tr("Ctrl+E"));
-    QObject::connect(actBuildLs, &QAction::triggered, logic, &HeightMapLogic::buildLandscapeFromPeaks);
+    QObject::connect(actBuildLs, &QAction::triggered, trgBuildLs, &Trigger::activate);
 
     QAction *actCalcContours = new QAction(master);
     actCalcContours->setText(HeightMapWindow::tr("Calculate &isobars"));
     actCalcContours->setShortcut(HeightMapWindow::tr("Ctrl+I"));
-    QObject::connect(actCalcContours, &QAction::triggered,  logic, &HeightMapLogic::plotIsobars);
+    QObject::connect(actCalcContours, &QAction::triggered, trgCalcContours, &Trigger::activate);
 
     QAction *actHmSettings = new QAction(master);
     actHmSettings->setText(HeightMapWindow::tr("&Peak settings..."));
@@ -339,21 +337,26 @@ void HeightMapWindow::init(HeightMapLogic *l)
 
     typedef HeightMapWindow W;
     typedef HeightMapLogic L;
+    typedef Trigger T;
 
-    connect(m->logic, &L::preferencesChanged,           this, &W::adjustPreferences);
-    connect(m->logic, &L::extrapolationDataChanged,     this, &W::adjustExtrapolationData);
-    connect(m->logic, &L::terrainCreated,               this, &W::resetTerrainData);
-    connect(m->logic, &L::processStarted,               this, &W::onProcessStarted);
-    connect(m->logic, &L::processFinished,              this, &W::onProcessFinished);
-    connect(m->logic, &L::peakGeneratingStarted,        this, &W::onPeakGeneratingStarted);
-    connect(m->logic, &L::peakGeneratingFinished,       this, &W::onPeakGeneratingFinished);
-    connect(m->logic, &L::peakExtrapolationStarted,     this, &W::onPeakExtrapolationStarted);
-    connect(m->logic, &L::peakExtrapolated,             this, &W::onPeakExtrapolated);
-    connect(m->logic, &L::peakExtrapolationFinished,    this, &W::onPeakExtrapolationFinished);
-    connect(m->logic, &L::contouringStarted,            this, &W::onContouringStarted);
-    connect(m->logic, &L::contouringLevelsAcquired,     this, &W::onContouringLevelsAcquired);
-    connect(m->logic, &L::contouringAt,                 this, &W::onContouringAt);
-    connect(m->logic, &L::contouringFinished,           this, &W::onContouringFinished);
+    connect(m->trgGenLs,        &T::activated,          m->logic,   &L::createLandscape);
+    connect(m->trgBuildLs,      &T::activated,          m->logic,   &L::buildLandscapeFromPeaks);
+    connect(m->trgCalcContours, &T::activated,          m->logic,   &L::plotIsobars);
+
+    connect(m->logic, &L::preferencesChanged,           this,       &W::adjustPreferences);
+    connect(m->logic, &L::extrapolationDataChanged,     this,       &W::adjustExtrapolationData);
+    connect(m->logic, &L::terrainCreated,               this,       &W::resetTerrainData);
+    connect(m->logic, &L::processStarted,               this,       &W::onProcessStarted);
+    connect(m->logic, &L::processFinished,              this,       &W::onProcessFinished);
+    connect(m->logic, &L::peakGeneratingStarted,        this,       &W::onPeakGeneratingStarted);
+    connect(m->logic, &L::peakGeneratingFinished,       this,       &W::onPeakGeneratingFinished);
+    connect(m->logic, &L::peakExtrapolationStarted,     this,       &W::onPeakExtrapolationStarted);
+    connect(m->logic, &L::peakExtrapolated,             this,       &W::onPeakExtrapolated);
+    connect(m->logic, &L::peakExtrapolationFinished,    this,       &W::onPeakExtrapolationFinished);
+    connect(m->logic, &L::contouringStarted,            this,       &W::onContouringStarted);
+    connect(m->logic, &L::contouringLevelsAcquired,     this,       &W::onContouringLevelsAcquired);
+    connect(m->logic, &L::contouringAt,                 this,       &W::onContouringAt);
+    connect(m->logic, &L::contouringFinished,           this,       &W::onContouringFinished);
 }
 
 
@@ -497,7 +500,7 @@ void HeightMapWindow::onProcessStarted()
     m->lblState->setText(tr("Processing..."));
     m->prgProcess->setValue(0);
     m->prgProcess->setMaximum(static_cast<int>(m->logic->preferences().peakCount()) +
-                              m->logic->terrain->width() - 1);
+                              m->logic->terrain()->width() - 1);
     m->prgProcess->show();
 
     m->processing = true;
