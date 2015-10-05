@@ -29,6 +29,8 @@ struct MappingWorkerImplementation
 
     ~MappingWorkerImplementation();
 
+    HeightMapLogic *logic;
+
     MappingData data;
     Mapper mapper;
     QMutex mutex;
@@ -40,13 +42,14 @@ private:
 
 
 MappingWorkerImplementation::MappingWorkerImplementation()
-    : data(),
+    : logic(nullptr),
+      data(),
       mapper(),
       mutex() { }
 
 PeakGenerationOptions MappingWorkerImplementation::genOptions() const
 {
-    const Preferences &prefs = hmApp->preferences();
+    const Preferences &prefs = logic->preferences();
     return PeakGenerationOptions {
         prefs.peakCount(),
         prefs.landscapeWidth(),
@@ -58,9 +61,9 @@ PeakGenerationOptions MappingWorkerImplementation::genOptions() const
 
 void MappingWorkerImplementation::fillLevels(std::vector<int> &levels)
 {
-    int minLvl = hmApp->preferences().minContouringLevel();
-    int maxLvl = hmApp->preferences().maxContouringLevel();
-    int step = hmApp->preferences().contouringStep();
+    int minLvl = logic->preferences().minContouringLevel();
+    int maxLvl = logic->preferences().maxContouringLevel();
+    int step = logic->preferences().contouringStep();
 
     for (int i = minLvl; i <= maxLvl; i += step)
         levels.push_back(i);
@@ -68,9 +71,9 @@ void MappingWorkerImplementation::fillLevels(std::vector<int> &levels)
 
 void MappingWorkerImplementation::drawPeaks()
 {
-    Terrain *terrain = hmApp->logic()->terrain();
+    Terrain *terrain = logic->terrain();
     Engraver engr;
-    int imageFactor = hmApp->preferences().imageFactor();
+    int imageFactor = logic->preferences().imageFactor();
 
     QImage imgPk(terrain->width() * imageFactor,
                  terrain->height() * imageFactor,
@@ -82,9 +85,9 @@ void MappingWorkerImplementation::drawPeaks()
 
 void MappingWorkerImplementation::drawLandscape()
 {
-    Terrain *terrain = hmApp->logic()->terrain();
+    Terrain *terrain = logic->terrain();
     Engraver engr;
-    int imageFactor = hmApp->preferences().imageFactor();
+    int imageFactor = logic->preferences().imageFactor();
 
     QImage imgLs(terrain->width() * imageFactor,
                  terrain->height() * imageFactor,
@@ -96,9 +99,9 @@ void MappingWorkerImplementation::drawLandscape()
 
 void MappingWorkerImplementation::drawIsobars()
 {
-    Terrain *terrain = hmApp->logic()->terrain();
+    Terrain *terrain = logic->terrain();
     Engraver engr;
-    int imageFactor = hmApp->preferences().imageFactor();
+    int imageFactor = logic->preferences().imageFactor();
 
     QImage imgBars(terrain->width() * imageFactor,
                    terrain->height() * imageFactor,
@@ -110,9 +113,9 @@ void MappingWorkerImplementation::drawIsobars()
 
 void MappingWorkerImplementation::drawHybrid()
 {
-    Terrain *terrain = hmApp->logic()->terrain();
+    Terrain *terrain = logic->terrain();
     Engraver engr;
-    int imageFactor = hmApp->preferences().imageFactor();
+    int imageFactor = logic->preferences().imageFactor();
 
     QImage imgHyb(terrain->width() * imageFactor,
                   terrain->height() * imageFactor,
@@ -136,10 +139,12 @@ MappingWorker::MappingWorker(QObject *parent)
     handle_event(Mapper, (&m->mapper), this, contouringAt, int);
 }
 
+
+void MappingWorker::bindLogic(HeightMapLogic *logic)
+{ m->logic = logic; }
+
 void MappingWorker::initFrom(const MappingData &data)
-{
-    m->data = data;
-}
+{ m->data = data; }
 
 
 MappingWorker::~MappingWorker()
@@ -189,7 +194,7 @@ void MappingWorker::generatePeaks()
 {
     emit peakGeneratingStarted();
 
-    Terrain *terrain = hmApp->logic()->terrain();
+    Terrain *terrain = m->logic->terrain();
     terrain->clearPeaks();
     terrain->generatePeaks(&m->mapper, m->genOptions());
     m->drawPeaks();
@@ -201,8 +206,8 @@ void MappingWorker::extrapolatePeaks()
 {
     emit peakExtrapolationStarted();
 
-    if (Extrapolator *extrapolator = hmApp->currentExtrapolator()) {
-        Terrain *terrain = hmApp->logic()->terrain();
+    if (Extrapolator *extrapolator = m->logic->currentExtrapolator()) {
+        Terrain *terrain = m->logic->terrain();
         terrain->fillLandscape(extrapolator->baseLevel());
         terrain->extrapolatePeaks(&m->mapper, extrapolator);
         m->drawLandscape();
@@ -220,7 +225,7 @@ void MappingWorker::calculateContours()
 
     emit contouringLevelsAcquired(levels.size());
 
-    Terrain *terrain = hmApp->logic()->terrain();
+    Terrain *terrain = m->logic->terrain();
     terrain->clearContours();
     terrain->calculateContours(&m->mapper, levels);
     m->drawIsobars();

@@ -113,6 +113,7 @@ HeightMapLogic::HeightMapLogic(QObject *parent)
 
     MappingWorker *worker = new MappingWorker;
     m->initWorker(worker);
+    worker->bindLogic(this);
     worker->moveToThread(m->thrProcess);
 
     m->trgGenLs = new Trigger(this);
@@ -224,8 +225,8 @@ HeightMapLogic::~HeightMapLogic()
 
 void HeightMapLogic::newTerrain()
 {
-    int w = hmApp->preferences().landscapeWidth();
-    int h = hmApp->preferences().landscapeHeight();
+    int w = m->prefs.landscapeWidth();
+    int h = m->prefs.landscapeHeight();
 
     m->terrain.reset(new Terrain(w, h));    
     m->resetImages();

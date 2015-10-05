@@ -12,6 +12,7 @@ namespace HeightMap {
 
 
 class Mapper;
+class HeightMapLogic;
 struct MappingData;
 struct MappingWorkerImplementation;
 class MappingWorker : public QObject
@@ -20,7 +21,10 @@ class MappingWorker : public QObject
 
 public:
     explicit MappingWorker(QObject *parent = 0);
+
+    void bindLogic(HeightMapLogic *);
     void initFrom(const MappingData &);
+
     ~MappingWorker();
 
 signals:
