@@ -1,6 +1,5 @@
 #include <QSettings>
 #include "preferences.h"
-#include "preferencescontroller.h"
 #include "extrapolation/simpleextrapolationfactory.h"
 #include "extrapolation/slopeextrapolationfactory.h"
 #include "extrapolation/baselevelextrapolationfactory.h"
@@ -16,13 +15,13 @@ namespace HeightMap {
 struct HeightMapApplicationImplementation
 {
     HeightMapApplicationImplementation();
+
+    void loadPrefs(Preferences &);
+    void savePrefs(const Preferences &);
+
     ~HeightMapApplicationImplementation();
 
     HeightMapLogic *logic;
-
-    Preferences prefs;
-    PreferencesController *ctrl;
-    QMap<QString, ExtrapolationFactory *> extrapolations;
 
     const QString IniFilename;
 
@@ -34,9 +33,6 @@ private:
 
 HeightMapApplicationImplementation::HeightMapApplicationImplementation()
     : logic(nullptr),
-      prefs(),
-      ctrl(nullptr),
-      extrapolations(),
       IniFilename(QApplication::applicationDirPath() + "/hmcfg.ini")
 {
     ExtrapolationFactory *xFactorySimple = new SimpleExtrapolationFactory;
@@ -51,6 +47,11 @@ HeightMapApplicationImplementation::HeightMapApplicationImplementation()
     ExtrapolationFactory *xFactoryFixedRadius = new FixedRadiusExtrapolationFactory;
     extrapolations.insert(xFactoryFixedRadius->name(), xFactoryFixedRadius);
 
+
+}
+
+void HeightMapApplicationImplementation::loadPrefs(Preferences &prefs)
+{
     QSettings settings(IniFilename, QSettings::IniFormat);
     prefs.setLandscapeWidth(qvariant_cast<int>(settings.value("landscape/width", Preferences::DefaultLandscapeWidth)));
     prefs.setLandscapeHeight(qvariant_cast<int>(settings.value("landscape/height", Preferences::DefaultLandscapeHeight)));
@@ -66,7 +67,7 @@ HeightMapApplicationImplementation::HeightMapApplicationImplementation()
     settings.sync();
 }
 
-HeightMapApplicationImplementation::~HeightMapApplicationImplementation()
+void HeightMapApplicationImplementation::savePrefs(const Preferences &prefs)
 {
     QSettings settings(IniFilename, QSettings::IniFormat);
 
@@ -94,11 +95,9 @@ HeightMapApplicationImplementation::~HeightMapApplicationImplementation()
     settings.beginGroup("appearance");
     settings.setValue("imgfactor", prefs.imageFactor());
     settings.endGroup();
-
-    for (auto i = extrapolations.constBegin(); i != extrapolations.constEnd(); ++i) {
-        delete i.value();
-    }
 }
+
+HeightMapApplicationImplementation::~HeightMapApplicationImplementation() { }
 
 
 HeightMapApplication::HeightMapApplication(int &argc, char **argv)
@@ -107,65 +106,19 @@ HeightMapApplication::HeightMapApplication(int &argc, char **argv)
 {
     m->logic = new HeightMapLogic(this);
 
-    m->ctrl = new PreferencesController(this);
-    m->ctrl->setPreferences(&m->prefs);
+    Preferences prefs;
+    m->loadPrefs(prefs);
+    m->logic->setPreferences(prefs);
 }
-
-
-const Preferences &HeightMapApplication::preferences() const
-{ return m->prefs; }
-
-void HeightMapApplication::setPreferences(const Preferences &prefs)
-{
-    if (m->prefs != prefs) {
-        m->prefs = prefs;
-        emit preferencesChanged();
-    }
-}
-
-PreferencesController *HeightMapApplication::preferencesController() const
-{ return m->ctrl; }
 
 
 HeightMapLogic *HeightMapApplication::logic() const
 { return m->logic; }
 
 
-QStringList HeightMapApplication::extrapolatorKeys() const
-{
-    return m->extrapolations.keys();
-}
-
-ExtrapolationFactory *HeightMapApplication::extrapolationFactory(const QString &name) const
-{ return m->extrapolations.value(name, nullptr); }
-
-Extrapolator *HeightMapApplication::currentExtrapolator() const
-{
-    QString currentName = preferences().extrapolatorName();
-    if (ExtrapolationFactory *f = extrapolationFactory(currentName)) {
-        return f->extrapolator();
-    }
-
-    return nullptr;
-}
-
-void HeightMapApplication::applyProxyExtrapolator(const QString &name)
-{
-    for (auto i = m->extrapolations.constBegin(); i != m->extrapolations.constEnd(); ++i) {
-        if (ExtrapolationFactory *f = i.value()) {
-            if (i.key() == name) {
-                f->applyProxyData();
-                emit extrapolationDataChanged(name);
-            } else {
-                f->resetProxyData();
-            }
-        }
-    }
-}
-
-
 HeightMapApplication::~HeightMapApplication()
 {
+    m->savePrefs(m->logic->preferences());
     delete m;
 }
 

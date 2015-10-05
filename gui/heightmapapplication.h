@@ -9,10 +9,6 @@
 namespace HeightMap {
 
 
-class Preferences;
-class PreferencesController;
-class Extrapolator;
-class ExtrapolationFactory;
 class AbstractExtrapolationWidget;
 class HeightMapLogic;
 struct HeightMapApplicationImplementation;
@@ -23,23 +19,9 @@ class HeightMapApplication : public QApplication
 public:
     HeightMapApplication(int &argc, char **argv);
 
-    const Preferences &preferences() const;
-    void setPreferences(const Preferences &);
-
-    PreferencesController *preferencesController() const;
-
     HeightMapLogic *logic() const;
 
-    QStringList extrapolatorKeys() const;
-    ExtrapolationFactory *extrapolationFactory(const QString &name) const;
-    Extrapolator *currentExtrapolator() const;
-    void applyProxyExtrapolator(const QString &name);
-
     ~HeightMapApplication();
-
-signals:
-    void preferencesChanged();
-    void extrapolationDataChanged(QString);
 
 private:
     DISABLE_COPY(HeightMapApplication)
