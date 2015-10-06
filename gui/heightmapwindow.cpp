@@ -38,10 +38,6 @@ struct HeightMapWindowImplementation
 {
     HeightMapWindowImplementation();
 
-    void createActions(HeightMapWindow *master);
-    void createWidgets();
-    void createDocks(HeightMapWindow *master);
-
     void provideExtrapolationWidgets(ExtrapolationOptionsDialog *);
 
     void displayHeightMapImage();
@@ -129,168 +125,6 @@ HeightMapWindowImplementation::HeightMapWindowImplementation()
       hmvm(HMVM_Hybrid),
       processing(false) { }
 
-void HeightMapWindowImplementation::createActions(HeightMapWindow *master)
-{
-    actNewFile = new QAction(master);
-    actNewFile->setText(HeightMapWindow::tr("&New file..."));
-    actNewFile->setShortcut(HeightMapWindow::tr("Ctrl+N"));
-
-    actExportLs = new QAction(master);
-    actExportLs->setText(HeightMapWindow::tr("Export landscape..."));
-
-    actExportPk = new QAction(master);
-    actExportPk->setText(HeightMapWindow::tr("Export peaks..."));
-
-    actExit = new QAction(master);
-    actExit->setText(HeightMapWindow::tr("E&xit"));
-    actExit->setShortcut(HeightMapWindow::tr("Alt+X"));
-
-    QMenu *mnuFile = master->menuBar()->addMenu(HeightMapWindow::tr("&File"));
-    mnuFile->addAction(actNewFile);
-    mnuFile->addSeparator();
-    mnuFile->addAction(actExportLs);
-    mnuFile->addAction(actExportPk);
-    mnuFile->addSeparator();
-    mnuFile->addAction(actExit);
-
-    actGenLs = new QAction(master);
-    actGenLs->setText(HeightMapWindow::tr("&Generate landscape"));
-    actGenLs->setShortcut(HeightMapWindow::tr("Ctrl+G"));
-
-    actBuildLs = new QAction(master);
-    actBuildLs->setText(HeightMapWindow::tr("E&xtrapolate peaks"));
-    actBuildLs->setShortcut(HeightMapWindow::tr("Ctrl+E"));
-
-    actCalcContours = new QAction(master);
-    actCalcContours->setText(HeightMapWindow::tr("Calculate &isobars"));
-    actCalcContours->setShortcut(HeightMapWindow::tr("Ctrl+I"));
-
-    actHmSettings = new QAction(master);
-    actHmSettings->setText(HeightMapWindow::tr("&Peak settings..."));
-    actHmSettings->setShortcut(HeightMapWindow::tr("F6"));
-
-    actExtrapolSettings = new QAction(master);
-    actExtrapolSettings->setText(HeightMapWindow::tr("&Extrapolation settings..."));
-    actExtrapolSettings->setShortcut(HeightMapWindow::tr("F7"));
-
-    actContourSettings = new QAction(master);
-    actContourSettings->setText(HeightMapWindow::tr("&Contouring settings..."));
-    actContourSettings->setShortcut(HeightMapWindow::tr("F8"));
-
-    QMenu *mnuLandscape = master->menuBar()->addMenu(HeightMapWindow::tr("&Landscape"));
-    mnuLandscape->addAction(actGenLs);
-    mnuLandscape->addAction(actBuildLs);
-    mnuLandscape->addAction(actCalcContours);
-    mnuLandscape->addSeparator();
-    mnuLandscape->addAction(actHmSettings);
-    mnuLandscape->addAction(actExtrapolSettings);
-    mnuLandscape->addAction(actContourSettings);
-
-    QActionGroup *agpViewMode = new QActionGroup(master);
-
-    actViewModePeaks = new QAction(agpViewMode);
-    actViewModePeaks->setText(HeightMapWindow::tr("Peaks"));
-    actViewModePeaks->setCheckable(true);
-    actViewModePeaks->setProperty("hmvm", HMVM_Peaks);
-
-    actViewModeLandscape = new QAction(agpViewMode);
-    actViewModeLandscape->setText(HeightMapWindow::tr("Landscape"));
-    actViewModeLandscape->setCheckable(true);
-    actViewModeLandscape->setProperty("hmvm", HMVM_Landscape);
-
-    actViewModeIsobars = new QAction(agpViewMode);
-    actViewModeIsobars->setText(HeightMapWindow::tr("Isobars"));
-    actViewModeIsobars->setCheckable(true);
-    actViewModeIsobars->setProperty("hmvm", HMVM_Isobars);
-
-    actViewModeHybrid = new QAction(agpViewMode);
-    actViewModeHybrid->setText(HeightMapWindow::tr("Hybrid"));
-    actViewModeHybrid->setCheckable(true);
-    actViewModeHybrid->setChecked(true);
-    actViewModeHybrid->setProperty("hmvm", HMVM_Hybrid);
-
-    QMenu *mnuView = master->menuBar()->addMenu(HeightMapWindow::tr("&View"));
-    mnuView->addAction(actViewModePeaks);
-    mnuView->addAction(actViewModeLandscape);
-    mnuView->addAction(actViewModeIsobars);
-    mnuView->addAction(actViewModeHybrid);
-
-    QMenu *mnuWindows = master->menuBar()->addMenu(HeightMapWindow::tr("&Windows"));
-    mnuWindows->addAction(dckPeakGenerating->toggleViewAction());
-    mnuWindows->addAction(dckExtrapolation->toggleViewAction());
-    mnuWindows->addAction(dckContouring->toggleViewAction());
-
-    typedef QAction A;
-    typedef QActionGroup G;
-    typedef HeightMapWindow W;
-    typedef HeightMapLogic L;
-
-    QObject::connect(actNewFile,            &A::triggered,  master,     &W::newFile);
-    QObject::connect(actExportLs,           &A::triggered,  master,     &W::exportLandscape);
-    QObject::connect(actExportPk,           &A::triggered,  master,     &W::exportPeaks);
-    QObject::connect(actExit,               &A::triggered,  master,     &W::close);
-    QObject::connect(actGenLs,              &A::triggered,  logic,      &L::createLandscape);
-    QObject::connect(actBuildLs,            &A::triggered,  logic,      &L::buildLandscapeFromPeaks);
-    QObject::connect(actCalcContours,       &A::triggered,  logic,      &L::plotIsobars);
-    QObject::connect(actHmSettings,         &A::triggered,  master,     &W::editPeakSettings);
-    QObject::connect(actExtrapolSettings,   &A::triggered,  master,     &W::editExtrapolationSettings);
-    QObject::connect(actContourSettings,    &A::triggered,  master,     &W::editContouringSettings);
-    QObject::connect(agpViewMode,           &G::triggered,  master,     &W::setViewMode);
-}
-
-void HeightMapWindowImplementation::createWidgets()
-{
-    Preferences prefs = logic->preferences();
-    PreferencesController *ctrl = logic->preferencesController();
-
-    wgtPeakGenerating = new PeakOptionsWidget;
-    wgtPeakGenerating->setRange(prefs.minPeak(), prefs.maxPeak());
-    wgtPeakGenerating->setPeakCount(prefs.peakCount());
-
-    wgtExtrapolation = new ExtrapolationOptionsWidget;
-
-    QStringList xNames = logic->extrapolatorKeys();
-    foreach (QString name, xNames) {
-        if (ExtrapolationFactory *f = logic->extrapolationFactory(name))
-            wgtExtrapolation->addExtrapolationWidget(f, false);
-    }
-
-    wgtExtrapolation->setExtrapolatorName(prefs.extrapolatorName());
-
-    wgtContouring = new ContouringOptionsWidget;
-    wgtContouring->setLevelRange(prefs.minContouringLevel(), prefs.maxContouringLevel());
-    wgtContouring->setStep(prefs.contouringStep());
-
-    HeightMapWindow::connect(wgtPeakGenerating, SIGNAL(minPeakChanged(int)), ctrl, SLOT(setMinPeak(int)));
-    HeightMapWindow::connect(wgtPeakGenerating, SIGNAL(maxPeakChanged(int)), ctrl, SLOT(setMaxPeak(int)));
-    HeightMapWindow::connect(wgtPeakGenerating, SIGNAL(peakCountChanged(int)), ctrl, SLOT(setPeakCount(int)));
-
-    HeightMapWindow::connect(
-                wgtExtrapolation, SIGNAL(extrapolatorNameChanged(QString)), ctrl, SLOT(setExtrapolatorName(QString)));
-
-    HeightMapWindow::connect(wgtContouring, SIGNAL(minLevelChanged(int)), ctrl, SLOT(setMinContouringLevel(int)));
-    HeightMapWindow::connect(wgtContouring, SIGNAL(maxLevelChanged(int)), ctrl, SLOT(setMaxContouringLevel(int)));
-    HeightMapWindow::connect(wgtContouring, SIGNAL(stepChanged(int)), ctrl, SLOT(setContouringStep(int)));
-}
-
-void HeightMapWindowImplementation::createDocks(HeightMapWindow *master)
-{
-    dckPeakGenerating = new QDockWidget(master);
-    dckPeakGenerating->setWindowTitle(HeightMapWindow::tr("Peak settings"));
-    dckPeakGenerating->setWidget(wgtPeakGenerating);
-    master->addDockWidget(Qt::LeftDockWidgetArea, dckPeakGenerating);
-
-    dckExtrapolation = new QDockWidget(master);
-    dckExtrapolation->setWindowTitle(HeightMapWindow::tr("Extrapolation settings"));
-    dckExtrapolation->setWidget(wgtExtrapolation);
-    master->addDockWidget(Qt::LeftDockWidgetArea, dckExtrapolation);
-
-    dckContouring = new QDockWidget(master);
-    dckContouring->setWindowTitle(HeightMapWindow::tr("Contouring settings"));
-    dckContouring->setWidget(wgtContouring);
-    master->addDockWidget(Qt::LeftDockWidgetArea, dckContouring);
-}
-
 void HeightMapWindowImplementation::provideExtrapolationWidgets(ExtrapolationOptionsDialog *dialog)
 {
     QStringList xNames = logic->extrapolatorKeys();
@@ -325,29 +159,6 @@ HeightMapWindow::HeightMapWindow(QWidget *parent)
     : QMainWindow(parent),
       m(new HeightMapWindowImplementation)
 {
-    m->lblHmImg->setAlignment(Qt::AlignCenter);
-
-    QScrollArea *scrollArea = new QScrollArea(this);
-    scrollArea->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    scrollArea->setWidgetResizable(true);
-    scrollArea->setWidget(m->lblHmImg);
-    setCentralWidget(scrollArea);
-
-    QWidget *procBarShell = new QWidget(this);
-    QBoxLayout *procBarLayout = new QHBoxLayout(procBarShell);
-    procBarLayout->setMargin(0);
-    procBarLayout->addWidget(m->prgProcess);
-    procBarShell->setMaximumHeight(m->lblProcess->sizeHint().height());
-
-    m->prgProcess->hide();
-
-    statusBar()->addWidget(m->lblState, 6);
-    statusBar()->addWidget(m->lblLandscape, 3);
-    statusBar()->addWidget(m->lblLevels, 3);
-    statusBar()->addWidget(m->lblProcess, 8);
-    statusBar()->addWidget(procBarShell, 12);
-    statusBar()->addWidget(m->lblPeaks, 4);
-    statusBar()->addWidget(m->lblIsobars, 6);
 }
 
 
@@ -355,9 +166,11 @@ void HeightMapWindow::init(HeightMapLogic *l)
 {
     m->logic = l;
 
-    m->createWidgets();
-    m->createDocks(this);
-    m->createActions(this);
+    createCentral();
+    createWidgets();
+    createDocks();
+    createActions();
+    createStatusBar();
 
     typedef HeightMapWindow W;
     typedef HeightMapLogic L;
@@ -586,6 +399,203 @@ void HeightMapWindow::setViewMode(QAction *viewModeAct)
 {
     m->hmvm = static_cast<HeightMapViewMode>(viewModeAct->property("hmvm").toInt());
     m->displayHeightMapImage();
+}
+
+
+void HeightMapWindow::createCentral()
+{
+    m->lblHmImg->setAlignment(Qt::AlignCenter);
+
+    QScrollArea *scrollArea = new QScrollArea(this);
+    scrollArea->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    scrollArea->setWidgetResizable(true);
+    scrollArea->setWidget(m->lblHmImg);
+    setCentralWidget(scrollArea);
+}
+
+void HeightMapWindow::createWidgets()
+{
+    Preferences prefs = m->logic->preferences();
+    PreferencesController *ctrl = m->logic->preferencesController();
+
+    m->wgtPeakGenerating = new PeakOptionsWidget;
+    m->wgtPeakGenerating->setRange(prefs.minPeak(), prefs.maxPeak());
+    m->wgtPeakGenerating->setPeakCount(prefs.peakCount());
+
+    m->wgtExtrapolation = new ExtrapolationOptionsWidget;
+
+    QStringList xNames = m->logic->extrapolatorKeys();
+    foreach (QString name, xNames) {
+        if (ExtrapolationFactory *f = m->logic->extrapolationFactory(name))
+            m->wgtExtrapolation->addExtrapolationWidget(f, false);
+    }
+
+    m->wgtExtrapolation->setExtrapolatorName(prefs.extrapolatorName());
+
+    m->wgtContouring = new ContouringOptionsWidget;
+    m->wgtContouring->setLevelRange(prefs.minContouringLevel(), prefs.maxContouringLevel());
+    m->wgtContouring->setStep(prefs.contouringStep());
+
+    typedef PeakOptionsWidget P;
+    typedef ExtrapolationOptionsWidget X;
+    typedef ContouringOptionsWidget C;
+    typedef PreferencesController PCtrl;
+
+    connect(m->wgtPeakGenerating,   &P::minPeakChanged,             ctrl,   &PCtrl::setMinPeak);
+    connect(m->wgtPeakGenerating,   &P::maxPeakChanged,             ctrl,   &PCtrl::setMaxPeak);
+    connect(m->wgtPeakGenerating,   &P::peakCountChanged,           ctrl,   &PCtrl::setPeakCount);
+
+    connect(m->wgtExtrapolation,    &X::extrapolatorNameChanged,    ctrl,   &PCtrl::setExtrapolatorName);
+
+    connect(m->wgtContouring,       &C::minLevelChanged,            ctrl,   &PCtrl::setMinContouringLevel);
+    connect(m->wgtContouring,       &C::maxLevelChanged,            ctrl,   &PCtrl::setMaxContouringLevel);
+    connect(m->wgtContouring,       &C::stepChanged,                ctrl,   &PCtrl::setContouringStep);
+}
+
+void HeightMapWindow::createDocks()
+{
+    m->dckPeakGenerating = new QDockWidget(this);
+    m->dckPeakGenerating->setWindowTitle(tr("Peak settings"));
+    m->dckPeakGenerating->setWidget(m->wgtPeakGenerating);
+    addDockWidget(Qt::LeftDockWidgetArea, m->dckPeakGenerating);
+
+    m->dckExtrapolation = new QDockWidget(this);
+    m->dckExtrapolation->setWindowTitle(tr("Extrapolation settings"));
+    m->dckExtrapolation->setWidget(m->wgtExtrapolation);
+    addDockWidget(Qt::LeftDockWidgetArea, m->dckExtrapolation);
+
+    m->dckContouring = new QDockWidget(this);
+    m->dckContouring->setWindowTitle(tr("Contouring settings"));
+    m->dckContouring->setWidget(m->wgtContouring);
+    addDockWidget(Qt::LeftDockWidgetArea, m->dckContouring);
+}
+
+void HeightMapWindow::createActions()
+{
+    m->actNewFile = new QAction(this);
+    m->actNewFile->setText(tr("&New file..."));
+    m->actNewFile->setShortcut(tr("Ctrl+N"));
+
+    m->actExportLs = new QAction(this);
+    m->actExportLs->setText(tr("Export landscape..."));
+
+    m->actExportPk = new QAction(this);
+    m->actExportPk->setText(tr("Export peaks..."));
+
+    m->actExit = new QAction(this);
+    m->actExit->setText(tr("E&xit"));
+    m->actExit->setShortcut(tr("Alt+X"));
+
+    QMenu *mnuFile = menuBar()->addMenu(tr("&File"));
+    mnuFile->addAction(m->actNewFile);
+    mnuFile->addSeparator();
+    mnuFile->addAction(m->actExportLs);
+    mnuFile->addAction(m->actExportPk);
+    mnuFile->addSeparator();
+    mnuFile->addAction(m->actExit);
+
+    m->actGenLs = new QAction(this);
+    m->actGenLs->setText(tr("&Generate landscape"));
+    m->actGenLs->setShortcut(tr("Ctrl+G"));
+
+    m->actBuildLs = new QAction(this);
+    m->actBuildLs->setText(tr("E&xtrapolate peaks"));
+    m->actBuildLs->setShortcut(tr("Ctrl+E"));
+
+    m->actCalcContours = new QAction(this);
+    m->actCalcContours->setText(tr("Calculate &isobars"));
+    m->actCalcContours->setShortcut(tr("Ctrl+I"));
+
+    m->actHmSettings = new QAction(this);
+    m->actHmSettings->setText(tr("&Peak settings..."));
+    m->actHmSettings->setShortcut(tr("F6"));
+
+    m->actExtrapolSettings = new QAction(this);
+    m->actExtrapolSettings->setText(tr("&Extrapolation settings..."));
+    m->actExtrapolSettings->setShortcut(tr("F7"));
+
+    m->actContourSettings = new QAction(this);
+    m->actContourSettings->setText(tr("&Contouring settings..."));
+    m->actContourSettings->setShortcut(tr("F8"));
+
+    QMenu *mnuLandscape = menuBar()->addMenu(tr("&Landscape"));
+    mnuLandscape->addAction(m->actGenLs);
+    mnuLandscape->addAction(m->actBuildLs);
+    mnuLandscape->addAction(m->actCalcContours);
+    mnuLandscape->addSeparator();
+    mnuLandscape->addAction(m->actHmSettings);
+    mnuLandscape->addAction(m->actExtrapolSettings);
+    mnuLandscape->addAction(m->actContourSettings);
+
+    QActionGroup *agpViewMode = new QActionGroup(this);
+
+    m->actViewModePeaks = new QAction(agpViewMode);
+    m->actViewModePeaks->setText(tr("Peaks"));
+    m->actViewModePeaks->setCheckable(true);
+    m->actViewModePeaks->setProperty("hmvm", HMVM_Peaks);
+
+    m->actViewModeLandscape = new QAction(agpViewMode);
+    m->actViewModeLandscape->setText(tr("Landscape"));
+    m->actViewModeLandscape->setCheckable(true);
+    m->actViewModeLandscape->setProperty("hmvm", HMVM_Landscape);
+
+    m->actViewModeIsobars = new QAction(agpViewMode);
+    m->actViewModeIsobars->setText(tr("Isobars"));
+    m->actViewModeIsobars->setCheckable(true);
+    m->actViewModeIsobars->setProperty("hmvm", HMVM_Isobars);
+
+    m->actViewModeHybrid = new QAction(agpViewMode);
+    m->actViewModeHybrid->setText(tr("Hybrid"));
+    m->actViewModeHybrid->setCheckable(true);
+    m->actViewModeHybrid->setChecked(true);
+    m->actViewModeHybrid->setProperty("hmvm", HMVM_Hybrid);
+
+    QMenu *mnuView = menuBar()->addMenu(tr("&View"));
+    mnuView->addAction(m->actViewModePeaks);
+    mnuView->addAction(m->actViewModeLandscape);
+    mnuView->addAction(m->actViewModeIsobars);
+    mnuView->addAction(m->actViewModeHybrid);
+
+    QMenu *mnuWindows = menuBar()->addMenu(tr("&Windows"));
+    mnuWindows->addAction(m->dckPeakGenerating->toggleViewAction());
+    mnuWindows->addAction(m->dckExtrapolation->toggleViewAction());
+    mnuWindows->addAction(m->dckContouring->toggleViewAction());
+
+    typedef QAction A;
+    typedef QActionGroup G;
+    typedef HeightMapWindow W;
+    typedef HeightMapLogic L;
+
+    connect(m->actNewFile,          &A::triggered,  this,       &W::newFile);
+    connect(m->actExportLs,         &A::triggered,  this,       &W::exportLandscape);
+    connect(m->actExportPk,         &A::triggered,  this,       &W::exportPeaks);
+    connect(m->actExit,             &A::triggered,  this,       &W::close);
+    connect(m->actGenLs,            &A::triggered,  m->logic,   &L::createLandscape);
+    connect(m->actBuildLs,          &A::triggered,  m->logic,   &L::buildLandscapeFromPeaks);
+    connect(m->actCalcContours,     &A::triggered,  m->logic,   &L::plotIsobars);
+    connect(m->actHmSettings,       &A::triggered,  this,       &W::editPeakSettings);
+    connect(m->actExtrapolSettings, &A::triggered,  this,       &W::editExtrapolationSettings);
+    connect(m->actContourSettings,  &A::triggered,  this,       &W::editContouringSettings);
+    connect(agpViewMode,            &G::triggered,  this,       &W::setViewMode);
+}
+
+void HeightMapWindow::createStatusBar()
+{
+    QWidget *procBarShell = new QWidget(this);
+    QBoxLayout *procBarLayout = new QHBoxLayout(procBarShell);
+    procBarLayout->setMargin(0);
+    procBarLayout->addWidget(m->prgProcess);
+    procBarShell->setMaximumHeight(m->lblProcess->sizeHint().height());
+
+    m->prgProcess->hide();
+
+    statusBar()->addWidget(m->lblState, 6);
+    statusBar()->addWidget(m->lblLandscape, 3);
+    statusBar()->addWidget(m->lblLevels, 3);
+    statusBar()->addWidget(m->lblProcess, 8);
+    statusBar()->addWidget(procBarShell, 12);
+    statusBar()->addWidget(m->lblPeaks, 4);
+    statusBar()->addWidget(m->lblIsobars, 6);
 }
 
 

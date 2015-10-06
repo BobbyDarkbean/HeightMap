@@ -52,6 +52,12 @@ private:
     DISABLE_COPY(HeightMapWindow)
     DISABLE_MOVE(HeightMapWindow)
 
+    void createCentral();
+    void createWidgets();
+    void createDocks();
+    void createActions();
+    void createStatusBar();
+
     HeightMapWindowImplementation *m;
 };
 
