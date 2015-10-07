@@ -11,6 +11,9 @@ include_directories (../hm)
 
 set (HMGUI_HDR auxiliary/colormap.h
                auxiliary/mappingdata.h
+               commands/contouringcommand.h
+               commands/extrapolatecommand.h
+               commands/generatecommand.h
                dialogs/contouringoptionsdialog.h
                dialogs/extrapolationoptionsdialog.h
                dialogs/generatingoptionsdialog.h
@@ -42,7 +45,10 @@ set (HMGUI_HDR auxiliary/colormap.h
                preferencescontroller.h
                trigger.h)
 
-set (HMGUI_SRC dialogs/contouringoptionsdialog.cpp
+set (HMGUI_SRC commands/contouringcommand.cpp
+               commands/extrapolatecommand.cpp
+               commands/generatecommand.cpp
+               dialogs/contouringoptionsdialog.cpp
                dialogs/extrapolationoptionsdialog.cpp
                dialogs/generatingoptionsdialog.cpp
                dialogs/terrainoptionsdialog.cpp
