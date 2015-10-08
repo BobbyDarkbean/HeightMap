@@ -19,6 +19,7 @@ set (HMGUI_HDR auxiliary/colormap.h
                dialogs/generatingoptionsdialog.h
                dialogs/terrainoptionsdialog.h
                extrapolation/baselevelextrapolationfactory.h
+               extrapolation/extrapolationdata.h
                extrapolation/extrapolationfactory.h
                extrapolation/fixedradiusextrapolationfactory.h
                extrapolation/simpleextrapolationfactory.h
@@ -53,6 +54,7 @@ set (HMGUI_SRC commands/contouringcommand.cpp
                dialogs/generatingoptionsdialog.cpp
                dialogs/terrainoptionsdialog.cpp
                extrapolation/baselevelextrapolationfactory.cpp
+               extrapolation/extrapolationdata.cpp
                extrapolation/extrapolationfactory.cpp
                extrapolation/fixedradiusextrapolationfactory.cpp
                extrapolation/simpleextrapolationfactory.cpp
