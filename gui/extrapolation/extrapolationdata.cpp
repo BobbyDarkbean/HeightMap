@@ -1,4 +1,5 @@
 #include <QMap>
+#include <QStringList>
 #include "hm_shared.h"
 
 #include "extrapolationdata.h"
