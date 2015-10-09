@@ -1,4 +1,5 @@
 #include "../widgets/baselevelextrapolationwidget.h"
+#include "extrapolationdata.h"
 #include "extrapolator.h"
 #include "xreader.h"
 #include "xwriter.h"
@@ -16,6 +17,9 @@ struct BaseLevelExtrapolationFactoryImplementation
     void applyProxy();
     void resetProxy();
 
+    ExtrapolationData extract() const;
+    void provide(const ExtrapolationData &);
+
     ~BaseLevelExtrapolationFactoryImplementation();
 
     BaseLevelExtrapolator *x;
@@ -32,7 +36,7 @@ BaseLevelExtrapolationFactoryImplementation::BaseLevelExtrapolationFactoryImplem
       proxy(new BaseLevelExtrapolator)
 {
     XReader xr("xdata/bsl.xml");
-    x->setBaseLevel(xr.readElement("baselevel", -1.0));
+    provide(xr.data());
 }
 
 void BaseLevelExtrapolationFactoryImplementation::applyProxy()
@@ -45,10 +49,22 @@ void BaseLevelExtrapolationFactoryImplementation::resetProxy()
     proxy->setBaseLevel(x->baseLevel());
 }
 
+ExtrapolationData BaseLevelExtrapolationFactoryImplementation::extract() const
+{
+    ExtrapolationData data;
+    data.insert("baselevel", x->baseLevel());
+    return data;
+}
+
+void BaseLevelExtrapolationFactoryImplementation::provide(const ExtrapolationData &data)
+{
+    x->setBaseLevel(data.value("baselevel", -1.0));
+}
+
 BaseLevelExtrapolationFactoryImplementation::~BaseLevelExtrapolationFactoryImplementation()
 {
     XWriter xw("xdata/bsl.xml");
-    xw.writeElement("baselevel", x->baseLevel());
+    xw.setData(extract());
 
     delete proxy;
     delete x;
@@ -92,6 +108,12 @@ QString BaseLevelExtrapolationFactory::name() const
 
 QString BaseLevelExtrapolationFactory::description() const
 { return BaseLevelExtrapolationWidget::tr("Base level depended"); }
+
+ExtrapolationData BaseLevelExtrapolationFactory::extractData() const
+{ return m->extract(); }
+
+void BaseLevelExtrapolationFactory::provideData(const ExtrapolationData &data)
+{ m->provide(data); }
 
 
 BaseLevelExtrapolationFactory::~BaseLevelExtrapolationFactory()

@@ -1,4 +1,5 @@
 #include "../widgets/simpleextrapolationwidget.h"
+#include "extrapolationdata.h"
 #include "extrapolator.h"
 #include "xreader.h"
 #include "xwriter.h"
@@ -16,6 +17,9 @@ struct SimpleExtrapolationFactoryImplementation
     void applyProxy();
     void resetProxy();
 
+    ExtrapolationData extract() const;
+    void provide(const ExtrapolationData &);
+
     ~SimpleExtrapolationFactoryImplementation();
 
     SimpleExtrapolator *x;
@@ -32,7 +36,7 @@ SimpleExtrapolationFactoryImplementation::SimpleExtrapolationFactoryImplementati
       proxy(new SimpleExtrapolator)
 {
     XReader xr("xdata/sml.xml");
-    x->setBaseLevel(xr.readElement("baselevel", -1.0));
+    provide(xr.data());
 }
 
 void SimpleExtrapolationFactoryImplementation::applyProxy()
@@ -45,10 +49,22 @@ void SimpleExtrapolationFactoryImplementation::resetProxy()
     proxy->setBaseLevel(x->baseLevel());
 }
 
+ExtrapolationData SimpleExtrapolationFactoryImplementation::extract() const
+{
+    ExtrapolationData data;
+    data.insert("baselevel", x->baseLevel());
+    return data;
+}
+
+void SimpleExtrapolationFactoryImplementation::provide(const ExtrapolationData &data)
+{
+    x->setBaseLevel(data.value("baselevel", -1.0));
+}
+
 SimpleExtrapolationFactoryImplementation::~SimpleExtrapolationFactoryImplementation()
 {
     XWriter xw("xdata/sml.xml");
-    xw.writeElement("baselevel", x->baseLevel());
+    xw.setData(extract());
 
     delete proxy;
     delete x;
@@ -92,6 +108,12 @@ QString SimpleExtrapolationFactory::name() const
 
 QString SimpleExtrapolationFactory::description() const
 { return SimpleExtrapolationWidget::tr("Simple"); }
+
+ExtrapolationData SimpleExtrapolationFactory::extractData() const
+{ return m->extract(); }
+
+void SimpleExtrapolationFactory::provideData(const ExtrapolationData &data)
+{ m->provide(data); }
 
 
 SimpleExtrapolationFactory::~SimpleExtrapolationFactory()

@@ -1,6 +1,7 @@
-#include <QMap>
 #include <QFile>
 #include <QXmlStreamWriter>
+#include <QStringList>
+#include "extrapolationdata.h"
 
 #include "xwriter.h"
 
@@ -14,7 +15,7 @@ struct XWriterImplementation
     ~XWriterImplementation();
 
     QString fname;
-    QMap<QString, double> xdata;
+    ExtrapolationData xdata;
 
 private:
     DISABLE_COPY(XWriterImplementation)
@@ -39,9 +40,9 @@ XWriterImplementation::~XWriterImplementation()
 
     xsw.writeStartElement("xdata");
 
-    for (auto i = xdata.constBegin(); i != xdata.constEnd(); ++i) {
-        xsw.writeEmptyElement(i.key());
-        xsw.writeAttribute("value", QString::number(i.value(), 'f', 2));
+    foreach (QString s, xdata.keys()) {
+        xsw.writeEmptyElement(s);
+        xsw.writeAttribute("value", QString::number(xdata.value(s, 0.0), 'f', 2));
     }
 
     xsw.writeEndElement();
@@ -54,10 +55,11 @@ XWriter::XWriter(const QString &filename)
     : m(new XWriterImplementation(filename)) { }
 
 
-void XWriter::writeElement(
-    const QString &name,
-    double value)
-{ m->xdata.insert(name, value); }
+ExtrapolationData XWriter::data() const
+{ return m->xdata; }
+
+void XWriter::setData(const ExtrapolationData &d)
+{ m->xdata = d; }
 
 
 XWriter::~XWriter()

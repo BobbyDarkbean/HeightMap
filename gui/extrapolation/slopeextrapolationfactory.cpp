@@ -1,4 +1,5 @@
 #include "../widgets/slopeextrapolationwidget.h"
+#include "extrapolationdata.h"
 #include "extrapolator.h"
 #include "xreader.h"
 #include "xwriter.h"
@@ -16,6 +17,9 @@ struct SlopeExtrapolationFactoryImplementation
     void applyProxy();
     void resetProxy();
 
+    ExtrapolationData extract() const;
+    void provide(const ExtrapolationData &);
+
     ~SlopeExtrapolationFactoryImplementation();
 
     SlopeExtrapolator *x;
@@ -32,8 +36,7 @@ SlopeExtrapolationFactoryImplementation::SlopeExtrapolationFactoryImplementation
       proxy(new SlopeExtrapolator)
 {
     XReader xr("xdata/slp.xml");
-    x->setBaseLevel(xr.readElement("baselevel", -1.0));
-    x->setSlopeRatio(xr.readElement("ratio", -1.0));
+    provide(xr.data());
 }
 
 void SlopeExtrapolationFactoryImplementation::applyProxy()
@@ -48,11 +51,24 @@ void SlopeExtrapolationFactoryImplementation::resetProxy()
     proxy->setSlopeRatio(x->slopeRatio());
 }
 
+ExtrapolationData SlopeExtrapolationFactoryImplementation::extract() const
+{
+    ExtrapolationData data;
+    data.insert("baselevel", x->baseLevel());
+    data.insert("ratio", x->slopeRatio());
+    return data;
+}
+
+void SlopeExtrapolationFactoryImplementation::provide(const ExtrapolationData &data)
+{
+    x->setBaseLevel(data.value("baselevel", -1.0));
+    x->setSlopeRatio(data.value("ratio", -1.0));
+}
+
 SlopeExtrapolationFactoryImplementation::~SlopeExtrapolationFactoryImplementation()
 {
     XWriter xw("xdata/slp.xml");
-    xw.writeElement("baselevel", x->baseLevel());
-    xw.writeElement("ratio", x->slopeRatio());
+    xw.setData(extract());
 
     delete proxy;
     delete x;
@@ -96,6 +112,12 @@ QString SlopeExtrapolationFactory::name() const
 
 QString SlopeExtrapolationFactory::description() const
 { return SlopeExtrapolationWidget::tr("Slope depended"); }
+
+ExtrapolationData SlopeExtrapolationFactory::extractData() const
+{ return m->extract(); }
+
+void SlopeExtrapolationFactory::provideData(const ExtrapolationData &data)
+{ m->provide(data); }
 
 
 SlopeExtrapolationFactory::~SlopeExtrapolationFactory()

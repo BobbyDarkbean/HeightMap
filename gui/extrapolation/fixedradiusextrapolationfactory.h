@@ -25,6 +25,9 @@ public:
     QString name() const;
     QString description() const;
 
+    ExtrapolationData extractData() const;
+    void provideData(const ExtrapolationData &);
+
     ~FixedRadiusExtrapolationFactory();
 
 private:

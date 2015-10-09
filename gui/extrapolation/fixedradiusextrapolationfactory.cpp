@@ -1,4 +1,5 @@
 #include "../widgets/fixedradiusextrapolationwidget.h"
+#include "extrapolationdata.h"
 #include "extrapolator.h"
 #include "xreader.h"
 #include "xwriter.h"
@@ -16,6 +17,9 @@ struct FixedRadiusExtrapolationFactoryImplementation
     void applyProxy();
     void resetProxy();
 
+    ExtrapolationData extract() const;
+    void provide(const ExtrapolationData &);
+
     ~FixedRadiusExtrapolationFactoryImplementation();
 
     FixedRadiusExtrapolator *x;
@@ -32,8 +36,7 @@ FixedRadiusExtrapolationFactoryImplementation::FixedRadiusExtrapolationFactoryIm
       proxy(new FixedRadiusExtrapolator)
 {
     XReader xr("xdata/fxr.xml");
-    x->setBaseLevel(xr.readElement("baselevel", -1.0));
-    x->setFixedRadius(xr.readElement("radius", -1.0));
+    provide(xr.data());
 }
 
 void FixedRadiusExtrapolationFactoryImplementation::applyProxy()
@@ -48,11 +51,24 @@ void FixedRadiusExtrapolationFactoryImplementation::resetProxy()
     proxy->setFixedRadius(x->fixedRadius());
 }
 
+ExtrapolationData FixedRadiusExtrapolationFactoryImplementation::extract() const
+{
+    ExtrapolationData data;
+    data.insert("baselevel", x->baseLevel());
+    data.insert("radius", x->fixedRadius());
+    return data;
+}
+
+void FixedRadiusExtrapolationFactoryImplementation::provide(const ExtrapolationData &data)
+{
+    x->setBaseLevel(data.value("baselevel", -1.0));
+    x->setFixedRadius(data.value("radius", -1.0));
+}
+
 FixedRadiusExtrapolationFactoryImplementation::~FixedRadiusExtrapolationFactoryImplementation()
 {
     XWriter xw("xdata/fxr.xml");
-    xw.writeElement("baselevel", x->baseLevel());
-    xw.writeElement("radius", x->fixedRadius());
+    xw.setData(extract());
 
     delete proxy;
     delete x;
@@ -96,6 +112,12 @@ QString FixedRadiusExtrapolationFactory::name() const
 
 QString FixedRadiusExtrapolationFactory::description() const
 { return FixedRadiusExtrapolationWidget::tr("Fixed radius"); }
+
+ExtrapolationData FixedRadiusExtrapolationFactory::extractData() const
+{ return m->extract(); }
+
+void FixedRadiusExtrapolationFactory::provideData(const ExtrapolationData &data)
+{ m->provide(data); }
 
 
 FixedRadiusExtrapolationFactory::~FixedRadiusExtrapolationFactory()

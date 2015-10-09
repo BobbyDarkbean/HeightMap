@@ -1,6 +1,6 @@
-#include <QMap>
 #include <QFile>
 #include <QXmlStreamReader>
+#include "extrapolationdata.h"
 
 #include "xreader.h"
 
@@ -14,7 +14,7 @@ struct XReaderImplementation
     ~XReaderImplementation();
 
     bool valid;
-    QMap<QString, double> xdata;
+    ExtrapolationData xdata;
 
 private:
     DISABLE_COPY(XReaderImplementation)
@@ -77,13 +77,11 @@ XReader::XReader(const QString &filename)
     : m(new XReaderImplementation(filename)) { }
 
 
+ExtrapolationData XReader::data() const
+{ return m->xdata; }
+
 bool XReader::isValid() const
 { return m->valid; }
-
-double XReader::readElement(
-    const QString &name,
-    double defaultValue) const
-{ return m->xdata.value(name, defaultValue); }
 
 
 XReader::~XReader()
