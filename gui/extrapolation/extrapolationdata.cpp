@@ -11,7 +11,10 @@ namespace HeightMap {
 struct ExtrapolationDataImplementation
 {
     ExtrapolationDataImplementation();
+
+    bool content_equals(const ExtrapolationDataImplementation &);
     ExtrapolationDataImplementation *clone() const;
+
     ~ExtrapolationDataImplementation();
 
     QMap<QString, double> xMap;
@@ -29,6 +32,9 @@ private:
 ExtrapolationDataImplementation::ExtrapolationDataImplementation()
     : xMap(),
       ref(1) { }
+
+bool ExtrapolationDataImplementation::content_equals(const ExtrapolationDataImplementation &other)
+{ return xMap == other.xMap; }
 
 ExtrapolationDataImplementation *ExtrapolationDataImplementation::clone() const
 { return new ExtrapolationDataImplementation(*this); }
@@ -75,6 +81,9 @@ void ExtrapolationData::remove(const QString &key)
 double ExtrapolationData::value(const QString &key, double defaultValue) const
 { return m->xMap.value(key, defaultValue); }
 
+
+bool ExtrapolationData::equals(const ExtrapolationData &other) const
+{ return m == other.m ? true : m->content_equals(*other.m); }
 
 void ExtrapolationData::detach()
 {

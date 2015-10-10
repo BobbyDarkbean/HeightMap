@@ -2,6 +2,7 @@
 #define _ExtrapolationData_h_
 
 
+#include <algorithm>
 #include <QString>
 
 
@@ -22,6 +23,8 @@ public:
     void remove(const QString &key);
     double value(const QString &key, double defaultValue) const;
 
+    bool equals(const ExtrapolationData &) const;
+
     void detach();
     void swap(ExtrapolationData &);
 
@@ -31,6 +34,13 @@ public:
 private:
     ExtrapolationDataImplementation *m;
 };
+
+
+inline bool operator ==(const ExtrapolationData &a, const ExtrapolationData &b)
+{ return a.equals(b); }
+
+inline bool operator !=(const ExtrapolationData &a, const ExtrapolationData &b)
+{ return !(a == b); }
 
 
 } // namespace HeightMap
