@@ -2,12 +2,14 @@
 #define _Preferences_h_
 
 
+#include <algorithm>
 #include <QString>
 
 
 namespace HeightMap {
 
 
+struct PreferencesImplementation;
 class Preferences
 {
 public:
@@ -33,6 +35,8 @@ public:
     };
 
     Preferences();
+    Preferences(const Preferences &);
+    Preferences(Preferences &&);
 
     int landscapeWidth() const;
     void setLandscapeWidth(int);
@@ -64,51 +68,17 @@ public:
     int imageFactor() const;
     void setImageFactor(int);
 
-    bool equals(const Preferences &other) const;
+    bool equals(const Preferences &) const;
+
+    void detach();
+    void swap(Preferences &);
+
+    Preferences &operator=(Preferences);    // copy-and-swap
+    ~Preferences();
 
 private:
-    int m_lsWidth;
-    int m_lsHeight;
-    unsigned int m_peaks;
-    int m_minPeak;
-    int m_maxPeak;
-    QString m_extrapolName;
-    int m_minContLevel;
-    int m_maxContLevel;
-    int m_contStep;
-    int m_imgFactor;
+    PreferencesImplementation *m;
 };
-
-
-inline int Preferences::landscapeWidth() const
-{ return m_lsWidth; }
-
-inline int Preferences::landscapeHeight() const
-{ return m_lsHeight; }
-
-inline unsigned int Preferences::peakCount() const
-{ return m_peaks; }
-
-inline int Preferences::minPeak() const
-{ return m_minPeak; }
-
-inline int Preferences::maxPeak() const
-{ return m_maxPeak; }
-
-inline const QString &Preferences::extrapolatorName() const
-{ return m_extrapolName; }
-
-inline int Preferences::minContouringLevel() const
-{ return m_minContLevel; }
-
-inline int Preferences::maxContouringLevel() const
-{ return m_maxContLevel; }
-
-inline int Preferences::contouringStep() const
-{ return m_contStep; }
-
-inline int Preferences::imageFactor() const
-{ return m_imgFactor; }
 
 
 inline bool operator ==(const Preferences &a, const Preferences &b)
@@ -119,6 +89,18 @@ inline bool operator !=(const Preferences &a, const Preferences &b)
 
 
 } // namespace HeightMap
+
+
+namespace std {
+
+
+template <>
+inline void swap<HeightMap::Preferences>(
+    HeightMap::Preferences &a,
+    HeightMap::Preferences &b) { a.swap(b); }
+
+
+} // namespace std
 
 
 #endif // _Preferences_h_
