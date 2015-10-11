@@ -63,6 +63,9 @@ ExtrapolationData::ExtrapolationData(ExtrapolationData &&other)
 }
 
 
+bool ExtrapolationData::isEmpty() const
+{ return m->xMap.isEmpty(); }
+
 QStringList ExtrapolationData::keys() const
 { return m->xMap.keys(); }
 

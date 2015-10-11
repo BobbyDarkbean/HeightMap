@@ -17,6 +17,8 @@ public:
     ExtrapolationData(const ExtrapolationData &);
     ExtrapolationData(ExtrapolationData &&);
 
+    bool isEmpty() const;
+
     QStringList keys() const;
 
     void insert(const QString &key, double value);
