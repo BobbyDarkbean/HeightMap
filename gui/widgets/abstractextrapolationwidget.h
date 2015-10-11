@@ -10,6 +10,7 @@ namespace HeightMap {
 
 
 class Extrapolator;
+class ExtrapolationData;
 class AbstractExtrapolationWidget : public QWidget
 {
     Q_OBJECT
@@ -19,6 +20,9 @@ public:
 
     virtual Extrapolator *extrapolator() const = 0;
     virtual void refreshData() = 0;
+
+    virtual ExtrapolationData extractData() const = 0;
+    virtual void provideData(const ExtrapolationData &) = 0;
 
     ~AbstractExtrapolationWidget();
 

@@ -2,6 +2,7 @@
 #include <QSpinBox>
 #include <QGridLayout>
 #include "extrapolator.h"
+#include "../extrapolation/extrapolationdata.h"
 #include "../preferences.h"
 
 #include "baselevelextrapolationwidget.h"
@@ -15,8 +16,11 @@ struct BaseLevelExtrapolationWidgetImplementation
     BaseLevelExtrapolationWidgetImplementation();
 
     void adjustControls();
-    void adjustLayout(BaseLevelExtrapolationWidget *master);
+    void adjustLayout(QWidget *master);
     void adjustValues();
+
+    ExtrapolationData extract() const;
+    void provide(const ExtrapolationData &);
 
     ~BaseLevelExtrapolationWidgetImplementation();
 
@@ -51,7 +55,7 @@ void BaseLevelExtrapolationWidgetImplementation::adjustControls()
     spnBaseLevel->setAlignment(Qt::AlignRight);
 }
 
-void BaseLevelExtrapolationWidgetImplementation::adjustLayout(BaseLevelExtrapolationWidget *master)
+void BaseLevelExtrapolationWidgetImplementation::adjustLayout(QWidget *master)
 {
     QGridLayout *lytContent = new QGridLayout;
     lytContent->setColumnStretch(0, 1);
@@ -63,14 +67,23 @@ void BaseLevelExtrapolationWidgetImplementation::adjustLayout(BaseLevelExtrapola
     QBoxLayout *lytMain = new QVBoxLayout(master);
     lytMain->addLayout(lytContent);
     lytMain->addStretch();
-
-    BaseLevelExtrapolationWidget::connect(
-                spnBaseLevel, SIGNAL(valueChanged(double)), master, SLOT(setBaseLevel(double)));
 }
 
 void BaseLevelExtrapolationWidgetImplementation::adjustValues()
 {
     spnBaseLevel->setValue(x->baseLevel());
+}
+
+ExtrapolationData BaseLevelExtrapolationWidgetImplementation::extract() const
+{
+    ExtrapolationData data;
+    data.insert("baselevel", spnBaseLevel->value());
+    return data;
+}
+
+void BaseLevelExtrapolationWidgetImplementation::provide(const ExtrapolationData &xdata)
+{
+    spnBaseLevel->setValue(xdata.value("baselevel", -1.0));
 }
 
 BaseLevelExtrapolationWidgetImplementation::~BaseLevelExtrapolationWidgetImplementation() { }
@@ -92,10 +105,21 @@ void BaseLevelExtrapolationWidget::bindExtrapolator(BaseLevelExtrapolator *blx)
 {
     m->x = blx;
     refreshData();
+
+    typedef BaseLevelExtrapolationWidget W;
+    void (QDoubleSpinBox::*qDoubleSpinBoxValueChanged)(double) = &QDoubleSpinBox::valueChanged;
+
+    connect(m->spnBaseLevel,    qDoubleSpinBoxValueChanged, this,   &W::setBaseLevel);
 }
 
 void BaseLevelExtrapolationWidget::refreshData()
 { m->adjustValues(); }
+
+ExtrapolationData BaseLevelExtrapolationWidget::extractData() const
+{ return m->extract(); }
+
+void BaseLevelExtrapolationWidget::provideData(const ExtrapolationData &xdata)
+{ m->provide(xdata); }
 
 
 BaseLevelExtrapolationWidget::~BaseLevelExtrapolationWidget()

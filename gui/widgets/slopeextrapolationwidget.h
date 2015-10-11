@@ -22,6 +22,9 @@ public:
 
     void refreshData();
 
+    ExtrapolationData extractData() const;
+    void provideData(const ExtrapolationData &);
+
     ~SlopeExtrapolationWidget();
 
 private slots:

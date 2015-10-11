@@ -2,6 +2,7 @@
 #include <QSpinBox>
 #include <QGridLayout>
 #include "extrapolator.h"
+#include "../extrapolation/extrapolationdata.h"
 #include "../preferences.h"
 
 #include "slopeextrapolationwidget.h"
@@ -15,8 +16,11 @@ struct SlopeExtrapolationWidgetImplementation
     SlopeExtrapolationWidgetImplementation();
 
     void adjustControls();
-    void adjustLayout(SlopeExtrapolationWidget *master);
+    void adjustLayout(QWidget *master);
     void adjustValues();
+
+    ExtrapolationData extract() const;
+    void provide(const ExtrapolationData &);
 
     ~SlopeExtrapolationWidgetImplementation();
 
@@ -65,7 +69,7 @@ void SlopeExtrapolationWidgetImplementation::adjustControls()
     spnSlope->setAlignment(Qt::AlignRight);
 }
 
-void SlopeExtrapolationWidgetImplementation::adjustLayout(SlopeExtrapolationWidget *master)
+void SlopeExtrapolationWidgetImplementation::adjustLayout(QWidget *master)
 {
     QGridLayout *lytContent = new QGridLayout;
     lytContent->setColumnStretch(0, 1);
@@ -80,17 +84,26 @@ void SlopeExtrapolationWidgetImplementation::adjustLayout(SlopeExtrapolationWidg
     QBoxLayout *lytMain = new QVBoxLayout(master);
     lytMain->addLayout(lytContent);
     lytMain->addStretch();
-
-    SlopeExtrapolationWidget::connect(
-                spnBaseLevel, SIGNAL(valueChanged(double)), master, SLOT(setBaseLevel(double)));
-    SlopeExtrapolationWidget::connect(
-                spnSlope, SIGNAL(valueChanged(double)), master, SLOT(setSlopeRatio(double)));
 }
 
 void SlopeExtrapolationWidgetImplementation::adjustValues()
 {
     spnBaseLevel->setValue(x->baseLevel());
     spnSlope->setValue(x->slopeRatio());
+}
+
+ExtrapolationData SlopeExtrapolationWidgetImplementation::extract() const
+{
+    ExtrapolationData data;
+    data.insert("baselevel", spnBaseLevel->value());
+    data.insert("ratio", spnSlope->value());
+    return data;
+}
+
+void SlopeExtrapolationWidgetImplementation::provide(const ExtrapolationData &xdata)
+{
+    spnBaseLevel->setValue(xdata.value("baselevel", -1.0));
+    spnSlope->setValue(xdata.value("ratio", -1.0));
 }
 
 SlopeExtrapolationWidgetImplementation::~SlopeExtrapolationWidgetImplementation() { }
@@ -112,10 +125,22 @@ void SlopeExtrapolationWidget::bindExtrapolator(SlopeExtrapolator *sx)
 {
     m->x = sx;
     refreshData();
+
+    typedef SlopeExtrapolationWidget W;
+    void (QDoubleSpinBox::*qDoubleSpinBoxValueChanged)(double) = &QDoubleSpinBox::valueChanged;
+
+    connect(m->spnBaseLevel,    qDoubleSpinBoxValueChanged, this,   &W::setBaseLevel);
+    connect(m->spnSlope,        qDoubleSpinBoxValueChanged, this,   &W::setSlopeRatio);
 }
 
 void SlopeExtrapolationWidget::refreshData()
 { m->adjustValues(); }
+
+ExtrapolationData SlopeExtrapolationWidget::extractData() const
+{ return m->extract(); }
+
+void SlopeExtrapolationWidget::provideData(const ExtrapolationData &xdata)
+{ m->provide(xdata); }
 
 
 SlopeExtrapolationWidget::~SlopeExtrapolationWidget()
