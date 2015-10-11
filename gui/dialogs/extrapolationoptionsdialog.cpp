@@ -110,7 +110,7 @@ QWidget *ExtrapolationOptionsDialog::extrapolationWidget(const QString &keyName)
 { return m->wgtExtrapolOpt->extrapolationWidget(keyName); }
 
 void ExtrapolationOptionsDialog::addExtrapolationWidget(ExtrapolationFactory *f)
-{ m->wgtExtrapolOpt->addExtrapolationWidget(f, true); }
+{ m->wgtExtrapolOpt->addExtrapolationWidget(f, false); }
 
 
 ExtrapolationOptionsDialog::~ExtrapolationOptionsDialog()

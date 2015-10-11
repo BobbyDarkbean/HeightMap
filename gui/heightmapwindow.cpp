@@ -426,8 +426,8 @@ void HeightMapWindow::createWidgets()
 
     QStringList xNames = m->logic->extrapolatorKeys();
     foreach (QString name, xNames) {
-        if (ExtrapolationFactory *f = m->logic->extrapolationFactory(name))
-            m->wgtExtrapolation->addExtrapolationWidget(f, false);
+        if (ExtrapolationFactory *f = hmApp->extrapolationFactory(name))
+            m->wgtExtrapolation->addExtrapolationWidget(f, true);
     }
 
     m->wgtExtrapolation->setExtrapolatorName(prefs.extrapolatorName());

@@ -19,8 +19,7 @@ public:
 
     virtual Extrapolator *extrapolator() const = 0;
 
-    virtual AbstractExtrapolationWidget *createWidget() const = 0;
-    virtual AbstractExtrapolationWidget *createProxyWidget() const = 0;
+    virtual AbstractExtrapolationWidget *createWidget(bool bind) const = 0;
 
     virtual void applyProxyData() = 0;
     virtual void resetProxyData() = 0;

@@ -83,20 +83,14 @@ SlopeExtrapolationFactory::SlopeExtrapolationFactory()
 Extrapolator *SlopeExtrapolationFactory::extrapolator() const
 { return m->x; }
 
-AbstractExtrapolationWidget *SlopeExtrapolationFactory::createWidget() const
+AbstractExtrapolationWidget *SlopeExtrapolationFactory::createWidget(bool bind) const
 {
     SlopeExtrapolationWidget *widget = new SlopeExtrapolationWidget;
-    widget->bindExtrapolator(m->x);
-
-    return widget;
-}
-
-AbstractExtrapolationWidget *SlopeExtrapolationFactory::createProxyWidget() const
-{
-    m->resetProxy();
-
-    SlopeExtrapolationWidget *widget = new SlopeExtrapolationWidget;
-    widget->bindExtrapolator(m->proxy);
+    if (bind) {
+        widget->bindExtrapolator(m->x);
+    } else {
+        widget->provideData(extractData());
+    }
 
     return widget;
 }

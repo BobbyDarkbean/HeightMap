@@ -79,20 +79,14 @@ SimpleExtrapolationFactory::SimpleExtrapolationFactory()
 Extrapolator *SimpleExtrapolationFactory::extrapolator() const
 { return m->x; }
 
-AbstractExtrapolationWidget *SimpleExtrapolationFactory::createWidget() const
+AbstractExtrapolationWidget *SimpleExtrapolationFactory::createWidget(bool bind) const
 {
     SimpleExtrapolationWidget *widget = new SimpleExtrapolationWidget;
-    widget->bindExtrapolator(m->x);
-
-    return widget;
-}
-
-AbstractExtrapolationWidget *SimpleExtrapolationFactory::createProxyWidget() const
-{
-    m->resetProxy();
-
-    SimpleExtrapolationWidget *widget = new SimpleExtrapolationWidget;
-    widget->bindExtrapolator(m->proxy);
+    if (bind) {
+        widget->bindExtrapolator(m->x);
+    } else {
+        widget->provideData(extractData());
+    }
 
     return widget;
 }

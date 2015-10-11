@@ -131,9 +131,9 @@ QWidget *ExtrapolationOptionsWidget::extrapolationWidget(const QString &name) co
     return m->stkExtrapolOpts->widget(id);
 }
 
-void ExtrapolationOptionsWidget::addExtrapolationWidget(ExtrapolationFactory *f, bool proxy)
+void ExtrapolationOptionsWidget::addExtrapolationWidget(ExtrapolationFactory *f, bool bound)
 {
-    AbstractExtrapolationWidget *w = proxy ? f->createProxyWidget() : f->createWidget();
+    AbstractExtrapolationWidget *w = f->createWidget(bound);
     QString name = f->name();
     QString description = f->description();
 

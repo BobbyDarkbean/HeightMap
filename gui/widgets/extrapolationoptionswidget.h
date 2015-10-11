@@ -26,7 +26,7 @@ public:
     void setXData(const QString &name, const ExtrapolationData &xdata);
 
     QWidget *extrapolationWidget(const QString &name) const;
-    void addExtrapolationWidget(ExtrapolationFactory *, bool proxy);
+    void addExtrapolationWidget(ExtrapolationFactory *, bool bound);
     void removeExtrapolationWidget(const QString &name);
 
     void retrieveExtrapolationSettings();

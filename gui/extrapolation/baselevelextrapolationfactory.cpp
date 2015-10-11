@@ -79,20 +79,14 @@ BaseLevelExtrapolationFactory::BaseLevelExtrapolationFactory()
 Extrapolator *BaseLevelExtrapolationFactory::extrapolator() const
 { return m->x; }
 
-AbstractExtrapolationWidget *BaseLevelExtrapolationFactory::createWidget() const
+AbstractExtrapolationWidget *BaseLevelExtrapolationFactory::createWidget(bool bind) const
 {
     BaseLevelExtrapolationWidget *widget = new BaseLevelExtrapolationWidget;
-    widget->bindExtrapolator(m->x);
-
-    return widget;
-}
-
-AbstractExtrapolationWidget *BaseLevelExtrapolationFactory::createProxyWidget() const
-{
-    m->resetProxy();
-
-    BaseLevelExtrapolationWidget *widget = new BaseLevelExtrapolationWidget;
-    widget->bindExtrapolator(m->proxy);
+    if (bind) {
+        widget->bindExtrapolator(m->x);
+    } else {
+        widget->provideData(extractData());
+    }
 
     return widget;
 }

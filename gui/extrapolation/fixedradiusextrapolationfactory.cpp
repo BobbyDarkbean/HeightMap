@@ -83,20 +83,14 @@ FixedRadiusExtrapolationFactory::FixedRadiusExtrapolationFactory()
 Extrapolator *FixedRadiusExtrapolationFactory::extrapolator() const
 { return m->x; }
 
-AbstractExtrapolationWidget *FixedRadiusExtrapolationFactory::createWidget() const
+AbstractExtrapolationWidget *FixedRadiusExtrapolationFactory::createWidget(bool bind) const
 {
     FixedRadiusExtrapolationWidget *widget = new FixedRadiusExtrapolationWidget;
-    widget->bindExtrapolator(m->x);
-
-    return widget;
-}
-
-AbstractExtrapolationWidget *FixedRadiusExtrapolationFactory::createProxyWidget() const
-{
-    m->resetProxy();
-
-    FixedRadiusExtrapolationWidget *widget = new FixedRadiusExtrapolationWidget;
-    widget->bindExtrapolator(m->proxy);
+    if (bind) {
+        widget->bindExtrapolator(m->x);
+    } else {
+        widget->provideData(extractData());
+    }
 
     return widget;
 }

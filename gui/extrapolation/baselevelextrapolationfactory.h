@@ -16,8 +16,7 @@ public:
 
     Extrapolator *extrapolator() const;
 
-    AbstractExtrapolationWidget *createWidget() const;
-    AbstractExtrapolationWidget *createProxyWidget() const;
+    AbstractExtrapolationWidget *createWidget(bool bind) const;
 
     void applyProxyData();
     void resetProxyData();
