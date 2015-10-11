@@ -4,6 +4,7 @@
 #include <QStackedWidget>
 #include <QBoxLayout>
 #include "abstractextrapolationwidget.h"
+#include "../extrapolation/extrapolationdata.h"
 #include "../extrapolation/extrapolationfactory.h"
 #include "../preferences.h"
 
@@ -104,6 +105,22 @@ void ExtrapolationOptionsWidget::setExtrapolatorName(const QString &name)
     int index = m->cmbExtrapolMethod->findData(name);
     if (index != -1)
         m->cmbExtrapolMethod->setCurrentIndex(index);
+}
+
+ExtrapolationData ExtrapolationOptionsWidget::xData(const QString &name)
+{
+    int id = m->mapExtrapolId.value(name, -1);
+    if (AbstractExtrapolationWidget *w = m->mapExtrapolWgts.value(id, nullptr))
+        return w->extractData();
+
+    return ExtrapolationData();
+}
+
+void ExtrapolationOptionsWidget::setXData(const QString &name, const ExtrapolationData &xdata)
+{
+    int id = m->mapExtrapolId.value(name, -1);
+    if (AbstractExtrapolationWidget *w = m->mapExtrapolWgts.value(id, nullptr))
+        w->provideData(xdata);
 }
 
 QWidget *ExtrapolationOptionsWidget::extrapolationWidget(const QString &name) const
