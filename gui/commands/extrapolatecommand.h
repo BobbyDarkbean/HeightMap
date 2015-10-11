@@ -10,6 +10,8 @@ namespace HeightMap {
 
 
 class HeightMapLogic;
+class Preferences;
+class ExtrapolationData;
 class Trigger;
 struct ExtrapolateCommandImplementation;
 class ExtrapolateCommand : public QUndoCommand
@@ -19,6 +21,18 @@ public:
 
     HeightMapLogic *logic() const;
     void setLogic(HeightMapLogic *);
+
+    Preferences prevPreferences() const;
+    void setPrevPreferences(const Preferences &);
+
+    Preferences nextPreferences() const;
+    void setNextPreferences(const Preferences &);
+
+    ExtrapolationData prevXData() const;
+    void setPrevXData(const ExtrapolationData &);
+
+    ExtrapolationData nextXData() const;
+    void setNextXData(const ExtrapolationData &);
 
     Trigger *trigger() const;
     void setTrigger(Trigger *);

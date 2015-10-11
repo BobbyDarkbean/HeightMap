@@ -11,6 +11,7 @@ include_directories (../hm)
 
 set (HMGUI_HDR auxiliary/colormap.h
                auxiliary/mappingdata.h
+               commands/commands
                commands/contouringcommand.h
                commands/extrapolatecommand.h
                commands/generatecommand.h
