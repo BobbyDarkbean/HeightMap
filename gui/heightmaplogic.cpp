@@ -1,11 +1,13 @@
 #include <memory>
 
-#include <QStringList>
 #include <QMap>
 #include <QImage>
 #include "terrain.h"
+#include "extrapolation/extrapolationdata.h"
 #include "extrapolation/extrapolationfactory.h"
 #include "auxiliary/mappingdata.h"
+#include "commands/commands"
+#include "heightmapapplication.h"
 #include "mappingthread.h"
 #include "mappingworker.h"
 #include "preferences.h"
@@ -30,8 +32,7 @@ struct HeightMapLogicImplementation
     std::unique_ptr<Terrain> terrain;
 
     Preferences prefs;
-    PreferencesController *ctrl;
-    QMap<QString, ExtrapolationFactory *> extrapolations;
+    ExtrapolationData xData;
 
     QImage imgPeaks;
     QImage imgLandscape;
@@ -44,6 +45,8 @@ struct HeightMapLogicImplementation
     Trigger *trgBuildLs;
     Trigger *trgCalcContours;
 
+    QUndoStack *uskCommands;
+
 private:
     DISABLE_COPY(HeightMapLogicImplementation)
     DISABLE_MOVE(HeightMapLogicImplementation)
@@ -53,8 +56,7 @@ private:
 HeightMapLogicImplementation::HeightMapLogicImplementation()
     : terrain(nullptr),
       prefs(),
-      ctrl(nullptr),
-      extrapolations(),
+      xData(),
       imgPeaks(),
       imgLandscape(),
       imgIsobars(),
@@ -62,7 +64,8 @@ HeightMapLogicImplementation::HeightMapLogicImplementation()
       thrProcess(nullptr),
       trgGenLs(nullptr),
       trgBuildLs(nullptr),
-      trgCalcContours(nullptr) { }
+      trgCalcContours(nullptr),
+      uskCommands(nullptr) { }
 
 void HeightMapLogicImplementation::initWorker(MappingWorker *worker)
 {
@@ -95,10 +98,6 @@ HeightMapLogicImplementation::~HeightMapLogicImplementation()
 {
     thrProcess->quit();
     thrProcess->wait();
-
-    for (auto i = extrapolations.constBegin(); i != extrapolations.constEnd(); ++i) {
-        delete i.value();
-    }
 }
 
 
@@ -106,9 +105,6 @@ HeightMapLogic::HeightMapLogic(QObject *parent)
     : QObject(parent),
       m(new HeightMapLogicImplementation)
 {
-    m->ctrl = new PreferencesController(this);
-    m->ctrl->setPreferences(&m->prefs);
-
     m->thrProcess = new MappingThread(this);
 
     MappingWorker *worker = new MappingWorker;
@@ -119,6 +115,8 @@ HeightMapLogic::HeightMapLogic(QObject *parent)
     m->trgGenLs = new Trigger(this);
     m->trgBuildLs = new Trigger(this);
     m->trgCalcContours = new Trigger(this);
+
+    m->uskCommands = new QUndoStack(this);
 
     typedef MappingWorker W;
     typedef HeightMapLogic L;
@@ -156,48 +154,19 @@ const Preferences &HeightMapLogic::preferences() const
 { return m->prefs; }
 
 void HeightMapLogic::setPreferences(const Preferences &prefs)
-{
-    if (m->prefs != prefs) {
-        m->prefs = prefs;
-        emit preferencesChanged();
-    }
-}
+{ m->prefs = prefs; }
 
-PreferencesController *HeightMapLogic::preferencesController() const
-{ return m->ctrl; }
+ExtrapolationData HeightMapLogic::xData() const
+{ return m->xData; }
+
+void HeightMapLogic::setXData(const ExtrapolationData &data)
+{ m->xData = data; }
 
 
-void HeightMapLogic::addExtrapolation(ExtrapolationFactory *f)
-{ m->extrapolations.insert(f->name(), f); }
-
-QStringList HeightMapLogic::extrapolatorKeys() const
-{ return m->extrapolations.keys(); }
-
-ExtrapolationFactory *HeightMapLogic::extrapolationFactory(const QString &name) const
-{ return m->extrapolations.value(name, nullptr); }
-
-Extrapolator *HeightMapLogic::currentExtrapolator() const
+ExtrapolationFactory *HeightMapLogic::currentExtrapolation() const
 {
     QString currentName = preferences().extrapolatorName();
-    if (ExtrapolationFactory *f = extrapolationFactory(currentName)) {
-        return f->extrapolator();
-    }
-
-    return nullptr;
-}
-
-void HeightMapLogic::applyProxyExtrapolator(const QString &name)
-{
-    for (auto i = m->extrapolations.constBegin(); i != m->extrapolations.constEnd(); ++i) {
-        if (ExtrapolationFactory *f = i.value()) {
-            if (i.key() == name) {
-                f->applyProxyData();
-                emit extrapolationDataChanged(name);
-            } else {
-                f->resetProxyData();
-            }
-        }
-    }
+    return hmApp->extrapolationFactory(currentName);
 }
 
 
@@ -225,6 +194,8 @@ HeightMapLogic::~HeightMapLogic()
 
 void HeightMapLogic::newTerrain()
 {
+    m->uskCommands->clear();
+
     int w = m->prefs.landscapeWidth();
     int h = m->prefs.landscapeHeight();
 
@@ -235,13 +206,55 @@ void HeightMapLogic::newTerrain()
 }
 
 void HeightMapLogic::createLandscape()
-{ m->trgGenLs->activate(); }
+{
+    GenerateCommand *cmd = new GenerateCommand;
+    cmd->setText(tr("Generate peaks"));
+    cmd->setLogic(this);
+    cmd->setPrevPreferences(m->prefs);
+    cmd->setPrevXData(m->xData);
+    cmd->setNextPreferences(hmApp->preferences());
+    if (ExtrapolationFactory *f = currentExtrapolation()) {
+        cmd->setNextXData(f->extractData());
+    }
+    cmd->setTrigger(m->trgGenLs);
+
+    m->uskCommands->push(cmd);
+    m->uskCommands->redo();
+}
 
 void HeightMapLogic::buildLandscapeFromPeaks()
-{ m->trgBuildLs->activate(); }
+{
+    ExtrapolateCommand *cmd = new ExtrapolateCommand;
+    cmd->setText(tr("Extrapolate peaks"));
+    cmd->setLogic(this);
+    cmd->setPrevPreferences(m->prefs);
+    cmd->setPrevXData(m->xData);
+    cmd->setNextPreferences(hmApp->preferences());
+    if (ExtrapolationFactory *f = currentExtrapolation()) {
+        cmd->setNextXData(f->extractData());
+    }
+    cmd->setTrigger(m->trgBuildLs);
+
+    m->uskCommands->push(cmd);
+    m->uskCommands->redo();
+}
 
 void HeightMapLogic::plotIsobars()
-{ m->trgCalcContours->activate(); }
+{
+    ContouringCommand *cmd = new ContouringCommand;
+    cmd->setText(tr("Calculate isobars"));
+    cmd->setLogic(this);
+    cmd->setPrevPreferences(m->prefs);
+    cmd->setPrevXData(m->xData);
+    cmd->setNextPreferences(hmApp->preferences());
+    if (ExtrapolationFactory *f = currentExtrapolation()) {
+        cmd->setNextXData(f->extractData());
+    }
+    cmd->setTrigger(m->trgCalcContours);
+
+    m->uskCommands->push(cmd);
+    m->uskCommands->redo();
+}
 
 
 } // namespace HeightMap

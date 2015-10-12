@@ -1,6 +1,8 @@
 #include <QImage>
 #include <QMutex>
 #include "auxiliary/mappingdata.h"
+#include "extrapolation/extrapolationdata.h"
+#include "extrapolation/extrapolationfactory.h"
 #include "heightmaplogic.h"
 #include "preferences.h"
 #include "terrain.h"
@@ -205,7 +207,10 @@ void MappingWorker::extrapolatePeaks()
 {
     emit peakExtrapolationStarted();
 
-    if (Extrapolator *extrapolator = m->logic->currentExtrapolator()) {
+    if (ExtrapolationFactory *f = m->logic->currentExtrapolation()) {
+        f->provideData(m->logic->xData());
+        Extrapolator *extrapolator = f->extrapolator();
+
         Terrain *terrain = m->logic->terrain();
         terrain->fillLandscape(extrapolator->baseLevel());
         terrain->extrapolatePeaks(&m->mapper, extrapolator);
