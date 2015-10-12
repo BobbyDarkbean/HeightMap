@@ -4,9 +4,7 @@
 #include <QImage>
 #include "terrain.h"
 #include "extrapolation/extrapolationdata.h"
-#include "extrapolation/extrapolationfactory.h"
 #include "auxiliary/mappingdata.h"
-#include "commands/commands"
 #include "heightmapapplication.h"
 #include "mappingthread.h"
 #include "mappingworker.h"
@@ -45,8 +43,6 @@ struct HeightMapLogicImplementation
     Trigger *trgBuildLs;
     Trigger *trgCalcContours;
 
-    QUndoStack *uskCommands;
-
 private:
     DISABLE_COPY(HeightMapLogicImplementation)
     DISABLE_MOVE(HeightMapLogicImplementation)
@@ -64,8 +60,7 @@ HeightMapLogicImplementation::HeightMapLogicImplementation()
       thrProcess(nullptr),
       trgGenLs(nullptr),
       trgBuildLs(nullptr),
-      trgCalcContours(nullptr),
-      uskCommands(nullptr) { }
+      trgCalcContours(nullptr) { }
 
 void HeightMapLogicImplementation::initWorker(MappingWorker *worker)
 {
@@ -115,8 +110,6 @@ HeightMapLogic::HeightMapLogic(QObject *parent)
     m->trgGenLs = new Trigger(this);
     m->trgBuildLs = new Trigger(this);
     m->trgCalcContours = new Trigger(this);
-
-    m->uskCommands = new QUndoStack(this);
 
     typedef MappingWorker W;
     typedef HeightMapLogic L;
@@ -194,8 +187,6 @@ HeightMapLogic::~HeightMapLogic()
 
 void HeightMapLogic::newTerrain()
 {
-    m->uskCommands->clear();
-
     int w = m->prefs.landscapeWidth();
     int h = m->prefs.landscapeHeight();
 
@@ -206,55 +197,13 @@ void HeightMapLogic::newTerrain()
 }
 
 void HeightMapLogic::createLandscape()
-{
-    GenerateCommand *cmd = new GenerateCommand;
-    cmd->setText(tr("Generate peaks"));
-    cmd->setLogic(this);
-    cmd->setPrevPreferences(m->prefs);
-    cmd->setPrevXData(m->xData);
-    cmd->setNextPreferences(hmApp->preferences());
-    if (ExtrapolationFactory *f = hmApp->currentExtrapolationFactory()) {
-        cmd->setNextXData(f->extractData());
-    }
-    cmd->setTrigger(m->trgGenLs);
-
-    m->uskCommands->push(cmd);
-    m->uskCommands->redo();
-}
+{ m->trgGenLs->activate(); }
 
 void HeightMapLogic::buildLandscapeFromPeaks()
-{
-    ExtrapolateCommand *cmd = new ExtrapolateCommand;
-    cmd->setText(tr("Extrapolate peaks"));
-    cmd->setLogic(this);
-    cmd->setPrevPreferences(m->prefs);
-    cmd->setPrevXData(m->xData);
-    cmd->setNextPreferences(hmApp->preferences());
-    if (ExtrapolationFactory *f = hmApp->currentExtrapolationFactory()) {
-        cmd->setNextXData(f->extractData());
-    }
-    cmd->setTrigger(m->trgBuildLs);
-
-    m->uskCommands->push(cmd);
-    m->uskCommands->redo();
-}
+{ m->trgBuildLs->activate(); }
 
 void HeightMapLogic::plotIsobars()
-{
-    ContouringCommand *cmd = new ContouringCommand;
-    cmd->setText(tr("Calculate isobars"));
-    cmd->setLogic(this);
-    cmd->setPrevPreferences(m->prefs);
-    cmd->setPrevXData(m->xData);
-    cmd->setNextPreferences(hmApp->preferences());
-    if (ExtrapolationFactory *f = hmApp->currentExtrapolationFactory()) {
-        cmd->setNextXData(f->extractData());
-    }
-    cmd->setTrigger(m->trgCalcContours);
-
-    m->uskCommands->push(cmd);
-    m->uskCommands->redo();
-}
+{ m->trgCalcContours->activate(); }
 
 
 } // namespace HeightMap

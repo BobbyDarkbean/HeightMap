@@ -15,6 +15,8 @@
 #include "preferencescontroller.h"
 #include "terrain.h"
 #include "extrapolation/extrapolationdata.h"
+#include "extrapolation/extrapolationfactory.h"
+#include "commands/commands"
 #include "widgets/abstractextrapolationwidget.h"
 #include "widgets/peakoptionswidget.h"
 #include "widgets/extrapolationoptionswidget.h"
@@ -72,6 +74,9 @@ struct HeightMapWindowImplementation
     QAction *actExportPk;
     QAction *actExit;
 
+    QAction *actUndo;
+    QAction *actRedo;
+
     QAction *actGenLs;
     QAction *actBuildLs;
     QAction *actCalcContours;
@@ -83,6 +88,8 @@ struct HeightMapWindowImplementation
     QAction *actViewModeLandscape;
     QAction *actViewModeIsobars;
     QAction *actViewModeHybrid;
+
+    QUndoStack *uskCommands;
 
     HeightMapViewMode hmvm;
 
@@ -114,6 +121,8 @@ HeightMapWindowImplementation::HeightMapWindowImplementation()
       actExportLs(nullptr),
       actExportPk(nullptr),
       actExit(nullptr),
+      actUndo(nullptr),
+      actRedo(nullptr),
       actGenLs(nullptr),
       actBuildLs(nullptr),
       actCalcContours(nullptr),
@@ -124,6 +133,7 @@ HeightMapWindowImplementation::HeightMapWindowImplementation()
       actViewModeLandscape(nullptr),
       actViewModeIsobars(nullptr),
       actViewModeHybrid(nullptr),
+      uskCommands(nullptr),
       hmvm(HMVM_Hybrid),
       processing(false) { }
 
@@ -309,6 +319,48 @@ void HeightMapWindow::editContouringSettings()
     }
 }
 
+void HeightMapWindow::generateLandscape()
+{
+    GenerateCommand *cmd = new GenerateCommand;
+    cmd->init(m->logic);
+    cmd->setText(tr("Generate peaks"));
+    cmd->setPreferences(hmApp->preferences());
+    if (ExtrapolationFactory *f = hmApp->currentExtrapolationFactory()) {
+        cmd->setXData(f->extractData());
+    }
+
+    m->uskCommands->push(cmd);
+    m->uskCommands->redo();
+}
+
+void HeightMapWindow::extrapolatePeaks()
+{
+    ExtrapolateCommand *cmd = new ExtrapolateCommand;
+    cmd->init(m->logic);
+    cmd->setText(tr("Extrapolate peaks"));
+    cmd->setPreferences(hmApp->preferences());
+    if (ExtrapolationFactory *f = hmApp->currentExtrapolationFactory()) {
+        cmd->setXData(f->extractData());
+    }
+
+    m->uskCommands->push(cmd);
+    m->uskCommands->redo();
+}
+
+void HeightMapWindow::calculateContours()
+{
+    ContouringCommand *cmd = new ContouringCommand;
+    cmd->init(m->logic);
+    cmd->setText(tr("Calculate contours"));
+    cmd->setPreferences(hmApp->preferences());
+    if (ExtrapolationFactory *f = hmApp->currentExtrapolationFactory()) {
+        cmd->setXData(f->extractData());
+    }
+
+    m->uskCommands->push(cmd);
+    m->uskCommands->redo();
+}
+
 void HeightMapWindow::adjustPreferences()
 {
     Preferences prefs(hmApp->preferences());
@@ -327,6 +379,8 @@ void HeightMapWindow::adjustExtrapolationData(QString)
 
 void HeightMapWindow::resetTerrainData()
 {
+    m->uskCommands->clear();
+
     m->resetStatusBar();
     m->displayHeightMapImage();
 }
@@ -498,6 +552,18 @@ void HeightMapWindow::createActions()
     mnuFile->addSeparator();
     mnuFile->addAction(m->actExit);
 
+    m->uskCommands = new QUndoStack(this);
+
+    m->actUndo = m->uskCommands->createUndoAction(this);
+    m->actUndo->setShortcut(tr("Ctrl+Z"));
+
+    m->actRedo = m->uskCommands->createRedoAction(this);
+    m->actRedo->setShortcut(tr("Ctrl+Shift+Z"));
+
+    QMenu *mnuEdit = menuBar()->addMenu(tr("&Edit"));
+    mnuEdit->addAction(m->actUndo);
+    mnuEdit->addAction(m->actRedo);
+
     m->actGenLs = new QAction(this);
     m->actGenLs->setText(tr("&Generate landscape"));
     m->actGenLs->setShortcut(tr("Ctrl+G"));
@@ -568,15 +634,14 @@ void HeightMapWindow::createActions()
     typedef QAction A;
     typedef QActionGroup G;
     typedef HeightMapWindow W;
-    typedef HeightMapLogic L;
 
     connect(m->actNewFile,          &A::triggered,  this,       &W::newFile);
     connect(m->actExportLs,         &A::triggered,  this,       &W::exportLandscape);
     connect(m->actExportPk,         &A::triggered,  this,       &W::exportPeaks);
     connect(m->actExit,             &A::triggered,  this,       &W::close);
-    connect(m->actGenLs,            &A::triggered,  m->logic,   &L::createLandscape);
-    connect(m->actBuildLs,          &A::triggered,  m->logic,   &L::buildLandscapeFromPeaks);
-    connect(m->actCalcContours,     &A::triggered,  m->logic,   &L::plotIsobars);
+    connect(m->actGenLs,            &A::triggered,  this,       &W::generateLandscape);
+    connect(m->actBuildLs,          &A::triggered,  this,       &W::extrapolatePeaks);
+    connect(m->actCalcContours,     &A::triggered,  this,       &W::calculateContours);
     connect(m->actHmSettings,       &A::triggered,  this,       &W::editPeakSettings);
     connect(m->actExtrapolSettings, &A::triggered,  this,       &W::editExtrapolationSettings);
     connect(m->actContourSettings,  &A::triggered,  this,       &W::editContouringSettings);

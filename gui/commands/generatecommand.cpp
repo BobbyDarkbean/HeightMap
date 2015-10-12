@@ -1,7 +1,6 @@
 #include "../heightmaplogic.h"
 #include "../preferences.h"
 #include "../extrapolation/extrapolationdata.h"
-#include "../trigger.h"
 
 #include "generatecommand.h"
 
@@ -21,8 +20,6 @@ struct GenerateCommandImplementation
     ExtrapolationData prevXData;
     ExtrapolationData nextXData;
 
-    Trigger *trg;
-
 private:
     DISABLE_COPY(GenerateCommandImplementation)
     DISABLE_MOVE(GenerateCommandImplementation)
@@ -34,8 +31,7 @@ GenerateCommandImplementation::GenerateCommandImplementation()
       prevPrefs(),
       nextPrefs(),
       prevXData(),
-      nextXData(),
-      trg(nullptr) { }
+      nextXData() { }
 
 GenerateCommandImplementation::~GenerateCommandImplementation() { }
 
@@ -45,55 +41,41 @@ GenerateCommand::GenerateCommand(QUndoCommand *parent)
       m(new GenerateCommandImplementation) { }
 
 
+void GenerateCommand::init(HeightMapLogic *l)
+{
+    m->logic = l;
+    m->prevPrefs = l->preferences();
+    m->prevXData = l->xData();
+}
+
 HeightMapLogic *GenerateCommand::logic() const
 { return m->logic; }
 
-void GenerateCommand::setLogic(HeightMapLogic *l)
-{ m->logic = l; }
-
-Preferences GenerateCommand::prevPreferences() const
-{ return m->prevPrefs; }
-
-void GenerateCommand::setPrevPreferences(const Preferences &prefs)
-{ m->prevPrefs = prefs; }
-
-Preferences GenerateCommand::nextPreferences() const
+Preferences GenerateCommand::preferences() const
 { return m->nextPrefs; }
 
-void GenerateCommand::setNextPreferences(const Preferences &prefs)
+void GenerateCommand::setPreferences(const Preferences &prefs)
 { m->nextPrefs = prefs; }
 
-ExtrapolationData GenerateCommand::prevXData() const
-{ return m->prevXData; }
-
-void GenerateCommand::setPrevXData(const ExtrapolationData &xdata)
-{ m->prevXData = xdata; }
-
-ExtrapolationData GenerateCommand::nextXData() const
+ExtrapolationData GenerateCommand::xData() const
 { return m->nextXData; }
 
-void GenerateCommand::setNextXData(const ExtrapolationData &xdata)
+void GenerateCommand::setXData(const ExtrapolationData &xdata)
 { m->nextXData = xdata; }
-
-Trigger *GenerateCommand::trigger() const
-{ return m->trg; }
-
-void GenerateCommand::setTrigger(Trigger *trg)
-{ m->trg = trg; }
 
 
 void GenerateCommand::undo()
 {
     m->logic->setPreferences(m->prevPrefs);
     m->logic->setXData(m->prevXData);
-    m->trg->activate();
+    m->logic->createLandscape();
 }
 
 void GenerateCommand::redo()
 {
     m->logic->setPreferences(m->nextPrefs);
     m->logic->setXData(m->nextXData);
-    m->trg->activate();
+    m->logic->createLandscape();
 }
 
 

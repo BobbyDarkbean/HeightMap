@@ -1,7 +1,6 @@
 #include "../heightmaplogic.h"
 #include "../preferences.h"
 #include "../extrapolation/extrapolationdata.h"
-#include "../trigger.h"
 
 #include "contouringcommand.h"
 
@@ -21,8 +20,6 @@ struct ContouringCommandImplementation
     ExtrapolationData prevXData;
     ExtrapolationData nextXData;
 
-    Trigger *trg;
-
 private:
     DISABLE_COPY(ContouringCommandImplementation)
     DISABLE_MOVE(ContouringCommandImplementation)
@@ -34,8 +31,7 @@ ContouringCommandImplementation::ContouringCommandImplementation()
       prevPrefs(),
       nextPrefs(),
       prevXData(),
-      nextXData(),
-      trg(nullptr) { }
+      nextXData() { }
 
 ContouringCommandImplementation::~ContouringCommandImplementation() { }
 
@@ -45,55 +41,41 @@ ContouringCommand::ContouringCommand(QUndoCommand *parent)
       m(new ContouringCommandImplementation) { }
 
 
+void ContouringCommand::init(HeightMapLogic *l)
+{
+    m->logic = l;
+    m->prevPrefs = l->preferences();
+    m->prevXData = l->xData();
+}
+
 HeightMapLogic *ContouringCommand::logic() const
 { return m->logic; }
 
-void ContouringCommand::setLogic(HeightMapLogic *l)
-{ m->logic = l; }
-
-Preferences ContouringCommand::prevPreferences() const
-{ return m->prevPrefs; }
-
-void ContouringCommand::setPrevPreferences(const Preferences &prefs)
-{ m->prevPrefs = prefs; }
-
-Preferences ContouringCommand::nextPreferences() const
+Preferences ContouringCommand::preferences() const
 { return m->nextPrefs; }
 
-void ContouringCommand::setNextPreferences(const Preferences &prefs)
+void ContouringCommand::setPreferences(const Preferences &prefs)
 { m->nextPrefs = prefs; }
 
-ExtrapolationData ContouringCommand::prevXData() const
-{ return m->prevXData; }
-
-void ContouringCommand::setPrevXData(const ExtrapolationData &xdata)
-{ m->prevXData = xdata; }
-
-ExtrapolationData ContouringCommand::nextXData() const
+ExtrapolationData ContouringCommand::xData() const
 { return m->nextXData; }
 
-void ContouringCommand::setNextXData(const ExtrapolationData &xdata)
+void ContouringCommand::setXData(const ExtrapolationData &xdata)
 { m->nextXData = xdata; }
-
-Trigger *ContouringCommand::trigger() const
-{ return m->trg; }
-
-void ContouringCommand::setTrigger(Trigger *trg)
-{ m->trg = trg; }
 
 
 void ContouringCommand::undo()
 {
     m->logic->setPreferences(m->prevPrefs);
     m->logic->setXData(m->prevXData);
-    m->trg->activate();
+    m->logic->plotIsobars();
 }
 
 void ContouringCommand::redo()
 {
     m->logic->setPreferences(m->nextPrefs);
     m->logic->setXData(m->nextXData);
-    m->trg->activate();
+    m->logic->plotIsobars();
 }
 
 

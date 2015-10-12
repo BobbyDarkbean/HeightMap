@@ -30,6 +30,10 @@ public slots:
     void editExtrapolationSettings();
     void editContouringSettings();
 
+    void generateLandscape();
+    void extrapolatePeaks();
+    void calculateContours();
+
     void adjustPreferences();
     void adjustExtrapolationData(QString);
 

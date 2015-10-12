@@ -12,30 +12,21 @@ namespace HeightMap {
 class HeightMapLogic;
 class Preferences;
 class ExtrapolationData;
-class Trigger;
 struct GenerateCommandImplementation;
 class GenerateCommand : public QUndoCommand
 {
 public:
     explicit GenerateCommand(QUndoCommand *parent = 0);
 
+    void init(HeightMapLogic *);
+
     HeightMapLogic *logic() const;
-    void setLogic(HeightMapLogic *);
 
-    Preferences prevPreferences() const;
-    void setPrevPreferences(const Preferences &);
+    Preferences preferences() const;
+    void setPreferences(const Preferences &);
 
-    Preferences nextPreferences() const;
-    void setNextPreferences(const Preferences &);
-
-    ExtrapolationData prevXData() const;
-    void setPrevXData(const ExtrapolationData &);
-
-    ExtrapolationData nextXData() const;
-    void setNextXData(const ExtrapolationData &);
-
-    Trigger *trigger() const;
-    void setTrigger(Trigger *);
+    ExtrapolationData xData() const;
+    void setXData(const ExtrapolationData &);
 
     void undo();
     void redo();
