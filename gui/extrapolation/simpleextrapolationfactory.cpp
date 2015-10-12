@@ -14,16 +14,12 @@ struct SimpleExtrapolationFactoryImplementation
 {
     SimpleExtrapolationFactoryImplementation();
 
-    void applyProxy();
-    void resetProxy();
-
     ExtrapolationData extract() const;
     void provide(const ExtrapolationData &);
 
     ~SimpleExtrapolationFactoryImplementation();
 
     SimpleExtrapolator *x;
-    SimpleExtrapolator *proxy;
 
 private:
     DISABLE_COPY(SimpleExtrapolationFactoryImplementation)
@@ -32,21 +28,10 @@ private:
 
 
 SimpleExtrapolationFactoryImplementation::SimpleExtrapolationFactoryImplementation()
-    : x(new SimpleExtrapolator),
-      proxy(new SimpleExtrapolator)
+    : x(new SimpleExtrapolator)
 {
     XReader xr("xdata/sml.xml");
     provide(xr.data());
-}
-
-void SimpleExtrapolationFactoryImplementation::applyProxy()
-{
-    x->setBaseLevel(proxy->baseLevel());
-}
-
-void SimpleExtrapolationFactoryImplementation::resetProxy()
-{
-    proxy->setBaseLevel(x->baseLevel());
 }
 
 ExtrapolationData SimpleExtrapolationFactoryImplementation::extract() const
@@ -66,7 +51,6 @@ SimpleExtrapolationFactoryImplementation::~SimpleExtrapolationFactoryImplementat
     XWriter xw("xdata/sml.xml");
     xw.setData(extract());
 
-    delete proxy;
     delete x;
 }
 
@@ -90,12 +74,6 @@ AbstractExtrapolationWidget *SimpleExtrapolationFactory::createWidget(bool bind)
 
     return widget;
 }
-
-void SimpleExtrapolationFactory::applyProxyData()
-{ m->applyProxy(); }
-
-void SimpleExtrapolationFactory::resetProxyData()
-{ m->resetProxy(); }
 
 QString SimpleExtrapolationFactory::name() const
 { return SimpleExtrapolationWidget::tr("sml"); }

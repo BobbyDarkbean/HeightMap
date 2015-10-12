@@ -14,16 +14,12 @@ struct SlopeExtrapolationFactoryImplementation
 {
     SlopeExtrapolationFactoryImplementation();
 
-    void applyProxy();
-    void resetProxy();
-
     ExtrapolationData extract() const;
     void provide(const ExtrapolationData &);
 
     ~SlopeExtrapolationFactoryImplementation();
 
     SlopeExtrapolator *x;
-    SlopeExtrapolator *proxy;
 
 private:
     DISABLE_COPY(SlopeExtrapolationFactoryImplementation)
@@ -32,23 +28,10 @@ private:
 
 
 SlopeExtrapolationFactoryImplementation::SlopeExtrapolationFactoryImplementation()
-    : x(new SlopeExtrapolator),
-      proxy(new SlopeExtrapolator)
+    : x(new SlopeExtrapolator)
 {
     XReader xr("xdata/slp.xml");
     provide(xr.data());
-}
-
-void SlopeExtrapolationFactoryImplementation::applyProxy()
-{
-    x->setBaseLevel(proxy->baseLevel());
-    x->setSlopeRatio(proxy->slopeRatio());
-}
-
-void SlopeExtrapolationFactoryImplementation::resetProxy()
-{
-    proxy->setBaseLevel(x->baseLevel());
-    proxy->setSlopeRatio(x->slopeRatio());
 }
 
 ExtrapolationData SlopeExtrapolationFactoryImplementation::extract() const
@@ -70,7 +53,6 @@ SlopeExtrapolationFactoryImplementation::~SlopeExtrapolationFactoryImplementatio
     XWriter xw("xdata/slp.xml");
     xw.setData(extract());
 
-    delete proxy;
     delete x;
 }
 
@@ -94,12 +76,6 @@ AbstractExtrapolationWidget *SlopeExtrapolationFactory::createWidget(bool bind) 
 
     return widget;
 }
-
-void SlopeExtrapolationFactory::applyProxyData()
-{ m->applyProxy(); }
-
-void SlopeExtrapolationFactory::resetProxyData()
-{ m->resetProxy(); }
 
 QString SlopeExtrapolationFactory::name() const
 { return SlopeExtrapolationWidget::tr("slp"); }

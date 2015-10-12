@@ -18,9 +18,6 @@ public:
 
     AbstractExtrapolationWidget *createWidget(bool bind) const;
 
-    void applyProxyData();
-    void resetProxyData();
-
     QString name() const;
     QString description() const;
 

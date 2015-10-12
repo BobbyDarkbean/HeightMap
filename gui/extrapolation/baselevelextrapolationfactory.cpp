@@ -14,16 +14,12 @@ struct BaseLevelExtrapolationFactoryImplementation
 {
     BaseLevelExtrapolationFactoryImplementation();
 
-    void applyProxy();
-    void resetProxy();
-
     ExtrapolationData extract() const;
     void provide(const ExtrapolationData &);
 
     ~BaseLevelExtrapolationFactoryImplementation();
 
     BaseLevelExtrapolator *x;
-    BaseLevelExtrapolator *proxy;
 
 private:
     DISABLE_COPY(BaseLevelExtrapolationFactoryImplementation)
@@ -32,21 +28,10 @@ private:
 
 
 BaseLevelExtrapolationFactoryImplementation::BaseLevelExtrapolationFactoryImplementation()
-    : x(new BaseLevelExtrapolator),
-      proxy(new BaseLevelExtrapolator)
+    : x(new BaseLevelExtrapolator)
 {
     XReader xr("xdata/bsl.xml");
     provide(xr.data());
-}
-
-void BaseLevelExtrapolationFactoryImplementation::applyProxy()
-{
-    x->setBaseLevel(proxy->baseLevel());
-}
-
-void BaseLevelExtrapolationFactoryImplementation::resetProxy()
-{
-    proxy->setBaseLevel(x->baseLevel());
 }
 
 ExtrapolationData BaseLevelExtrapolationFactoryImplementation::extract() const
@@ -66,7 +51,6 @@ BaseLevelExtrapolationFactoryImplementation::~BaseLevelExtrapolationFactoryImple
     XWriter xw("xdata/bsl.xml");
     xw.setData(extract());
 
-    delete proxy;
     delete x;
 }
 
@@ -90,12 +74,6 @@ AbstractExtrapolationWidget *BaseLevelExtrapolationFactory::createWidget(bool bi
 
     return widget;
 }
-
-void BaseLevelExtrapolationFactory::applyProxyData()
-{ m->applyProxy(); }
-
-void BaseLevelExtrapolationFactory::resetProxyData()
-{ m->resetProxy(); }
 
 QString BaseLevelExtrapolationFactory::name() const
 { return BaseLevelExtrapolationWidget::tr("bsl"); }

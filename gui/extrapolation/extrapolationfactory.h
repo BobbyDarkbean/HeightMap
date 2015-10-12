@@ -21,9 +21,6 @@ public:
 
     virtual AbstractExtrapolationWidget *createWidget(bool bind) const = 0;
 
-    virtual void applyProxyData() = 0;
-    virtual void resetProxyData() = 0;
-
     virtual QString name() const = 0;
     virtual QString description() const = 0;
 

@@ -14,16 +14,12 @@ struct FixedRadiusExtrapolationFactoryImplementation
 {
     FixedRadiusExtrapolationFactoryImplementation();
 
-    void applyProxy();
-    void resetProxy();
-
     ExtrapolationData extract() const;
     void provide(const ExtrapolationData &);
 
     ~FixedRadiusExtrapolationFactoryImplementation();
 
     FixedRadiusExtrapolator *x;
-    FixedRadiusExtrapolator *proxy;
 
 private:
     DISABLE_COPY(FixedRadiusExtrapolationFactoryImplementation)
@@ -32,23 +28,10 @@ private:
 
 
 FixedRadiusExtrapolationFactoryImplementation::FixedRadiusExtrapolationFactoryImplementation()
-    : x(new FixedRadiusExtrapolator),
-      proxy(new FixedRadiusExtrapolator)
+    : x(new FixedRadiusExtrapolator)
 {
     XReader xr("xdata/fxr.xml");
     provide(xr.data());
-}
-
-void FixedRadiusExtrapolationFactoryImplementation::applyProxy()
-{
-    x->setBaseLevel(proxy->baseLevel());
-    x->setFixedRadius(proxy->fixedRadius());
-}
-
-void FixedRadiusExtrapolationFactoryImplementation::resetProxy()
-{
-    proxy->setBaseLevel(x->baseLevel());
-    proxy->setFixedRadius(x->fixedRadius());
 }
 
 ExtrapolationData FixedRadiusExtrapolationFactoryImplementation::extract() const
@@ -70,7 +53,6 @@ FixedRadiusExtrapolationFactoryImplementation::~FixedRadiusExtrapolationFactoryI
     XWriter xw("xdata/fxr.xml");
     xw.setData(extract());
 
-    delete proxy;
     delete x;
 }
 
@@ -94,12 +76,6 @@ AbstractExtrapolationWidget *FixedRadiusExtrapolationFactory::createWidget(bool 
 
     return widget;
 }
-
-void FixedRadiusExtrapolationFactory::applyProxyData()
-{ m->applyProxy(); }
-
-void FixedRadiusExtrapolationFactory::resetProxyData()
-{ m->resetProxy(); }
 
 QString FixedRadiusExtrapolationFactory::name() const
 { return FixedRadiusExtrapolationWidget::tr("fxr"); }
