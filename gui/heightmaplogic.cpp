@@ -199,7 +199,7 @@ void HeightMapLogic::newTerrain()
     int w = m->prefs.landscapeWidth();
     int h = m->prefs.landscapeHeight();
 
-    m->terrain.reset(new Terrain(w, h));    
+    m->terrain.reset(new Terrain(w, h));
     m->resetImages();
 
     emit terrainCreated();
@@ -213,7 +213,7 @@ void HeightMapLogic::createLandscape()
     cmd->setPrevPreferences(m->prefs);
     cmd->setPrevXData(m->xData);
     cmd->setNextPreferences(hmApp->preferences());
-    if (ExtrapolationFactory *f = currentExtrapolation()) {
+    if (ExtrapolationFactory *f = hmApp->currentExtrapolationFactory()) {
         cmd->setNextXData(f->extractData());
     }
     cmd->setTrigger(m->trgGenLs);
@@ -230,7 +230,7 @@ void HeightMapLogic::buildLandscapeFromPeaks()
     cmd->setPrevPreferences(m->prefs);
     cmd->setPrevXData(m->xData);
     cmd->setNextPreferences(hmApp->preferences());
-    if (ExtrapolationFactory *f = currentExtrapolation()) {
+    if (ExtrapolationFactory *f = hmApp->currentExtrapolationFactory()) {
         cmd->setNextXData(f->extractData());
     }
     cmd->setTrigger(m->trgBuildLs);
@@ -247,7 +247,7 @@ void HeightMapLogic::plotIsobars()
     cmd->setPrevPreferences(m->prefs);
     cmd->setPrevXData(m->xData);
     cmd->setNextPreferences(hmApp->preferences());
-    if (ExtrapolationFactory *f = currentExtrapolation()) {
+    if (ExtrapolationFactory *f = hmApp->currentExtrapolationFactory()) {
         cmd->setNextXData(f->extractData());
     }
     cmd->setTrigger(m->trgCalcContours);

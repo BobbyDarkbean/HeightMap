@@ -34,6 +34,7 @@ public:
 
     QStringList extrapolatorKeys() const;
     ExtrapolationFactory *extrapolationFactory(const QString &name) const;
+    ExtrapolationFactory *currentExtrapolationFactory() const;
 
     ~HeightMapApplication();
 

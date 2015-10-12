@@ -175,6 +175,9 @@ QStringList HeightMapApplication::extrapolatorKeys() const
 ExtrapolationFactory *HeightMapApplication::extrapolationFactory(const QString &name) const
 { return m->extrapolations.value(name, nullptr); }
 
+ExtrapolationFactory *HeightMapApplication::currentExtrapolationFactory() const
+{ return extrapolationFactory(preferences().extrapolatorName()); }
+
 
 HeightMapApplication::~HeightMapApplication()
 {
