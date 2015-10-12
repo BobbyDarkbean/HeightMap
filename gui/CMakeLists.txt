@@ -76,8 +76,11 @@ set (HMGUI_SRC dialogs/contouringoptionsdialog.cpp
 set (CMAKE_INCLUDE_CURRENT_DIR ON)
 set (CMAKE_AUTOMOC ON)
 
-if (UNIX OR MINGW)
-    set (CMAKE_CXX_FLAGS "-Wall -O3 -pedantic -s -std=c++11 ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
+if (CMAKE_COMPILER_IS_GNUCXX)
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -O3 -pedantic -s -std=c++11")
+    if (UNIX)
+        set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
+    endif ()
 endif ()
 
 add_executable (${APP} WIN32 ${HMGUI_SRC} ${HMGUI_HDR})
