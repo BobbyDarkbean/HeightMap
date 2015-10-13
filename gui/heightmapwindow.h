@@ -20,7 +20,7 @@ public:
     void init(HeightMapLogic *);
     ~HeightMapWindow();
 
-public slots:
+private slots:
     void newFile();
 
     void exportLandscape();
