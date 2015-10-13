@@ -353,9 +353,6 @@ void HeightMapWindow::calculateContours()
     cmd->init(m->logic);
     cmd->setText(tr("Calculate contours"));
     cmd->setPreferences(hmApp->preferences());
-    if (ExtrapolationFactory *f = hmApp->currentExtrapolationFactory()) {
-        cmd->setXData(f->extractData());
-    }
 
     m->uskCommands->push(cmd);
     m->uskCommands->redo();
