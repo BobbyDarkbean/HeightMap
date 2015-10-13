@@ -105,61 +105,91 @@ int Preferences::landscapeWidth() const
 { return m->lsWidth; }
 
 void Preferences::setLandscapeWidth(int lsWidth)
-{ m->lsWidth = qBound<int>(MinLandscapeDim, lsWidth, MaxLandscapeDim); }
+{
+    detach();
+    m->lsWidth = qBound<int>(MinLandscapeDim, lsWidth, MaxLandscapeDim);
+}
 
 int Preferences::landscapeHeight() const
 { return m->lsHeight; }
 
 void Preferences::setLandscapeHeight(int lsHeight)
-{ m->lsHeight = qBound<int>(MinLandscapeDim, lsHeight, MaxLandscapeDim); }
+{
+    detach();
+    m->lsHeight = qBound<int>(MinLandscapeDim, lsHeight, MaxLandscapeDim);
+}
 
 unsigned int Preferences::peakCount() const
 { return m->peaks; }
 
 void Preferences::setPeakCount(unsigned int peaks)
-{ m->peaks = peaks; }
+{
+    detach();
+    m->peaks = peaks;
+}
 
 int Preferences::minPeak() const
 { return m->minPeak; }
 
 void Preferences::setMinPeak(int minPeak)
-{ m->minPeak = qBound<int>(MinLevel, minPeak, MaxLevel); }
+{
+    detach();
+    m->minPeak = qBound<int>(MinLevel, minPeak, MaxLevel);
+}
 
 int Preferences::maxPeak() const
 { return m->maxPeak; }
 
 void Preferences::setMaxPeak(int maxPeak)
-{ m->maxPeak = qBound<int>(MinLevel, maxPeak, MaxLevel); }
+{
+    detach();
+    m->maxPeak = qBound<int>(MinLevel, maxPeak, MaxLevel);
+}
 
 const QString &Preferences::extrapolatorName() const
 { return m->extrapolName; }
 
 void Preferences::setExtrapolatorName(const QString &extrapolName)
-{ m->extrapolName = extrapolName; }
+{
+    detach();
+    m->extrapolName = extrapolName;
+}
 
 int Preferences::minContouringLevel() const
 { return m->minContLevel; }
 
 void Preferences::setMinContouringLevel(int minContLevel)
-{ m->minContLevel = qBound<int>(1, minContLevel, MaxLevel); }
+{
+    detach();
+    m->minContLevel = qBound<int>(1, minContLevel, MaxLevel);
+}
 
 int Preferences::maxContouringLevel() const
 { return m->maxContLevel; }
 
 void Preferences::setMaxContouringLevel(int maxContLevel)
-{ m->maxContLevel = qBound<int>(1, maxContLevel, MaxLevel); }
+{
+    detach();
+    m->maxContLevel = qBound<int>(1, maxContLevel, MaxLevel);
+}
 
 int Preferences::contouringStep() const
 { return m->contStep; }
 
 void Preferences::setContouringStep(int contStep)
-{ m->contStep = qBound<int>(1, contStep, MaxLevel); }
+{
+    detach();
+    m->contStep = qBound<int>(1, contStep, MaxLevel);
+}
 
 int Preferences::imageFactor() const
 { return m->imgFactor; }
 
 void Preferences::setImageFactor(int imgFactor)
-{ m->imgFactor = qMax(1, imgFactor); }
+{
+    detach();
+    m->imgFactor = qMax(1, imgFactor);
+}
 
 
 bool Preferences::equals(const Preferences &other) const
