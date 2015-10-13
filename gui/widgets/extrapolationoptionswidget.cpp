@@ -4,6 +4,7 @@
 #include <QStackedWidget>
 #include <QBoxLayout>
 #include "abstractextrapolationwidget.h"
+#include "../extrapolation/extrapolationdata.h"
 #include "../extrapolation/extrapolationfactory.h"
 #include "../preferences.h"
 
@@ -106,6 +107,22 @@ void ExtrapolationOptionsWidget::setExtrapolatorName(const QString &name)
         m->cmbExtrapolMethod->setCurrentIndex(index);
 }
 
+ExtrapolationData ExtrapolationOptionsWidget::xData(const QString &name)
+{
+    int id = m->mapExtrapolId.value(name, -1);
+    if (AbstractExtrapolationWidget *w = m->mapExtrapolWgts.value(id, nullptr))
+        return w->extractData();
+
+    return ExtrapolationData();
+}
+
+void ExtrapolationOptionsWidget::setXData(const QString &name, const ExtrapolationData &xdata)
+{
+    int id = m->mapExtrapolId.value(name, -1);
+    if (AbstractExtrapolationWidget *w = m->mapExtrapolWgts.value(id, nullptr))
+        w->provideData(xdata);
+}
+
 QWidget *ExtrapolationOptionsWidget::extrapolationWidget(const QString &name) const
 {
     int id = m->mapExtrapolId.value(name, -1);
@@ -114,9 +131,9 @@ QWidget *ExtrapolationOptionsWidget::extrapolationWidget(const QString &name) co
     return m->stkExtrapolOpts->widget(id);
 }
 
-void ExtrapolationOptionsWidget::addExtrapolationWidget(ExtrapolationFactory *f, bool proxy)
+void ExtrapolationOptionsWidget::addExtrapolationWidget(ExtrapolationFactory *f, bool bound)
 {
-    AbstractExtrapolationWidget *w = proxy ? f->createProxyWidget() : f->createWidget();
+    AbstractExtrapolationWidget *w = f->createWidget(bound);
     QString name = f->name();
     QString description = f->description();
 

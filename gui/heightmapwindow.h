@@ -20,7 +20,7 @@ public:
     void init(HeightMapLogic *);
     ~HeightMapWindow();
 
-public slots:
+private slots:
     void newFile();
 
     void exportLandscape();
@@ -29,6 +29,10 @@ public slots:
     void editPeakSettings();
     void editExtrapolationSettings();
     void editContouringSettings();
+
+    void generateLandscape();
+    void extrapolatePeaks();
+    void calculateContours();
 
     void adjustPreferences();
     void adjustExtrapolationData(QString);

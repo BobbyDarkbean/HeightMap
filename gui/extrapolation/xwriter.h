@@ -9,12 +9,16 @@ class QString;
 namespace HeightMap {
 
 
+class ExtrapolationData;
 struct XWriterImplementation;
 class XWriter
 {
 public:
     explicit XWriter(const QString &filename);
-    void writeElement(const QString &name, double value);
+
+    ExtrapolationData data() const;
+    void setData(const ExtrapolationData &);
+
     ~XWriter();
 
 private:

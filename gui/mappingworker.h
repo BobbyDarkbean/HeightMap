@@ -41,6 +41,7 @@ signals:
     void contouringFinished();
 
 public slots:
+    void syncLandscape();
     void createLandscape();
     void buildLandscapeFromPeaks();
     void plotIsobars();
@@ -49,6 +50,7 @@ private:
     DISABLE_COPY(MappingWorker)
     DISABLE_MOVE(MappingWorker)
 
+    void loadPeaks();
     void generatePeaks();
     void extrapolatePeaks();
     void calculateContours();

@@ -1,6 +1,8 @@
 #include <QImage>
 #include <QMutex>
 #include "auxiliary/mappingdata.h"
+#include "extrapolation/extrapolationdata.h"
+#include "extrapolation/extrapolationfactory.h"
 #include "heightmaplogic.h"
 #include "preferences.h"
 #include "terrain.h"
@@ -152,6 +154,19 @@ MappingWorker::~MappingWorker()
 }
 
 
+void MappingWorker::syncLandscape()
+{
+    QMutexLocker lock(&m->mutex);
+
+    emit processStarted();
+
+    loadPeaks();
+    extrapolatePeaks();
+    calculateContours();
+
+    emit processFinished();
+}
+
 void MappingWorker::createLandscape()
 {
     QMutexLocker lock(&m->mutex);
@@ -189,6 +204,13 @@ void MappingWorker::plotIsobars()
 }
 
 
+void MappingWorker::loadPeaks()
+{
+    emit peakGeneratingStarted();
+    m->drawPeaks();
+    emit peakGeneratingFinished();
+}
+
 void MappingWorker::generatePeaks()
 {
     emit peakGeneratingStarted();
@@ -205,12 +227,19 @@ void MappingWorker::extrapolatePeaks()
 {
     emit peakExtrapolationStarted();
 
-    if (Extrapolator *extrapolator = m->logic->currentExtrapolator()) {
+    if (ExtrapolationFactory *f = m->logic->currentExtrapolation()) {
+        f->provideData(m->logic->xData());
+        Extrapolator *extrapolator = f->extrapolator();
+
         Terrain *terrain = m->logic->terrain();
         terrain->fillLandscape(extrapolator->baseLevel());
         terrain->extrapolatePeaks(&m->mapper, extrapolator);
-        m->drawLandscape();
+    } else {
+        Terrain *terrain = m->logic->terrain();
+        terrain->clearLandscape();
     }
+
+    m->drawLandscape();
 
     emit peakExtrapolationFinished();
 }

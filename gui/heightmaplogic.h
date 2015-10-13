@@ -15,7 +15,7 @@ namespace HeightMap {
 class Terrain;
 class Preferences;
 class PreferencesController;
-class Extrapolator;
+class ExtrapolationData;
 class ExtrapolationFactory;
 struct HeightMapLogicImplementation;
 class HeightMapLogic : public QObject
@@ -31,22 +31,18 @@ public:
     const Preferences &preferences() const;
     void setPreferences(const Preferences &);
 
-    PreferencesController *preferencesController() const;
+    ExtrapolationData xData() const;
+    void setXData(const ExtrapolationData &);
 
-    void addExtrapolation(ExtrapolationFactory *);
-    QStringList extrapolatorKeys() const;
-    ExtrapolationFactory *extrapolationFactory(const QString &name) const;
-
-    Extrapolator *currentExtrapolator() const;
-    void applyProxyExtrapolator(const QString &name);
+    ExtrapolationFactory *currentExtrapolation() const;
 
     const QImage &heightMapImage(HeightMapViewMode);
 
     ~HeightMapLogic();
 
 signals:
-    void preferencesChanged();
-    void extrapolationDataChanged(QString);
+    void preferencesChanged(const Preferences &);
+    void extrapolationDataChanged(const QString &, const ExtrapolationData &);
     void terrainCreated();
     void processStarted();
     void processFinished();
@@ -62,6 +58,7 @@ signals:
 
 public slots:
     void newTerrain();
+    void loadTerrain();
     void createLandscape();
     void buildLandscapeFromPeaks();
     void plotIsobars();

@@ -2,6 +2,7 @@
 #include <QSpinBox>
 #include <QGridLayout>
 #include "extrapolator.h"
+#include "../extrapolation/extrapolationdata.h"
 #include "../preferences.h"
 
 #include "simpleextrapolationwidget.h"
@@ -15,8 +16,11 @@ struct SimpleExtrapolationWidgetImplementation
     SimpleExtrapolationWidgetImplementation();
 
     void adjustControls();
-    void adjustLayout(SimpleExtrapolationWidget *master);
+    void adjustLayout(QWidget *master);
     void adjustValues();
+
+    ExtrapolationData extract() const;
+    void provide(const ExtrapolationData &);
 
     ~SimpleExtrapolationWidgetImplementation();
 
@@ -51,7 +55,7 @@ void SimpleExtrapolationWidgetImplementation::adjustControls()
     spnBaseLevel->setAlignment(Qt::AlignRight);
 }
 
-void SimpleExtrapolationWidgetImplementation::adjustLayout(SimpleExtrapolationWidget *master)
+void SimpleExtrapolationWidgetImplementation::adjustLayout(QWidget *master)
 {
     QGridLayout *lytContent = new QGridLayout;
     lytContent->setColumnStretch(0, 1);
@@ -63,14 +67,23 @@ void SimpleExtrapolationWidgetImplementation::adjustLayout(SimpleExtrapolationWi
     QBoxLayout *lytMain = new QVBoxLayout(master);
     lytMain->addLayout(lytContent);
     lytMain->addStretch();
-
-    SimpleExtrapolationWidget::connect(
-                spnBaseLevel, SIGNAL(valueChanged(double)), master, SLOT(setBaseLevel(double)));
 }
 
 void SimpleExtrapolationWidgetImplementation::adjustValues()
 {
     spnBaseLevel->setValue(x->baseLevel());
+}
+
+ExtrapolationData SimpleExtrapolationWidgetImplementation::extract() const
+{
+    ExtrapolationData data;
+    data.insert("baselevel", spnBaseLevel->value());
+    return data;
+}
+
+void SimpleExtrapolationWidgetImplementation::provide(const ExtrapolationData &xdata)
+{
+    spnBaseLevel->setValue(xdata.value("baselevel", -1.0));
 }
 
 SimpleExtrapolationWidgetImplementation::~SimpleExtrapolationWidgetImplementation() { }
@@ -92,10 +105,21 @@ void SimpleExtrapolationWidget::bindExtrapolator(SimpleExtrapolator *sx)
 {
     m->x = sx;
     refreshData();
+
+    typedef SimpleExtrapolationWidget W;
+    void (QDoubleSpinBox::*qDoubleSpinBoxValueChanged)(double) = &QDoubleSpinBox::valueChanged;
+
+    connect(m->spnBaseLevel,    qDoubleSpinBoxValueChanged, this,   &W::setBaseLevel);
 }
 
 void SimpleExtrapolationWidget::refreshData()
 { m->adjustValues(); }
+
+ExtrapolationData SimpleExtrapolationWidget::extractData() const
+{ return m->extract(); }
+
+void SimpleExtrapolationWidget::provideData(const ExtrapolationData &xdata)
+{ m->provide(xdata); }
 
 
 SimpleExtrapolationWidget::~SimpleExtrapolationWidget()

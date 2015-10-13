@@ -2,6 +2,7 @@
 #include <QSpinBox>
 #include <QGridLayout>
 #include "extrapolator.h"
+#include "../extrapolation/extrapolationdata.h"
 #include "../preferences.h"
 
 #include "fixedradiusextrapolationwidget.h"
@@ -15,8 +16,11 @@ struct FixedRadiusExtrapolationWidgetImplementation
     FixedRadiusExtrapolationWidgetImplementation();
 
     void adjustControls();
-    void adjustLayout(FixedRadiusExtrapolationWidget *master);
+    void adjustLayout(QWidget *master);
     void adjustValues();
+
+    ExtrapolationData extract() const;
+    void provide(const ExtrapolationData &);
 
     ~FixedRadiusExtrapolationWidgetImplementation();
 
@@ -64,7 +68,7 @@ void FixedRadiusExtrapolationWidgetImplementation::adjustControls()
     spnFixedRadius->setAlignment(Qt::AlignRight);
 }
 
-void FixedRadiusExtrapolationWidgetImplementation::adjustLayout(FixedRadiusExtrapolationWidget *master)
+void FixedRadiusExtrapolationWidgetImplementation::adjustLayout(QWidget *master)
 {
     QGridLayout *lytContent = new QGridLayout;
     lytContent->setColumnStretch(0, 1);
@@ -79,17 +83,26 @@ void FixedRadiusExtrapolationWidgetImplementation::adjustLayout(FixedRadiusExtra
     QBoxLayout *lytMain = new QVBoxLayout(master);
     lytMain->addLayout(lytContent);
     lytMain->addStretch();
-
-    FixedRadiusExtrapolationWidget::connect(
-                spnBaseLevel, SIGNAL(valueChanged(double)), master, SLOT(setBaseLevel(double)));
-    FixedRadiusExtrapolationWidget::connect(
-                spnFixedRadius, SIGNAL(valueChanged(int)), master, SLOT(setFixedRadius(int)));
 }
 
 void FixedRadiusExtrapolationWidgetImplementation::adjustValues()
 {
     spnBaseLevel->setValue(x->baseLevel());
     spnFixedRadius->setValue(x->fixedRadius());
+}
+
+ExtrapolationData FixedRadiusExtrapolationWidgetImplementation::extract() const
+{
+    ExtrapolationData data;
+    data.insert("baselevel", spnBaseLevel->value());
+    data.insert("radius", spnFixedRadius->value());
+    return data;
+}
+
+void FixedRadiusExtrapolationWidgetImplementation::provide(const ExtrapolationData &xdata)
+{
+    spnBaseLevel->setValue(xdata.value("baselevel", -1.0));
+    spnFixedRadius->setValue(static_cast<int>(xdata.value("radius", -1.0)));
 }
 
 FixedRadiusExtrapolationWidgetImplementation::~FixedRadiusExtrapolationWidgetImplementation() { }
@@ -111,10 +124,23 @@ void FixedRadiusExtrapolationWidget::bindExtrapolator(FixedRadiusExtrapolator *f
 {
     m->x = frx;
     refreshData();
+
+    typedef FixedRadiusExtrapolationWidget W;
+    void (QDoubleSpinBox::*qDoubleSpinBoxValueChanged)(double) = &QDoubleSpinBox::valueChanged;
+    void (QSpinBox::*qSpinBoxValueChanged)(int) = &QSpinBox::valueChanged;
+
+    connect(m->spnBaseLevel,    qDoubleSpinBoxValueChanged, this,   &W::setBaseLevel);
+    connect(m->spnFixedRadius,  qSpinBoxValueChanged,       this,   &W::setFixedRadius);
 }
 
 void FixedRadiusExtrapolationWidget::refreshData()
 { m->adjustValues(); }
+
+ExtrapolationData FixedRadiusExtrapolationWidget::extractData() const
+{ return m->extract(); }
+
+void FixedRadiusExtrapolationWidget::provideData(const ExtrapolationData &xdata)
+{ m->provide(xdata); }
 
 
 FixedRadiusExtrapolationWidget::~FixedRadiusExtrapolationWidget()

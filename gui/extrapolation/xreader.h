@@ -9,14 +9,15 @@ class QString;
 namespace HeightMap {
 
 
+class ExtrapolationData;
 struct XReaderImplementation;
 class XReader
 {
 public:
     explicit XReader(const QString &filename);
 
+    ExtrapolationData data() const;
     bool isValid() const;
-    double readElement(const QString &name, double defaultValue) const;
 
     ~XReader();
 

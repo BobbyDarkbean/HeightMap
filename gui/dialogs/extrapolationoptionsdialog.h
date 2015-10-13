@@ -10,6 +10,7 @@ namespace HeightMap {
 
 
 class PreferencesController;
+class ExtrapolationData;
 class ExtrapolationFactory;
 struct ExtrapolationOptionsDialogImplementation;
 class ExtrapolationOptionsDialog : public QDialog
@@ -24,6 +25,8 @@ public:
 
     PreferencesController *preferencesController() const;
     void setPreferencesController(PreferencesController *);
+
+    ExtrapolationData xData();
 
     QWidget *extrapolationWidget(const QString &keyName) const;
     void addExtrapolationWidget(ExtrapolationFactory *);
