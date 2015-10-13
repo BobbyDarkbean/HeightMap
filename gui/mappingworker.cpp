@@ -154,6 +154,19 @@ MappingWorker::~MappingWorker()
 }
 
 
+void MappingWorker::syncLandscape()
+{
+    QMutexLocker lock(&m->mutex);
+
+    emit processStarted();
+
+    loadPeaks();
+    extrapolatePeaks();
+    calculateContours();
+
+    emit processFinished();
+}
+
 void MappingWorker::createLandscape()
 {
     QMutexLocker lock(&m->mutex);
@@ -191,6 +204,13 @@ void MappingWorker::plotIsobars()
 }
 
 
+void MappingWorker::loadPeaks()
+{
+    emit peakGeneratingStarted();
+    m->drawPeaks();
+    emit peakGeneratingFinished();
+}
+
 void MappingWorker::generatePeaks()
 {
     emit peakGeneratingStarted();
@@ -214,8 +234,12 @@ void MappingWorker::extrapolatePeaks()
         Terrain *terrain = m->logic->terrain();
         terrain->fillLandscape(extrapolator->baseLevel());
         terrain->extrapolatePeaks(&m->mapper, extrapolator);
-        m->drawLandscape();
+    } else {
+        Terrain *terrain = m->logic->terrain();
+        terrain->clearLandscape();
     }
+
+    m->drawLandscape();
 
     emit peakExtrapolationFinished();
 }
