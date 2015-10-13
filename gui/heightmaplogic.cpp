@@ -150,13 +150,19 @@ const Preferences &HeightMapLogic::preferences() const
 { return m->prefs; }
 
 void HeightMapLogic::setPreferences(const Preferences &prefs)
-{ m->prefs = prefs; }
+{
+    m->prefs = prefs;
+    emit preferencesChanged(m->prefs);
+}
 
 ExtrapolationData HeightMapLogic::xData() const
 { return m->xData; }
 
 void HeightMapLogic::setXData(const ExtrapolationData &data)
-{ m->xData = data; }
+{
+    m->xData = data;
+    emit extrapolationDataChanged(m->prefs.extrapolatorName(), m->xData);
+}
 
 
 ExtrapolationFactory *HeightMapLogic::currentExtrapolation() const

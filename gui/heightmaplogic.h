@@ -41,6 +41,8 @@ public:
     ~HeightMapLogic();
 
 signals:
+    void preferencesChanged(const Preferences &);
+    void extrapolationDataChanged(const QString &, const ExtrapolationData &);
     void terrainCreated();
     void processStarted();
     void processFinished();

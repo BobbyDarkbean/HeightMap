@@ -130,9 +130,16 @@ HeightMapApplication::HeightMapApplication(int &argc, char **argv)
       m(new HeightMapApplicationImplementation)
 {
     m->logic = new HeightMapLogic(this);
+    m->logic->setPreferences(m->prefs);
 
     m->ctrl = new PreferencesController(this);
     m->ctrl->setPreferences(&m->prefs);
+
+    typedef HeightMapLogic L;
+    typedef HeightMapApplication A;
+
+    connect(m->logic,   &L::preferencesChanged,         this,   &A::setPreferences);
+    connect(m->logic,   &L::extrapolationDataChanged,   this,   &A::setXData);
 }
 
 
