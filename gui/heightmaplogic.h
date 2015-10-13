@@ -56,6 +56,7 @@ signals:
 
 public slots:
     void newTerrain();
+    void loadTerrain();
     void createLandscape();
     void buildLandscapeFromPeaks();
     void plotIsobars();

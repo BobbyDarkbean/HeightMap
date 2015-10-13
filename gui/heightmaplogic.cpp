@@ -1,6 +1,5 @@
 #include <memory>
 
-#include <QMap>
 #include <QImage>
 #include "terrain.h"
 #include "extrapolation/extrapolationdata.h"
@@ -39,6 +38,7 @@ struct HeightMapLogicImplementation
 
     MappingThread *thrProcess;
 
+    Trigger *trgLoadLs;
     Trigger *trgGenLs;
     Trigger *trgBuildLs;
     Trigger *trgCalcContours;
@@ -58,6 +58,7 @@ HeightMapLogicImplementation::HeightMapLogicImplementation()
       imgIsobars(),
       imgHybrid(),
       thrProcess(nullptr),
+      trgLoadLs(nullptr),
       trgGenLs(nullptr),
       trgBuildLs(nullptr),
       trgCalcContours(nullptr) { }
@@ -107,6 +108,7 @@ HeightMapLogic::HeightMapLogic(QObject *parent)
     worker->bindLogic(this);
     worker->moveToThread(m->thrProcess);
 
+    m->trgLoadLs = new Trigger(this);
     m->trgGenLs = new Trigger(this);
     m->trgBuildLs = new Trigger(this);
     m->trgCalcContours = new Trigger(this);
@@ -116,6 +118,7 @@ HeightMapLogic::HeightMapLogic(QObject *parent)
     typedef Trigger T;
     typedef MappingThread M;
 
+    connect(m->trgLoadLs,       &T::activated,      worker, &W::syncLandscape);
     connect(m->trgGenLs,        &T::activated,      worker, &W::createLandscape);
     connect(m->trgBuildLs,      &T::activated,      worker, &W::buildLandscapeFromPeaks);
     connect(m->trgCalcContours, &T::activated,      worker, &W::plotIsobars);
@@ -195,6 +198,9 @@ void HeightMapLogic::newTerrain()
 
     emit terrainCreated();
 }
+
+void HeightMapLogic::loadTerrain()
+{ m->trgLoadLs->activate(); }
 
 void HeightMapLogic::createLandscape()
 { m->trgGenLs->activate(); }
