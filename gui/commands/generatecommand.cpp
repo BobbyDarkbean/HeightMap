@@ -1,3 +1,4 @@
+#include "terrain.h"
 #include "../heightmaplogic.h"
 #include "../preferences.h"
 #include "../extrapolation/extrapolationdata.h"
@@ -15,6 +16,8 @@ struct GenerateCommandImplementation
 
     HeightMapLogic *logic;
 
+    std::vector<PeakInfo> prevPeaks;
+    std::vector<PeakInfo> nextPeaks;
     Preferences prevPrefs;
     Preferences nextPrefs;
     ExtrapolationData prevXData;
@@ -46,6 +49,7 @@ void GenerateCommand::init(HeightMapLogic *l)
     m->logic = l;
     m->prevPrefs = l->preferences();
     m->prevXData = l->xData();
+    m->prevPeaks = l->terrain()->peaks();
 }
 
 HeightMapLogic *GenerateCommand::logic() const
@@ -66,16 +70,25 @@ void GenerateCommand::setXData(const ExtrapolationData &xdata)
 
 void GenerateCommand::undo()
 {
+    m->nextPeaks = m->logic->terrain()->peaks();
+    m->logic->terrain()->setPeaks(m->prevPeaks);
+
     m->logic->setPreferences(m->prevPrefs);
     m->logic->setXData(m->prevXData);
-    m->logic->createLandscape();
+    m->logic->loadTerrain();
 }
 
 void GenerateCommand::redo()
 {
     m->logic->setPreferences(m->nextPrefs);
     m->logic->setXData(m->nextXData);
-    m->logic->createLandscape();
+
+    if (m->nextPeaks.empty()) {
+        m->logic->createLandscape();
+    } else {
+        m->logic->terrain()->setPeaks(m->nextPeaks);
+        m->logic->loadTerrain();
+    }
 }
 
 
