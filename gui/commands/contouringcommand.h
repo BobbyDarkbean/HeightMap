@@ -11,7 +11,6 @@ namespace HeightMap {
 
 class HeightMapLogic;
 class Preferences;
-class ExtrapolationData;
 struct ContouringCommandImplementation;
 class ContouringCommand : public QUndoCommand
 {
@@ -24,9 +23,6 @@ public:
 
     Preferences preferences() const;
     void setPreferences(const Preferences &);
-
-    ExtrapolationData xData() const;
-    void setXData(const ExtrapolationData &);
 
     void undo();
     void redo();
