@@ -29,7 +29,10 @@ public:
     int height() const;
 
     const Landscape &landscape() const;
+
     const std::vector<PeakInfo> &peaks() const;
+    void setPeaks(const std::vector<PeakInfo> &);
+
     const std::list<Line2dSegment> &contours() const;
 
     void clearLandscape();

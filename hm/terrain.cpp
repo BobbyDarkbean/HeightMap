@@ -78,6 +78,8 @@ int Terrain::height() const { return m->ls.height(); }
 const Landscape &Terrain::landscape() const { return m->ls; }
 
 const std::vector<PeakInfo> &Terrain::peaks() const { return m->peaks; }
+void Terrain::setPeaks(const std::vector<PeakInfo> &peaks) { m->peaks = peaks; }
+
 const std::list<Line2dSegment> &Terrain::contours() const { return m->contours; }
 
 void Terrain::clearLandscape() { fillLandscape(0.0); }
