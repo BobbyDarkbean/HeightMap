@@ -221,7 +221,7 @@ void HeightMapWindow::newFile()
     if (!dialog.exec())
         return;
 
-    m->logic->setPreferences(dialog.preferences());
+    hmApp->setPreferences(dialog.preferences());
     m->logic->newTerrain();
 }
 

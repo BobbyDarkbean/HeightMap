@@ -196,6 +196,9 @@ HeightMapLogic::~HeightMapLogic()
 
 void HeightMapLogic::newTerrain()
 {
+    setPreferences(hmApp->preferences());
+    setXData(hmApp->xData(m->prefs.extrapolatorName()));
+
     int w = m->prefs.landscapeWidth();
     int h = m->prefs.landscapeHeight();
 
