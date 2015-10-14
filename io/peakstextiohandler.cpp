@@ -22,9 +22,14 @@ void PeaksTextIOHandler::write(const Terrain *t, const QString &filename)
     QTextStream stream(&f);
     stream.setRealNumberPrecision(2);
     stream.setRealNumberNotation(QTextStream::FixedNotation);
+    stream.setFieldAlignment(QTextStream::AlignRight);
 
     for (std::vector<PeakInfo>::const_iterator itr = t->peaks().begin(); itr != t->peaks().end(); ++itr) {
-
+        stream << "{ "
+               << "x: " << qSetFieldWidth(4) << itr->x << qSetFieldWidth(0) << " ; "
+               << "y: " << qSetFieldWidth(4) << itr->y << qSetFieldWidth(0) << " ; "
+               << "level: " << qSetFieldWidth(6) << itr->height << qSetFieldWidth(0)
+               << " }" << endl;
     }
 }
 
