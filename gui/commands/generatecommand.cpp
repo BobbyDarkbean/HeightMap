@@ -1,7 +1,7 @@
-#include "terrain.h"
 #include "../heightmaplogic.h"
-#include "../preferences.h"
-#include "../extrapolation/extrapolationdata.h"
+#include "terrain.h"
+#include "preferences.h"
+#include "extrapolationdata.h"
 
 #include "generatecommand.h"
 

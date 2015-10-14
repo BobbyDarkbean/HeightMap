@@ -1,7 +1,7 @@
 #include <QPushButton>
 #include <QFrame>
 #include <QBoxLayout>
-#include "../preferences.h"
+#include "preferences.h"
 #include "../preferencescontroller.h"
 #include "../widgets/peakoptionswidget.h"
 

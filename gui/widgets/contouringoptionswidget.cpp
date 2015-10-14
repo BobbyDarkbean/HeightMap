@@ -2,7 +2,7 @@
 #include <QSpinBox>
 #include <QGroupBox>
 #include <QLayout>
-#include "../preferences.h"
+#include "preferences.h"
 
 #include "contouringoptionswidget.h"
 

@@ -1,7 +1,7 @@
 #include <QSettings>
 #include "preferences.h"
 #include "preferencescontroller.h"
-#include "extrapolation/extrapolationdata.h"
+#include "extrapolationdata.h"
 #include "extrapolation/simpleextrapolationfactory.h"
 #include "extrapolation/slopeextrapolationfactory.h"
 #include "extrapolation/baselevelextrapolationfactory.h"

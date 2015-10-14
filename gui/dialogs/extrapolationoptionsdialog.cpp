@@ -1,10 +1,10 @@
 #include <QPushButton>
 #include <QFrame>
 #include <QBoxLayout>
-#include "../preferences.h"
+#include "preferences.h"
+#include "extrapolationdata.h"
+#include "extrapolationfactory.h"
 #include "../preferencescontroller.h"
-#include "../extrapolation/extrapolationdata.h"
-#include "../extrapolation/extrapolationfactory.h"
 #include "../widgets/extrapolationoptionswidget.h"
 
 #include "extrapolationoptionsdialog.h"

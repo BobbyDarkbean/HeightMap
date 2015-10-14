@@ -3,6 +3,7 @@
 
 
 #include <QString>
+#include "xbase_shared.h"
 #include "hmdef.h"
 
 
@@ -12,7 +13,7 @@ namespace HeightMap {
 class Extrapolator;
 class AbstractExtrapolationWidget;
 class ExtrapolationData;
-class ExtrapolationFactory
+class HMX_SHARED ExtrapolationFactory
 {
 public:
     ExtrapolationFactory();

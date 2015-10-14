@@ -3,7 +3,7 @@
 #include <QSlider>
 #include <QGroupBox>
 #include <QLayout>
-#include "../preferences.h"
+#include "preferences.h"
 
 #include "peakoptionswidget.h"
 

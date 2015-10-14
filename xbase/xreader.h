@@ -2,6 +2,7 @@
 #define _XReader_h_
 
 
+#include "xbase_shared.h"
 #include "hmdef.h"
 
 
@@ -11,7 +12,7 @@ namespace HeightMap {
 
 class ExtrapolationData;
 struct XReaderImplementation;
-class XReader
+class HMX_SHARED XReader
 {
 public:
     explicit XReader(const QString &filename);

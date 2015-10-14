@@ -2,6 +2,7 @@
 #define _XWriter_h_
 
 
+#include "xbase_shared.h"
 #include "hmdef.h"
 
 
@@ -11,7 +12,7 @@ namespace HeightMap {
 
 class ExtrapolationData;
 struct XWriterImplementation;
-class XWriter
+class HMX_SHARED XWriter
 {
 public:
     explicit XWriter(const QString &filename);

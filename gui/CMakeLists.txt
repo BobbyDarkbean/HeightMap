@@ -8,6 +8,8 @@ message ("Project: ${PROJECT_NAME}")
 find_package (Qt5Widgets REQUIRED)
 
 include_directories (../hm)
+include_directories (../io)
+include_directories (../xbase)
 
 set (HMGUI_HDR auxiliary/colormap.h
                auxiliary/mappingdata.h
@@ -20,13 +22,9 @@ set (HMGUI_HDR auxiliary/colormap.h
                dialogs/generatingoptionsdialog.h
                dialogs/terrainoptionsdialog.h
                extrapolation/baselevelextrapolationfactory.h
-               extrapolation/extrapolationdata.h
-               extrapolation/extrapolationfactory.h
                extrapolation/fixedradiusextrapolationfactory.h
                extrapolation/simpleextrapolationfactory.h
                extrapolation/slopeextrapolationfactory.h
-               extrapolation/xreader.h
-               extrapolation/xwriter.h
                widgets/abstractextrapolationwidget.h
                widgets/baselevelextrapolationwidget.h
                widgets/contouringoptionswidget.h
@@ -43,7 +41,6 @@ set (HMGUI_HDR auxiliary/colormap.h
                heightmapwindow.h
                mappingthread.h
                mappingworker.h
-               preferences.h
                preferencescontroller.h
                trigger.h)
 
@@ -55,13 +52,9 @@ set (HMGUI_SRC commands/contouringcommand.cpp
                dialogs/generatingoptionsdialog.cpp
                dialogs/terrainoptionsdialog.cpp
                extrapolation/baselevelextrapolationfactory.cpp
-               extrapolation/extrapolationdata.cpp
-               extrapolation/extrapolationfactory.cpp
                extrapolation/fixedradiusextrapolationfactory.cpp
                extrapolation/simpleextrapolationfactory.cpp
                extrapolation/slopeextrapolationfactory.cpp
-               extrapolation/xreader.cpp
-               extrapolation/xwriter.cpp
                widgets/abstractextrapolationwidget.cpp
                widgets/baselevelextrapolationwidget.cpp
                widgets/contouringoptionswidget.cpp
@@ -78,7 +71,6 @@ set (HMGUI_SRC commands/contouringcommand.cpp
                main.cpp
                mappingthread.cpp
                mappingworker.cpp
-               preferences.cpp
                preferencescontroller.cpp
                trigger.cpp)
 
@@ -95,4 +87,5 @@ endif ()
 add_executable (${APP} WIN32 ${HMGUI_SRC} ${HMGUI_HDR})
 target_link_libraries (${APP} Qt5::Widgets)
 target_link_libraries (${APP} hghtmap-core)
+target_link_libraries (${APP} hghtmap-x)
 target_link_libraries (${APP} hghtmap-io)

@@ -2,7 +2,7 @@
 #include <QSpinBox>
 #include <QGroupBox>
 #include <QBoxLayout>
-#include "../preferences.h"
+#include "preferences.h"
 
 #include "landscapeoptionswidget.h"
 

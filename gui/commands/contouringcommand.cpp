@@ -1,5 +1,5 @@
 #include "../heightmaplogic.h"
-#include "../preferences.h"
+#include "preferences.h"
 
 #include "contouringcommand.h"
 

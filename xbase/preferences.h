@@ -4,13 +4,14 @@
 
 #include <algorithm>
 #include <QString>
+#include "xbase_shared.h"
 
 
 namespace HeightMap {
 
 
 struct PreferencesImplementation;
-class Preferences
+class HMX_SHARED Preferences
 {
 public:
 

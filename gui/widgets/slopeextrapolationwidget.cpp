@@ -2,8 +2,8 @@
 #include <QSpinBox>
 #include <QGridLayout>
 #include "extrapolator.h"
-#include "../extrapolation/extrapolationdata.h"
-#include "../preferences.h"
+#include "extrapolationdata.h"
+#include "preferences.h"
 
 #include "slopeextrapolationwidget.h"
 

@@ -2,12 +2,12 @@
 
 #include <QImage>
 #include "terrain.h"
-#include "extrapolation/extrapolationdata.h"
+#include "preferences.h"
+#include "extrapolationdata.h"
 #include "auxiliary/mappingdata.h"
 #include "heightmapapplication.h"
 #include "mappingthread.h"
 #include "mappingworker.h"
-#include "preferences.h"
 #include "preferencescontroller.h"
 #include "trigger.h"
 

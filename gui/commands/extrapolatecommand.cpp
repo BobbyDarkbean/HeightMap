@@ -1,6 +1,6 @@
 #include "../heightmaplogic.h"
-#include "../preferences.h"
-#include "../extrapolation/extrapolationdata.h"
+#include "preferences.h"
+#include "extrapolationdata.h"
 
 #include "extrapolatecommand.h"
 

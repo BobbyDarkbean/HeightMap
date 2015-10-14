@@ -4,13 +4,14 @@
 
 #include <algorithm>
 #include <QString>
+#include "xbase_shared.h"
 
 
 namespace HeightMap {
 
 
 struct ExtrapolationDataImplementation;
-class ExtrapolationData
+class HMX_SHARED ExtrapolationData
 {
 public:
     ExtrapolationData();

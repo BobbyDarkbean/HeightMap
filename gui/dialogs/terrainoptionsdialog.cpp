@@ -1,7 +1,7 @@
 #include <QPushButton>
 #include <QFrame>
 #include <QBoxLayout>
-#include "../preferences.h"
+#include "preferences.h"
 #include "../widgets/landscapeoptionswidget.h"
 
 #include "terrainoptionsdialog.h"

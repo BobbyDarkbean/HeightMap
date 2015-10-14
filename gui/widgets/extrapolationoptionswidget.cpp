@@ -4,9 +4,9 @@
 #include <QStackedWidget>
 #include <QBoxLayout>
 #include "abstractextrapolationwidget.h"
-#include "../extrapolation/extrapolationdata.h"
-#include "../extrapolation/extrapolationfactory.h"
-#include "../preferences.h"
+#include "extrapolationdata.h"
+#include "extrapolationfactory.h"
+#include "preferences.h"
 
 #include "extrapolationoptionswidget.h"
 
