@@ -4,7 +4,7 @@
 
 #include <QObject>
 #include <QPoint>
-#include "hm_shared.h"
+#include "hmdef.h"
 #include "heightmapviewmode.h"
 
 

@@ -17,6 +17,7 @@ set (HMCORE_HDR internal/contouring.h
                 eventservice
                 extrapolator.h
                 hm_shared.h
+                hmdef.h
                 landscape.h
                 line2dsegment.h
                 mapper.h

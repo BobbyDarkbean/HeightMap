@@ -1,5 +1,5 @@
 #include <qglobal.h>
-#include "hm_shared.h"
+#include "hmdef.h"
 
 #include "preferences.h"
 

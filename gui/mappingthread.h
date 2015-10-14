@@ -3,7 +3,7 @@
 
 
 #include <QThread>
-#include "hm_shared.h"
+#include "hmdef.h"
 
 
 namespace HeightMap {

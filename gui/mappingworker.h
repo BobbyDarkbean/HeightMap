@@ -4,6 +4,7 @@
 
 #include <QObject>
 #include <QPoint>
+#include "hmdef.h"
 #include "eventservice"
 #include "peakinfo.h"
 

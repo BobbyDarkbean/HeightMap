@@ -2,7 +2,7 @@
 #define _XReader_h_
 
 
-#include "hm_shared.h"
+#include "hmdef.h"
 
 
 class QString;

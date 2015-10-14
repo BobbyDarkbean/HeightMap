@@ -1,4 +1,6 @@
 #include <ostream>
+#include "hmdef.h"
+
 #include "landscape.h"
 
 

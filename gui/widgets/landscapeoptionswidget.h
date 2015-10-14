@@ -2,8 +2,8 @@
 #define _LandscapeOptionsWidget_h_
 
 
-#include "hm_shared.h"
 #include <QWidget>
+#include "hmdef.h"
 
 
 namespace HeightMap {

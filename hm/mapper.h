@@ -5,6 +5,7 @@
 #include <vector>
 #include <list>
 #include "hm_shared.h"
+#include "hmdef.h"
 #include "event.h"
 #include "peakinfo.h"
 #include "line2dsegment.h"
