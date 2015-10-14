@@ -8,7 +8,7 @@
 namespace HeightMap {
 
 
-class PeaksTextIOHandler : public HeightMapIOHandler
+class HMIO_SHARED PeaksTextIOHandler : public HeightMapIOHandler
 {
 public:
     PeaksTextIOHandler();

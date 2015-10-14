@@ -8,7 +8,7 @@
 namespace HeightMap {
 
 
-class LandscapeTextIOHandler : public HeightMapIOHandler
+class HMIO_SHARED LandscapeTextIOHandler : public HeightMapIOHandler
 {
 public:
     LandscapeTextIOHandler();

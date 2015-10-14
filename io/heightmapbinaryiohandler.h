@@ -8,7 +8,7 @@
 namespace HeightMap {
 
 
-class HeightMapBinaryIOHandler : public HeightMapIOHandler
+class HMIO_SHARED HeightMapBinaryIOHandler : public HeightMapIOHandler
 {
 public:
     HeightMapBinaryIOHandler();

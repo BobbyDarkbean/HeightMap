@@ -2,12 +2,15 @@
 #define _HeightMapIoHandler_h_
 
 
+#include "io_shared.h"
+
+
 class QString;
 namespace HeightMap {
 
 
 class Terrain;
-class HeightMapIOHandler
+class HMIO_SHARED HeightMapIOHandler
 {
 public:
     HeightMapIOHandler();
