@@ -8,7 +8,8 @@
 #include <QBoxLayout>
 #include <QPixmap>
 #include <QFileDialog>
-#include <fstream>
+#include "../io/landscapetextiohandler.h"
+#include "../io/peakstextiohandler.h"
 #include "heightmapapplication.h"
 #include "heightmaplogic.h"
 #include "preferences.h"
@@ -241,10 +242,8 @@ void HeightMapWindow::exportLandscape()
 
     QString filename(dialog.selectedFiles().value(0));
 
-    std::ofstream stream;
-    stream.open(filename.toStdString(), std::ios::out | std::ios::trunc);
-    m->logic->terrain()->exportLandscape(stream, 4);
-    stream.close();
+    LandscapeTextIOHandler ioHandler;
+    ioHandler.write(m->logic->terrain(), filename);
 }
 
 void HeightMapWindow::exportPeaks()
@@ -263,10 +262,8 @@ void HeightMapWindow::exportPeaks()
 
     QString filename(dialog.selectedFiles().value(0));
 
-    std::ofstream stream;
-    stream.open(filename.toStdString(), std::ios::out | std::ios::trunc);
-    m->logic->terrain()->exportPeaks(stream);
-    stream.close();
+    PeaksTextIOHandler ioHandler;
+    ioHandler.write(m->logic->terrain(), filename);
 }
 
 void HeightMapWindow::editPeakSettings()
