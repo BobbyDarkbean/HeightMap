@@ -48,10 +48,6 @@ public:
     void calculateContours(Mapper *mapper,
                            const std::vector<int> &levelLayout);
 
-    void exportPeaks(std::ostream &) const;
-    void exportLandscape(std::ostream &,
-                         int precision) const;
-
     void swap(Terrain &);
 
     Terrain &operator=(Terrain);    // copy-and-swap
