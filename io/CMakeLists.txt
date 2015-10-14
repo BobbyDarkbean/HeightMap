@@ -16,10 +16,16 @@ set (HMIO_PATCH 0)
 set (HMIO_VERSION ${HMIO_MAJOR}.${HMIO_MINOR}.${HMIO_PATCH})
 set (HMIO_SOVERSION ${HMIO_MAJOR}.${HMIO_MINOR})
 
-set (HMIO_HDR heightmapiohandler.h
-              io_shared.h)
+set (HMIO_HDR heightmapbinaryiohandler.h
+              heightmapiohandler.h
+              io_shared.h
+              landscapetextiohandler.h
+              peakstextiohandler.h)
 
-set (HMIO_SRC heightmapiohandler.cpp)
+set (HMIO_SRC heightmapbinaryiohandler.cpp
+              heightmapiohandler.cpp
+              landscapetextiohandler.cpp
+              peakstextiohandler.cpp)
 
 set (CMAKE_INCLUDE_CURRENT_DIR ON)
 set (CMAKE_AUTOMOC ON)
