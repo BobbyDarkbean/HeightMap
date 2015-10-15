@@ -20,6 +20,7 @@ set (HMIO_SOVERSION ${HMIO_MAJOR}.${HMIO_MINOR})
 set (HMIO_HDR heightmapbinaryiohandler.h
               heightmapiohandler.h
               io_shared.h
+              iohandlers
               landscapetextiohandler.h
               peakstextiohandler.h)
 
