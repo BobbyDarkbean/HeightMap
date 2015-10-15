@@ -2,7 +2,7 @@
 #include <QFrame>
 #include <QBoxLayout>
 #include "preferences.h"
-#include "../preferencescontroller.h"
+#include "preferencescontroller.h"
 #include "../widgets/contouringoptionswidget.h"
 
 #include "contouringoptionsdialog.h"

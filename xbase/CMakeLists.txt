@@ -19,6 +19,7 @@ set (HMX_SOVERSION ${HMX_MAJOR}.${HMX_MINOR})
 set (HMX_HDR extrapolationdata.h
              extrapolationfactory.h
              preferences.h
+             preferencescontroller.h
              xbase_shared.h
              xreader.h
              xwriter.h)
@@ -26,6 +27,7 @@ set (HMX_HDR extrapolationdata.h
 set (HMX_SRC extrapolationdata.cpp
              extrapolationfactory.cpp
              preferences.cpp
+             preferencescontroller.cpp
              xreader.cpp
              xwriter.cpp)
 

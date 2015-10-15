@@ -2,7 +2,7 @@
 #include <QFrame>
 #include <QBoxLayout>
 #include "preferences.h"
-#include "../preferencescontroller.h"
+#include "preferencescontroller.h"
 #include "../widgets/peakoptionswidget.h"
 
 #include "generatingoptionsdialog.h"

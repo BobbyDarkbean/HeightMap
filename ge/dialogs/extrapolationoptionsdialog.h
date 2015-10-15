@@ -4,6 +4,7 @@
 
 #include <QDialog>
 #include "hmdef.h"
+#include "../ge_shared.h"
 
 
 namespace HeightMap {
@@ -13,7 +14,7 @@ class PreferencesController;
 class ExtrapolationData;
 class ExtrapolationFactory;
 struct ExtrapolationOptionsDialogImplementation;
-class ExtrapolationOptionsDialog : public QDialog
+class HMGE_SHARED ExtrapolationOptionsDialog : public QDialog
 {
     Q_OBJECT
 

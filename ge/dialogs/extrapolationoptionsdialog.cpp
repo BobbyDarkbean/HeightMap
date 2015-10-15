@@ -4,7 +4,7 @@
 #include "preferences.h"
 #include "extrapolationdata.h"
 #include "extrapolationfactory.h"
-#include "../preferencescontroller.h"
+#include "preferencescontroller.h"
 #include "../widgets/extrapolationoptionswidget.h"
 
 #include "extrapolationoptionsdialog.h"

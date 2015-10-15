@@ -4,13 +4,14 @@
 
 #include <QWidget>
 #include "hmdef.h"
+#include "../ge_shared.h"
 
 
 namespace HeightMap {
 
 
 struct LandscapeOptionsWidgetImplementation;
-class LandscapeOptionsWidget : public QWidget
+class HMGE_SHARED LandscapeOptionsWidget : public QWidget
 {
     Q_OBJECT
 

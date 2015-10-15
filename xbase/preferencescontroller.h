@@ -4,13 +4,14 @@
 
 #include <QObject>
 #include "hmdef.h"
+#include "xbase_shared.h"
 
 
 namespace HeightMap {
 
 
 class Preferences;
-class PreferencesController : public QObject
+class HMX_SHARED PreferencesController : public QObject
 {
     Q_OBJECT
 

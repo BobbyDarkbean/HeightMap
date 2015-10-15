@@ -2,6 +2,7 @@
 #define _ExtrapolationFactory_h_
 
 
+#include <QObject>
 #include <QString>
 #include "xbase_shared.h"
 #include "hmdef.h"
@@ -37,6 +38,9 @@ private:
 
 
 } // namespace HeightMap
+
+
+Q_DECLARE_INTERFACE(HeightMap::ExtrapolationFactory, "BobbyDarkbean.HeightMap.ExtrapolationInterface")
 
 
 #endif // _ExtrapolationFactory_h_

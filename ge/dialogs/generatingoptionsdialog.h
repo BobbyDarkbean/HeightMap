@@ -4,6 +4,7 @@
 
 #include <QDialog>
 #include "hmdef.h"
+#include "../ge_shared.h"
 
 
 namespace HeightMap {
@@ -11,7 +12,7 @@ namespace HeightMap {
 
 class PreferencesController;
 struct GeneratingOptionsDialogImplementation;
-class GeneratingOptionsDialog : public QDialog
+class HMGE_SHARED GeneratingOptionsDialog : public QDialog
 {
     Q_OBJECT
 

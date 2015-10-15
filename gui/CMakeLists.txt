@@ -9,6 +9,7 @@ find_package (Qt5Widgets REQUIRED)
 
 include_directories (../hm)
 include_directories (../io)
+include_directories (../ge)
 include_directories (../xbase)
 
 set (HMGUI_HDR auxiliary/colormap.h
@@ -17,23 +18,6 @@ set (HMGUI_HDR auxiliary/colormap.h
                commands/contouringcommand.h
                commands/extrapolatecommand.h
                commands/generatecommand.h
-               dialogs/contouringoptionsdialog.h
-               dialogs/extrapolationoptionsdialog.h
-               dialogs/generatingoptionsdialog.h
-               dialogs/terrainoptionsdialog.h
-               extrapolation/baselevelextrapolationfactory.h
-               extrapolation/fixedradiusextrapolationfactory.h
-               extrapolation/simpleextrapolationfactory.h
-               extrapolation/slopeextrapolationfactory.h
-               widgets/abstractextrapolationwidget.h
-               widgets/baselevelextrapolationwidget.h
-               widgets/contouringoptionswidget.h
-               widgets/extrapolationoptionswidget.h
-               widgets/fixedradiusextrapolationwidget.h
-               widgets/landscapeoptionswidget.h
-               widgets/peakoptionswidget.h
-               widgets/simpleextrapolationwidget.h
-               widgets/slopeextrapolationwidget.h
                engraver.h
                heightmapapplication.h
                heightmaplogic.h
@@ -41,29 +25,11 @@ set (HMGUI_HDR auxiliary/colormap.h
                heightmapwindow.h
                mappingthread.h
                mappingworker.h
-               preferencescontroller.h
                trigger.h)
 
 set (HMGUI_SRC commands/contouringcommand.cpp
                commands/extrapolatecommand.cpp
                commands/generatecommand.cpp
-               dialogs/contouringoptionsdialog.cpp
-               dialogs/extrapolationoptionsdialog.cpp
-               dialogs/generatingoptionsdialog.cpp
-               dialogs/terrainoptionsdialog.cpp
-               extrapolation/baselevelextrapolationfactory.cpp
-               extrapolation/fixedradiusextrapolationfactory.cpp
-               extrapolation/simpleextrapolationfactory.cpp
-               extrapolation/slopeextrapolationfactory.cpp
-               widgets/abstractextrapolationwidget.cpp
-               widgets/baselevelextrapolationwidget.cpp
-               widgets/contouringoptionswidget.cpp
-               widgets/extrapolationoptionswidget.cpp
-               widgets/fixedradiusextrapolationwidget.cpp
-               widgets/landscapeoptionswidget.cpp
-               widgets/peakoptionswidget.cpp
-               widgets/simpleextrapolationwidget.cpp
-               widgets/slopeextrapolationwidget.cpp
                engraver.cpp
                heightmapapplication.cpp
                heightmaplogic.cpp
@@ -71,7 +37,6 @@ set (HMGUI_SRC commands/contouringcommand.cpp
                main.cpp
                mappingthread.cpp
                mappingworker.cpp
-               preferencescontroller.cpp
                trigger.cpp)
 
 set (CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -89,3 +54,4 @@ target_link_libraries (${APP} Qt5::Widgets)
 target_link_libraries (${APP} hghtmap-core)
 target_link_libraries (${APP} hghtmap-x)
 target_link_libraries (${APP} hghtmap-io)
+target_link_libraries (${APP} hghtmap-ge)

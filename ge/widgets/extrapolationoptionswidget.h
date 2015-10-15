@@ -4,6 +4,7 @@
 
 #include <QWidget>
 #include "hmdef.h"
+#include "../ge_shared.h"
 
 
 namespace HeightMap {
@@ -12,7 +13,7 @@ namespace HeightMap {
 class ExtrapolationData;
 class ExtrapolationFactory;
 struct ExtrapolationOptionsWidgetImplementation;
-class ExtrapolationOptionsWidget : public QWidget
+class HMGE_SHARED ExtrapolationOptionsWidget : public QWidget
 {
     Q_OBJECT
 

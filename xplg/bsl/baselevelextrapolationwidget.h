@@ -2,7 +2,7 @@
 #define _BaseLevelExtrapolationWidget_h_
 
 
-#include "abstractextrapolationwidget.h"
+#include "widgets/abstractextrapolationwidget.h"
 
 
 namespace HeightMap {

@@ -1,4 +1,4 @@
-#include "../widgets/baselevelextrapolationwidget.h"
+#include "baselevelextrapolationwidget.h"
 #include "extrapolationdata.h"
 #include "extrapolator.h"
 #include "xreader.h"

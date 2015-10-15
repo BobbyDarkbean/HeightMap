@@ -4,13 +4,14 @@
 
 #include <QWidget>
 #include "hmdef.h"
+#include "../ge_shared.h"
 
 
 namespace HeightMap {
 
 
 struct ContouringOptionsWidgetImplementation;
-class ContouringOptionsWidget : public QWidget
+class HMGE_SHARED ContouringOptionsWidget : public QWidget
 {
     Q_OBJECT
 

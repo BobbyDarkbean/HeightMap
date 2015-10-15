@@ -4,13 +4,14 @@
 
 #include <QWidget>
 #include "hmdef.h"
+#include "../ge_shared.h"
 
 
 namespace HeightMap {
 
 
 struct PeakOptionsWidgetImplementation;
-class PeakOptionsWidget : public QWidget
+class HMGE_SHARED PeakOptionsWidget : public QWidget
 {
     Q_OBJECT
 
