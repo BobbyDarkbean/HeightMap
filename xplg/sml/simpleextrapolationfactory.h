@@ -9,10 +9,15 @@ namespace HeightMap {
 
 
 struct SimpleExtrapolationFactoryImplementation;
-class SimpleExtrapolationFactory : public ExtrapolationFactory
+class SimpleExtrapolationFactory
+        : public QObject, public ExtrapolationFactory
 {
+    Q_OBJECT
+    Q_PLUGIN_METADATA(IID "BobbyDarkbean.HeightMap.ExtrapolationInterface" FILE "sml.json")
+    Q_INTERFACES(HeightMap::ExtrapolationFactory)
+
 public:
-    SimpleExtrapolationFactory();
+    explicit SimpleExtrapolationFactory(QObject *parent = 0);
 
     Extrapolator *extrapolator() const;
 

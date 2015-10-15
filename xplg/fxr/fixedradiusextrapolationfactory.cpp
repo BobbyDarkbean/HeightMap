@@ -57,8 +57,9 @@ FixedRadiusExtrapolationFactoryImplementation::~FixedRadiusExtrapolationFactoryI
 }
 
 
-FixedRadiusExtrapolationFactory::FixedRadiusExtrapolationFactory()
-    : ExtrapolationFactory(),
+FixedRadiusExtrapolationFactory::FixedRadiusExtrapolationFactory(QObject *parent)
+    : QObject(parent),
+      ExtrapolationFactory(),
       m(new FixedRadiusExtrapolationFactoryImplementation) { }
 
 

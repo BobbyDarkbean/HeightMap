@@ -17,6 +17,8 @@ set (HMX_SLP_HDR slopeextrapolationfactory.h
 set (HMX_SLP_SRC slopeextrapolationfactory.cpp
                  slopeextrapolationwidget.cpp)
 
+set (HMX_SLP_MET slp.json)
+
 set (CMAKE_INCLUDE_CURRENT_DIR ON)
 set (CMAKE_AUTOMOC ON)
 
@@ -25,7 +27,7 @@ if (CMAKE_COMPILER_IS_GNUCXX)
 endif ()
 add_definitions (-DQT_PLUGIN)
 
-add_library (${LIB} SHARED ${HMX_SLP_SRC} ${HMX_SLP_HDR})
+add_library (${LIB} SHARED ${HMX_SLP_SRC} ${HMX_SLP_HDR} ${HMX_SLP_MET})
 target_link_libraries (${LIB} Qt5::Widgets)
 target_link_libraries (${LIB} hghtmap-core)
 target_link_libraries (${LIB} hghtmap-x)

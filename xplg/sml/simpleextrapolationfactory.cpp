@@ -55,8 +55,9 @@ SimpleExtrapolationFactoryImplementation::~SimpleExtrapolationFactoryImplementat
 }
 
 
-SimpleExtrapolationFactory::SimpleExtrapolationFactory()
-    : ExtrapolationFactory(),
+SimpleExtrapolationFactory::SimpleExtrapolationFactory(QObject *parent)
+    : QObject(parent),
+      ExtrapolationFactory(),
       m(new SimpleExtrapolationFactoryImplementation) { }
 
 

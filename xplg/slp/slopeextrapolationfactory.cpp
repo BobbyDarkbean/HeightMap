@@ -57,8 +57,9 @@ SlopeExtrapolationFactoryImplementation::~SlopeExtrapolationFactoryImplementatio
 }
 
 
-SlopeExtrapolationFactory::SlopeExtrapolationFactory()
-    : ExtrapolationFactory(),
+SlopeExtrapolationFactory::SlopeExtrapolationFactory(QObject *parent)
+    : QObject(parent),
+      ExtrapolationFactory(),
       m(new SlopeExtrapolationFactoryImplementation) { }
 
 

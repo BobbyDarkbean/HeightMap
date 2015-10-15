@@ -9,10 +9,15 @@ namespace HeightMap {
 
 
 struct FixedRadiusExtrapolationFactoryImplementation;
-class FixedRadiusExtrapolationFactory : public ExtrapolationFactory
+class FixedRadiusExtrapolationFactory
+        : public QObject, public ExtrapolationFactory
 {
+    Q_OBJECT
+    Q_PLUGIN_METADATA(IID "BobbyDarkbean.HeightMap.ExtrapolationInterface" FILE "fxr.json")
+    Q_INTERFACES(HeightMap::ExtrapolationFactory)
+
 public:
-    FixedRadiusExtrapolationFactory();
+    explicit FixedRadiusExtrapolationFactory(QObject *parent = 0);
 
     Extrapolator *extrapolator() const;
 

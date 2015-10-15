@@ -17,6 +17,8 @@ set (HMX_BSL_HDR baselevelextrapolationfactory.h
 set (HMX_BSL_SRC baselevelextrapolationfactory.cpp
                  baselevelextrapolationwidget.cpp)
 
+set (HMX_BSL_MET bsl.json)
+
 set (CMAKE_INCLUDE_CURRENT_DIR ON)
 set (CMAKE_AUTOMOC ON)
 
@@ -25,7 +27,7 @@ if (CMAKE_COMPILER_IS_GNUCXX)
 endif ()
 add_definitions (-DQT_PLUGIN)
 
-add_library (${LIB} SHARED ${HMX_BSL_SRC} ${HMX_BSL_HDR})
+add_library (${LIB} SHARED ${HMX_BSL_SRC} ${HMX_BSL_HDR} ${HMX_BSL_MET})
 target_link_libraries (${LIB} Qt5::Widgets)
 target_link_libraries (${LIB} hghtmap-core)
 target_link_libraries (${LIB} hghtmap-x)

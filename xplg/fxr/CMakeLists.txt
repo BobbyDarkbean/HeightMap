@@ -17,6 +17,8 @@ set (HMX_FXR_HDR fixedradiusextrapolationfactory.h
 set (HMX_FXR_SRC fixedradiusextrapolationfactory.cpp
                  fixedradiusextrapolationwidget.cpp)
 
+set (HMX_FXR_MET fxr.json)
+
 set (CMAKE_INCLUDE_CURRENT_DIR ON)
 set (CMAKE_AUTOMOC ON)
 
@@ -25,7 +27,7 @@ if (CMAKE_COMPILER_IS_GNUCXX)
 endif ()
 add_definitions (-DQT_PLUGIN)
 
-add_library (${LIB} SHARED ${HMX_FXR_SRC} ${HMX_FXR_HDR})
+add_library (${LIB} SHARED ${HMX_FXR_SRC} ${HMX_FXR_HDR} ${HMX_FXR_MET})
 target_link_libraries (${LIB} Qt5::Widgets)
 target_link_libraries (${LIB} hghtmap-core)
 target_link_libraries (${LIB} hghtmap-x)
