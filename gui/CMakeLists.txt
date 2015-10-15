@@ -14,10 +14,10 @@ include_directories (../xbase)
 
 set (HMGUI_HDR auxiliary/colormap.h
                auxiliary/mappingdata.h
-               commands/commands
-               commands/contouringcommand.h
-               commands/extrapolatecommand.h
-               commands/generatecommand.h
+               cmd/contouringcommand.h
+               cmd/extrapolatecommand.h
+               cmd/generatecommand.h
+               commands
                engraver.h
                heightmapapplication.h
                heightmaplogic.h
@@ -27,9 +27,9 @@ set (HMGUI_HDR auxiliary/colormap.h
                mappingworker.h
                trigger.h)
 
-set (HMGUI_SRC commands/contouringcommand.cpp
-               commands/extrapolatecommand.cpp
-               commands/generatecommand.cpp
+set (HMGUI_SRC cmd/contouringcommand.cpp
+               cmd/extrapolatecommand.cpp
+               cmd/generatecommand.cpp
                engraver.cpp
                heightmapapplication.cpp
                heightmaplogic.cpp

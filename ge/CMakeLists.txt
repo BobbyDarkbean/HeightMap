@@ -26,7 +26,8 @@ set (HMGE_HDR dialogs/contouringoptionsdialog.h
               widgets/extrapolationoptionswidget.h
               widgets/landscapeoptionswidget.h
               widgets/peakoptionswidget.h
-              ge_shared.h)
+              ge_shared.h
+              guielements)
 
 set (HMGE_SRC dialogs/contouringoptionsdialog.cpp
               dialogs/extrapolationoptionsdialog.cpp

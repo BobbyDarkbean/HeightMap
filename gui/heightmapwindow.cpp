@@ -17,15 +17,8 @@
 #include "preferencescontroller.h"
 #include "extrapolationdata.h"
 #include "extrapolationfactory.h"
-#include "commands/commands"
-#include "widgets/abstractextrapolationwidget.h"
-#include "widgets/peakoptionswidget.h"
-#include "widgets/extrapolationoptionswidget.h"
-#include "widgets/contouringoptionswidget.h"
-#include "dialogs/terrainoptionsdialog.h"
-#include "dialogs/generatingoptionsdialog.h"
-#include "dialogs/extrapolationoptionsdialog.h"
-#include "dialogs/contouringoptionsdialog.h"
+#include "commands"
+#include "guielements"
 
 #include "heightmapwindow.h"
 
