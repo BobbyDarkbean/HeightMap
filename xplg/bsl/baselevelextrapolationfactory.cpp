@@ -55,8 +55,9 @@ BaseLevelExtrapolationFactoryImplementation::~BaseLevelExtrapolationFactoryImple
 }
 
 
-BaseLevelExtrapolationFactory::BaseLevelExtrapolationFactory()
-    : ExtrapolationFactory(),
+BaseLevelExtrapolationFactory::BaseLevelExtrapolationFactory(QObject *parent)
+    : QObject(parent),
+      ExtrapolationFactory(),
       m(new BaseLevelExtrapolationFactoryImplementation) { }
 
 
