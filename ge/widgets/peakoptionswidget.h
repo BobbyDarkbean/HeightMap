@@ -18,6 +18,8 @@ class HMGE_SHARED PeakOptionsWidget : public QWidget
 public:
     explicit PeakOptionsWidget(QWidget *parent = 0);
 
+    bool eventFilter(QObject *, QEvent *);
+
     int minPeak() const;
     int maxPeak() const;
     void setRange(int minValue, int maxValue);

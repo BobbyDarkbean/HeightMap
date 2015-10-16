@@ -1,3 +1,4 @@
+#include <QEvent>
 #include <QLabel>
 #include <QSpinBox>
 #include <QSlider>
@@ -73,6 +74,10 @@ void PeakOptionsWidgetImplementation::adjustControls(PeakOptionsWidget *master)
     spnMaxPeak->setAlignment(Qt::AlignRight);
     spnPeakCount->setAlignment(Qt::AlignRight);
 
+    spnMinPeak->installEventFilter(master);
+    spnMaxPeak->installEventFilter(master);
+    spnPeakCount->installEventFilter(master);
+
     // Sliders
     sldMinPeak->setOrientation(Qt::Horizontal);
     sldMaxPeak->setOrientation(Qt::Horizontal);
@@ -139,6 +144,20 @@ PeakOptionsWidget::PeakOptionsWidget(QWidget *parent)
 {
     m->adjustControls(this);
     m->adjustLayout(this);
+}
+
+
+bool PeakOptionsWidget::eventFilter(QObject *o, QEvent *e)
+{
+    const QEvent::Type t = e->type();
+    switch (t) {
+    case QEvent::ShortcutOverride:
+        return true;
+    default:
+        break;
+    }
+
+    return QWidget::eventFilter(o, e);
 }
 
 

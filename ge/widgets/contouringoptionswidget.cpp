@@ -1,3 +1,4 @@
+#include <QEvent>
 #include <QLabel>
 #include <QSpinBox>
 #include <QGroupBox>
@@ -70,6 +71,10 @@ void ContouringOptionsWidgetImplementation::adjustControls(ContouringOptionsWidg
     spnMaxLevel->setAlignment(Qt::AlignRight);
     spnStep->setAlignment(Qt::AlignRight);
 
+    spnMinLevel->installEventFilter(master);
+    spnMaxLevel->installEventFilter(master);
+    spnStep->installEventFilter(master);
+
     // Group-box
     grpLevelOpts->setTitle(ContouringOptionsWidget::tr("Levels"));
 
@@ -106,6 +111,20 @@ ContouringOptionsWidget::ContouringOptionsWidget(QWidget *parent)
 {
     m->adjustControls(this);
     m->adjustLayout(this);
+}
+
+
+bool ContouringOptionsWidget::eventFilter(QObject *o, QEvent *e)
+{
+    const QEvent::Type t = e->type();
+    switch (t) {
+    case QEvent::ShortcutOverride:
+        return true;
+    default:
+        break;
+    }
+
+    return QWidget::eventFilter(o, e);
 }
 
 

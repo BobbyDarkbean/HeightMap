@@ -18,6 +18,8 @@ class HMGE_SHARED ContouringOptionsWidget : public QWidget
 public:
     explicit ContouringOptionsWidget(QWidget *parent = 0);
 
+    bool eventFilter(QObject *, QEvent *);
+
     int minLevel() const;
     int maxLevel() const;
     void setLevelRange(int minValue, int maxValue);
