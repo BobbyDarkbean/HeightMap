@@ -15,7 +15,7 @@ struct SlopeExtrapolationWidgetImplementation
 {
     SlopeExtrapolationWidgetImplementation();
 
-    void adjustControls();
+    void adjustControls(QWidget *master);
     void adjustLayout(QWidget *master);
     void adjustValues();
 
@@ -45,7 +45,7 @@ SlopeExtrapolationWidgetImplementation::SlopeExtrapolationWidgetImplementation()
       spnSlope(new QDoubleSpinBox),
       x(nullptr) { }
 
-void SlopeExtrapolationWidgetImplementation::adjustControls()
+void SlopeExtrapolationWidgetImplementation::adjustControls(QWidget *master)
 {
     // Labels
     lblBaseLevel->setText(SlopeExtrapolationWidget::tr("Landscape base level:"));
@@ -61,12 +61,14 @@ void SlopeExtrapolationWidgetImplementation::adjustControls()
     spnBaseLevel->setSingleStep(0.01);
     spnBaseLevel->setAccelerated(true);
     spnBaseLevel->setAlignment(Qt::AlignRight);
+    spnBaseLevel->installEventFilter(master);
 
     spnSlope->setDecimals(2);
     spnSlope->setRange(1.0, 32.0);
     spnSlope->setSingleStep(0.01);
     spnSlope->setAccelerated(true);
     spnSlope->setAlignment(Qt::AlignRight);
+    spnSlope->installEventFilter(master);
 }
 
 void SlopeExtrapolationWidgetImplementation::adjustLayout(QWidget *master)
@@ -113,7 +115,7 @@ SlopeExtrapolationWidget::SlopeExtrapolationWidget(QWidget *parent)
     : AbstractExtrapolationWidget(parent),
       m(new SlopeExtrapolationWidgetImplementation)
 {
-    m->adjustControls();
+    m->adjustControls(this);
     m->adjustLayout(this);
 }
 

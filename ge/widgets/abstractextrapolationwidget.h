@@ -19,6 +19,8 @@ class HMGE_SHARED AbstractExtrapolationWidget : public QWidget
 public:
     explicit AbstractExtrapolationWidget(QWidget *parent = 0);
 
+    bool eventFilter(QObject *, QEvent *);
+
     virtual Extrapolator *extrapolator() const = 0;
     virtual void refreshData() = 0;
 

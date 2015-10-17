@@ -15,7 +15,7 @@ struct FixedRadiusExtrapolationWidgetImplementation
 {
     FixedRadiusExtrapolationWidgetImplementation();
 
-    void adjustControls();
+    void adjustControls(QWidget *master);
     void adjustLayout(QWidget *master);
     void adjustValues();
 
@@ -45,7 +45,7 @@ FixedRadiusExtrapolationWidgetImplementation::FixedRadiusExtrapolationWidgetImpl
       spnFixedRadius(new QSpinBox),
       x(nullptr) { }
 
-void FixedRadiusExtrapolationWidgetImplementation::adjustControls()
+void FixedRadiusExtrapolationWidgetImplementation::adjustControls(QWidget *master)
 {
     // Labels
     lblBaseLevel->setText(FixedRadiusExtrapolationWidget::tr("Landscape base level:"));
@@ -61,11 +61,13 @@ void FixedRadiusExtrapolationWidgetImplementation::adjustControls()
     spnBaseLevel->setSingleStep(0.01);
     spnBaseLevel->setAccelerated(true);
     spnBaseLevel->setAlignment(Qt::AlignRight);
+    spnBaseLevel->installEventFilter(master);
 
     spnFixedRadius->setRange(1, Preferences::MaxLandscapeDim);
     spnFixedRadius->setSingleStep(1);
     spnFixedRadius->setAccelerated(true);
     spnFixedRadius->setAlignment(Qt::AlignRight);
+    spnFixedRadius->installEventFilter(master);
 }
 
 void FixedRadiusExtrapolationWidgetImplementation::adjustLayout(QWidget *master)
@@ -112,7 +114,7 @@ FixedRadiusExtrapolationWidget::FixedRadiusExtrapolationWidget(QWidget *parent)
     : AbstractExtrapolationWidget(parent),
       m(new FixedRadiusExtrapolationWidgetImplementation)
 {
-    m->adjustControls();
+    m->adjustControls(this);
     m->adjustLayout(this);
 }
 

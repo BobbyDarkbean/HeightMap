@@ -15,7 +15,7 @@ struct SimpleExtrapolationWidgetImplementation
 {
     SimpleExtrapolationWidgetImplementation();
 
-    void adjustControls();
+    void adjustControls(QWidget *master);
     void adjustLayout(QWidget *master);
     void adjustValues();
 
@@ -40,7 +40,7 @@ SimpleExtrapolationWidgetImplementation::SimpleExtrapolationWidgetImplementation
       spnBaseLevel(new QDoubleSpinBox),
       x(nullptr) { }
 
-void SimpleExtrapolationWidgetImplementation::adjustControls()
+void SimpleExtrapolationWidgetImplementation::adjustControls(QWidget *master)
 {
     // Label
     lblBaseLevel->setText(SimpleExtrapolationWidget::tr("Landscape base level:"));
@@ -53,6 +53,7 @@ void SimpleExtrapolationWidgetImplementation::adjustControls()
     spnBaseLevel->setSingleStep(0.01);
     spnBaseLevel->setAccelerated(true);
     spnBaseLevel->setAlignment(Qt::AlignRight);
+    spnBaseLevel->installEventFilter(master);
 }
 
 void SimpleExtrapolationWidgetImplementation::adjustLayout(QWidget *master)
@@ -93,7 +94,7 @@ SimpleExtrapolationWidget::SimpleExtrapolationWidget(QWidget *parent)
     : AbstractExtrapolationWidget(parent),
       m(new SimpleExtrapolationWidgetImplementation)
 {
-    m->adjustControls();
+    m->adjustControls(this);
     m->adjustLayout(this);
 }
 
