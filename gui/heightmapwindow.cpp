@@ -558,6 +558,35 @@ void HeightMapWindow::createActions()
     mnuEdit->addAction(m->actUndo);
     mnuEdit->addAction(m->actRedo);
 
+    QActionGroup *agpViewMode = new QActionGroup(this);
+
+    m->actViewModePeaks = new QAction(agpViewMode);
+    m->actViewModePeaks->setText(tr("Peaks"));
+    m->actViewModePeaks->setCheckable(true);
+    m->actViewModePeaks->setProperty("hmvm", HMVM_Peaks);
+
+    m->actViewModeLandscape = new QAction(agpViewMode);
+    m->actViewModeLandscape->setText(tr("Landscape"));
+    m->actViewModeLandscape->setCheckable(true);
+    m->actViewModeLandscape->setProperty("hmvm", HMVM_Landscape);
+
+    m->actViewModeIsobars = new QAction(agpViewMode);
+    m->actViewModeIsobars->setText(tr("Isobars"));
+    m->actViewModeIsobars->setCheckable(true);
+    m->actViewModeIsobars->setProperty("hmvm", HMVM_Isobars);
+
+    m->actViewModeHybrid = new QAction(agpViewMode);
+    m->actViewModeHybrid->setText(tr("Hybrid"));
+    m->actViewModeHybrid->setCheckable(true);
+    m->actViewModeHybrid->setChecked(true);
+    m->actViewModeHybrid->setProperty("hmvm", HMVM_Hybrid);
+
+    QMenu *mnuView = menuBar()->addMenu(tr("&View"));
+    mnuView->addAction(m->actViewModePeaks);
+    mnuView->addAction(m->actViewModeLandscape);
+    mnuView->addAction(m->actViewModeIsobars);
+    mnuView->addAction(m->actViewModeHybrid);
+
     m->actGenLs = new QAction(this);
     m->actGenLs->setText(tr("&Generate landscape"));
     m->actGenLs->setShortcut(tr("Ctrl+G"));
@@ -590,35 +619,6 @@ void HeightMapWindow::createActions()
     mnuLandscape->addAction(m->actHmSettings);
     mnuLandscape->addAction(m->actExtrapolSettings);
     mnuLandscape->addAction(m->actContourSettings);
-
-    QActionGroup *agpViewMode = new QActionGroup(this);
-
-    m->actViewModePeaks = new QAction(agpViewMode);
-    m->actViewModePeaks->setText(tr("Peaks"));
-    m->actViewModePeaks->setCheckable(true);
-    m->actViewModePeaks->setProperty("hmvm", HMVM_Peaks);
-
-    m->actViewModeLandscape = new QAction(agpViewMode);
-    m->actViewModeLandscape->setText(tr("Landscape"));
-    m->actViewModeLandscape->setCheckable(true);
-    m->actViewModeLandscape->setProperty("hmvm", HMVM_Landscape);
-
-    m->actViewModeIsobars = new QAction(agpViewMode);
-    m->actViewModeIsobars->setText(tr("Isobars"));
-    m->actViewModeIsobars->setCheckable(true);
-    m->actViewModeIsobars->setProperty("hmvm", HMVM_Isobars);
-
-    m->actViewModeHybrid = new QAction(agpViewMode);
-    m->actViewModeHybrid->setText(tr("Hybrid"));
-    m->actViewModeHybrid->setCheckable(true);
-    m->actViewModeHybrid->setChecked(true);
-    m->actViewModeHybrid->setProperty("hmvm", HMVM_Hybrid);
-
-    QMenu *mnuView = menuBar()->addMenu(tr("&View"));
-    mnuView->addAction(m->actViewModePeaks);
-    mnuView->addAction(m->actViewModeLandscape);
-    mnuView->addAction(m->actViewModeIsobars);
-    mnuView->addAction(m->actViewModeHybrid);
 
     QMenu *mnuWindows = menuBar()->addMenu(tr("&Windows"));
     mnuWindows->addAction(m->dckPeakGenerating->toggleViewAction());
