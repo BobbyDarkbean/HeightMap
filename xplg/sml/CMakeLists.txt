@@ -12,10 +12,12 @@ include_directories (../../ge)
 include_directories (../../xbase)
 
 set (HMX_SML_HDR simpleextrapolationfactory.h
-                 simpleextrapolationwidget.h)
+                 simpleextrapolationwidget.h
+                 simpleextrapolator.h)
 
 set (HMX_SML_SRC simpleextrapolationfactory.cpp
-                 simpleextrapolationwidget.cpp)
+                 simpleextrapolationwidget.cpp
+                 simpleextrapolator.cpp)
 
 set (HMX_SML_MET sml.json)
 

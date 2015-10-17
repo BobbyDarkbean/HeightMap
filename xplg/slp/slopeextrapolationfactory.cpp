@@ -1,6 +1,6 @@
 #include "slopeextrapolationwidget.h"
+#include "slopeextrapolator.h"
 #include "extrapolationdata.h"
-#include "extrapolator.h"
 #include "xreader.h"
 #include "xwriter.h"
 

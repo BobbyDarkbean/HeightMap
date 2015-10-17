@@ -12,10 +12,12 @@ include_directories (../../ge)
 include_directories (../../xbase)
 
 set (HMX_SLP_HDR slopeextrapolationfactory.h
-                 slopeextrapolationwidget.h)
+                 slopeextrapolationwidget.h
+                 slopeextrapolator.h)
 
 set (HMX_SLP_SRC slopeextrapolationfactory.cpp
-                 slopeextrapolationwidget.cpp)
+                 slopeextrapolationwidget.cpp
+                 slopeextrapolator.cpp)
 
 set (HMX_SLP_MET slp.json)
 

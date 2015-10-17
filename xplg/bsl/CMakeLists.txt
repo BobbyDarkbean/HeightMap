@@ -12,10 +12,12 @@ include_directories (../../ge)
 include_directories (../../xbase)
 
 set (HMX_BSL_HDR baselevelextrapolationfactory.h
-                 baselevelextrapolationwidget.h)
+                 baselevelextrapolationwidget.h
+                 baselevelextrapolator.h)
 
 set (HMX_BSL_SRC baselevelextrapolationfactory.cpp
-                 baselevelextrapolationwidget.cpp)
+                 baselevelextrapolationwidget.cpp
+                 baselevelextrapolator.cpp)
 
 set (HMX_BSL_MET bsl.json)
 

@@ -12,10 +12,12 @@ include_directories (../../ge)
 include_directories (../../xbase)
 
 set (HMX_FXR_HDR fixedradiusextrapolationfactory.h
-                 fixedradiusextrapolationwidget.h)
+                 fixedradiusextrapolationwidget.h
+                 fixedradiusextrapolator.h)
 
 set (HMX_FXR_SRC fixedradiusextrapolationfactory.cpp
-                 fixedradiusextrapolationwidget.cpp)
+                 fixedradiusextrapolationwidget.cpp
+                 fixedradiusextrapolator.cpp)
 
 set (HMX_FXR_MET fxr.json)
 

@@ -1,7 +1,7 @@
 #include <QLabel>
 #include <QSpinBox>
 #include <QGridLayout>
-#include "extrapolator.h"
+#include "slopeextrapolator.h"
 #include "extrapolationdata.h"
 #include "preferences.h"
 

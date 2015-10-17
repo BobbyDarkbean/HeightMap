@@ -1,6 +1,6 @@
 #include "simpleextrapolationwidget.h"
+#include "simpleextrapolator.h"
 #include "extrapolationdata.h"
-#include "extrapolator.h"
 #include "xreader.h"
 #include "xwriter.h"
 

@@ -1,6 +1,6 @@
 #include "fixedradiusextrapolationwidget.h"
+#include "fixedradiusextrapolator.h"
 #include "extrapolationdata.h"
-#include "extrapolator.h"
 #include "xreader.h"
 #include "xwriter.h"
 
