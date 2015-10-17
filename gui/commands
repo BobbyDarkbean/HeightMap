@@ -1,0 +1,3 @@
+#include "cmd/generatecommand.h"
+#include "cmd/extrapolatecommand.h"
+#include "cmd/contouringcommand.h"

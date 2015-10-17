@@ -8,24 +8,16 @@
 #include <QBoxLayout>
 #include <QPixmap>
 #include <QFileDialog>
-#include "../io/landscapetextiohandler.h"
-#include "../io/peakstextiohandler.h"
 #include "heightmapapplication.h"
 #include "heightmaplogic.h"
+#include "terrain.h"
 #include "preferences.h"
 #include "preferencescontroller.h"
-#include "terrain.h"
-#include "extrapolation/extrapolationdata.h"
-#include "extrapolation/extrapolationfactory.h"
-#include "commands/commands"
-#include "widgets/abstractextrapolationwidget.h"
-#include "widgets/peakoptionswidget.h"
-#include "widgets/extrapolationoptionswidget.h"
-#include "widgets/contouringoptionswidget.h"
-#include "dialogs/terrainoptionsdialog.h"
-#include "dialogs/generatingoptionsdialog.h"
-#include "dialogs/extrapolationoptionsdialog.h"
-#include "dialogs/contouringoptionsdialog.h"
+#include "extrapolationdata.h"
+#include "extrapolationfactory.h"
+#include "iohandlers"
+#include "commands"
+#include "guielements"
 
 #include "heightmapwindow.h"
 

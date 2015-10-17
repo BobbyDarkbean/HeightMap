@@ -8,6 +8,7 @@ message ("Project: ${PROJECT_NAME}")
 find_package (Qt5Core REQUIRED)
 
 include_directories (../hm)
+include_directories (../xbase)
 
 set (HMIO_MAJOR 1)
 set (HMIO_MINOR 0)
@@ -19,6 +20,7 @@ set (HMIO_SOVERSION ${HMIO_MAJOR}.${HMIO_MINOR})
 set (HMIO_HDR heightmapbinaryiohandler.h
               heightmapiohandler.h
               io_shared.h
+              iohandlers
               landscapetextiohandler.h
               peakstextiohandler.h)
 
@@ -41,3 +43,4 @@ set_target_properties (${LIB} PROPERTIES
                               SOVERSION ${HMIO_SOVERSION})
 target_link_libraries (${LIB} Qt5::Core)
 target_link_libraries (${LIB} hghtmap-core)
+target_link_libraries (${LIB} hghtmap-x)

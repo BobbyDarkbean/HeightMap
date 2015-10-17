@@ -1,11 +1,10 @@
+#include <QDir>
+#include <QPluginLoader>
 #include <QSettings>
 #include "preferences.h"
 #include "preferencescontroller.h"
-#include "extrapolation/extrapolationdata.h"
-#include "extrapolation/simpleextrapolationfactory.h"
-#include "extrapolation/slopeextrapolationfactory.h"
-#include "extrapolation/baselevelextrapolationfactory.h"
-#include "extrapolation/fixedradiusextrapolationfactory.h"
+#include "extrapolationdata.h"
+#include "extrapolationfactory.h"
 #include "heightmaplogic.h"
 
 #include "heightmapapplication.h"
@@ -35,6 +34,7 @@ struct HeightMapApplicationImplementation
     QMap<QString, ExtrapolationFactory *> extrapolations;
 
     const QString IniFilename;
+    const QString XDataPath;
 
 private:
     DISABLE_COPY(HeightMapApplicationImplementation)
@@ -47,7 +47,8 @@ HeightMapApplicationImplementation::HeightMapApplicationImplementation()
       prefs(),
       ctrl(nullptr),
       extrapolations(),
-      IniFilename(QApplication::applicationDirPath() + "/hmcfg.ini")
+      IniFilename(QApplication::applicationDirPath() + "/hmcfg.ini"),
+      XDataPath(QApplication::applicationDirPath() + "/xdata")
 {
     loadPreferences();
     importExtrapolations();
@@ -55,10 +56,17 @@ HeightMapApplicationImplementation::HeightMapApplicationImplementation()
 
 void HeightMapApplicationImplementation::importExtrapolations()
 {
-    addExtrapolation(new SimpleExtrapolationFactory);
-    addExtrapolation(new SlopeExtrapolationFactory);
-    addExtrapolation(new BaseLevelExtrapolationFactory);
-    addExtrapolation(new FixedRadiusExtrapolationFactory);
+    QDir xDataDir(XDataPath);
+
+    QStringList dllFilter;
+    dllFilter << "*.dll";
+    QStringList pluginNames = xDataDir.entryList(dllFilter, QDir::Files);
+
+    foreach (const QString &filename, pluginNames) {
+        QPluginLoader loader(xDataDir.absoluteFilePath(filename));
+        if (ExtrapolationFactory *f = qobject_cast<ExtrapolationFactory *>(loader.instance()))
+            addExtrapolation(f);
+    }
 }
 
 void HeightMapApplicationImplementation::cleanupExtrapolations()

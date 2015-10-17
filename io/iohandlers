@@ -1,0 +1,4 @@
+#include "heightmapbinaryiohandler.h"
+#include "heightmapiohandler.h"
+#include "landscapetextiohandler.h"
+#include "peakstextiohandler.h"

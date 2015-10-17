@@ -1,9 +1,9 @@
 #include <QImage>
 #include <QMutex>
 #include "auxiliary/mappingdata.h"
-#include "extrapolation/extrapolationdata.h"
-#include "extrapolation/extrapolationfactory.h"
 #include "heightmaplogic.h"
+#include "extrapolationdata.h"
+#include "extrapolationfactory.h"
 #include "preferences.h"
 #include "terrain.h"
 #include "mapper.h"
