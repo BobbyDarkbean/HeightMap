@@ -1,5 +1,5 @@
 #include <QMap>
-#include <QStringList>
+#include <QDataStream>
 #include "hmdef.h"
 
 #include "extrapolationdata.h"
@@ -85,6 +85,18 @@ double ExtrapolationData::value(const QString &key, double defaultValue) const
 { return m->xMap.value(key, defaultValue); }
 
 
+void ExtrapolationData::writeTo(QDataStream &stream) const
+{
+    stream << m->xMap;
+}
+
+void ExtrapolationData::readFrom(QDataStream &stream)
+{
+    detach();
+    stream >> m->xMap;
+}
+
+
 bool ExtrapolationData::equals(const ExtrapolationData &other) const
 { return m == other.m ? true : m->content_equals(*other.m); }
 
@@ -114,6 +126,19 @@ ExtrapolationData::~ExtrapolationData()
         if (--m->ref == 0)
             delete m;
     }
+}
+
+
+QDataStream &operator <<(QDataStream &stream, const ExtrapolationData &xdata)
+{
+    xdata.writeTo(stream);
+    return stream;
+}
+
+QDataStream &operator >>(QDataStream &stream, ExtrapolationData &xdata)
+{
+    xdata.readFrom(stream);
+    return stream;
 }
 
 

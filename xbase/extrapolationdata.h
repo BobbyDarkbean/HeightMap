@@ -7,6 +7,7 @@
 #include "xbase_shared.h"
 
 
+class QDataStream;
 namespace HeightMap {
 
 
@@ -26,6 +27,9 @@ public:
     void remove(const QString &key);
     double value(const QString &key, double defaultValue) const;
 
+    void writeTo(QDataStream &) const;
+    void readFrom(QDataStream &);
+
     bool equals(const ExtrapolationData &) const;
 
     void detach();
@@ -37,6 +41,10 @@ public:
 private:
     ExtrapolationDataImplementation *m;
 };
+
+
+HMX_SHARED QDataStream &operator <<(QDataStream &, const ExtrapolationData &);
+HMX_SHARED QDataStream &operator >>(QDataStream &, ExtrapolationData &);
 
 
 inline bool operator ==(const ExtrapolationData &a, const ExtrapolationData &b)

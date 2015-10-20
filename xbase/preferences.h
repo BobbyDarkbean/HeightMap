@@ -7,6 +7,7 @@
 #include "xbase_shared.h"
 
 
+class QDataStream;
 namespace HeightMap {
 
 
@@ -69,6 +70,9 @@ public:
     int imageFactor() const;
     void setImageFactor(int);
 
+    void writeTo(QDataStream &) const;
+    void readFrom(QDataStream &);
+
     bool equals(const Preferences &) const;
 
     void detach();
@@ -80,6 +84,10 @@ public:
 private:
     PreferencesImplementation *m;
 };
+
+
+HMX_SHARED QDataStream &operator <<(QDataStream &, const Preferences &);
+HMX_SHARED QDataStream &operator >>(QDataStream &, Preferences &);
 
 
 inline bool operator ==(const Preferences &a, const Preferences &b)

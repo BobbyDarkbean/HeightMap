@@ -1,4 +1,4 @@
-#include <qglobal.h>
+#include <QDataStream>
 #include "hmdef.h"
 
 #include "preferences.h"
@@ -192,6 +192,24 @@ void Preferences::setImageFactor(int imgFactor)
 }
 
 
+void Preferences::writeTo(QDataStream &stream) const
+{
+    stream << m->lsWidth << m->lsHeight << m->peaks
+           << m->minPeak << m->maxPeak << m->extrapolName
+           << m->minContLevel << m->maxContLevel << m->contStep
+           << m->imgFactor;
+}
+
+void Preferences::readFrom(QDataStream &stream)
+{
+    detach();
+    stream >> m->lsWidth >> m->lsHeight >> m->peaks
+           >> m->minPeak >> m->maxPeak >> m->extrapolName
+           >> m->minContLevel >> m->maxContLevel >> m->contStep
+           >> m->imgFactor;
+}
+
+
 bool Preferences::equals(const Preferences &other) const
 { return m == other.m ? true : m->content_equals(*other.m); }
 
@@ -221,6 +239,19 @@ Preferences::~Preferences()
         if (--m->ref == 0)
             delete m;
     }
+}
+
+
+QDataStream &operator <<(QDataStream &stream, const Preferences &prefs)
+{
+    prefs.writeTo(stream);
+    return stream;
+}
+
+QDataStream &operator >>(QDataStream &stream, Preferences &prefs)
+{
+    prefs.readFrom(stream);
+    return stream;
 }
 
 
