@@ -38,6 +38,9 @@ public:
 
     const QImage &heightMapImage(HeightMapViewMode);
 
+    void newTerrain();
+    void openTerrain(Terrain *t);
+
     ~HeightMapLogic();
 
 signals:
@@ -57,7 +60,6 @@ signals:
     void contouringFinished();
 
 public slots:
-    void newTerrain();
     void loadTerrain();
     void createLandscape();
     void buildLandscapeFromPeaks();

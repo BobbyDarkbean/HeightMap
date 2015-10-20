@@ -33,9 +33,9 @@ void PeaksTextIOHandler::write(const Terrain *t, const QString &filename)
     }
 }
 
-void PeaksTextIOHandler::read(Terrain *, const QString &)
+Terrain *PeaksTextIOHandler::read(const QString &)
 {
-
+    return nullptr;
 }
 
 

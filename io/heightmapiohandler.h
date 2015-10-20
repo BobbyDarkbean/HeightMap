@@ -16,7 +16,7 @@ public:
     HeightMapIOHandler();
 
     virtual void write(const Terrain *t, const QString &filename) = 0;
-    virtual void read(Terrain *t, const QString &filename) = 0;
+    virtual Terrain *read(const QString &filename) = 0;
 
     virtual ~HeightMapIOHandler();
 };

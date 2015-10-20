@@ -188,12 +188,6 @@ const QImage &HeightMapLogic::heightMapImage(HeightMapViewMode hmvm)
 }
 
 
-HeightMapLogic::~HeightMapLogic()
-{
-    delete m;
-}
-
-
 void HeightMapLogic::newTerrain()
 {
     setPreferences(hmApp->preferences());
@@ -207,6 +201,26 @@ void HeightMapLogic::newTerrain()
 
     emit terrainCreated();
 }
+
+void HeightMapLogic::openTerrain(Terrain *t)
+{
+    setPreferences(hmApp->preferences());
+    setXData(hmApp->xData(m->prefs.extrapolatorName()));
+
+    m->terrain.reset(t);
+    m->resetImages();
+
+    emit terrainCreated();
+
+    loadTerrain();
+}
+
+
+HeightMapLogic::~HeightMapLogic()
+{
+    delete m;
+}
+
 
 void HeightMapLogic::loadTerrain()
 { m->trgLoadLs->activate(); }

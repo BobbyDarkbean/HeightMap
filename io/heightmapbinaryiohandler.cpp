@@ -43,11 +43,11 @@ void HeightMapBinaryIOHandler::write(const Terrain *t, const QString &filename)
     }
 }
 
-void HeightMapBinaryIOHandler::read(Terrain *t, const QString &filename)
+Terrain *HeightMapBinaryIOHandler::read(const QString &filename)
 {
     QFile f(filename);
     if (!f.open(QIODevice::ReadOnly)) {
-        return;
+        return nullptr;
     }
 
     QDataStream stream(&f);
@@ -64,7 +64,10 @@ void HeightMapBinaryIOHandler::read(Terrain *t, const QString &filename)
         i->y = static_cast<int>(y);
         i->height = height;     // TODO: cast from independent format
     }
+
+    Terrain *t = new Terrain(m_prefs.landscapeWidth(), m_prefs.landscapeHeight());
     t->setPeaks(peaks);
+    return t;
 }
 
 

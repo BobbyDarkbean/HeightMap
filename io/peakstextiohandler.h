@@ -14,7 +14,7 @@ public:
     PeaksTextIOHandler();
 
     void write(const Terrain *t, const QString &filename);
-    void read(Terrain *t, const QString &filename);
+    Terrain *read(const QString &filename);
 
     ~PeaksTextIOHandler();
 };

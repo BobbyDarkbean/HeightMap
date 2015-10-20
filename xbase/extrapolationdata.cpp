@@ -1,4 +1,5 @@
 #include <QMap>
+#include <QStringList>
 #include <QDataStream>
 #include "hmdef.h"
 

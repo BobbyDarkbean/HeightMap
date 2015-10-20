@@ -246,14 +246,13 @@ void HeightMapWindow::openFile()
         return;
 
     QString filename(dialog.selectedFiles().value(0));
-    m->logic->newTerrain();
 
     HeightMapBinaryIOHandler ioHandler;
-    ioHandler.read(m->logic->terrain(), filename);
-    m->logic->setPreferences(ioHandler.preferences());
-    m->logic->setXData(ioHandler.xData());
+    Terrain *t = ioHandler.read(filename);
+    hmApp->setPreferences(ioHandler.preferences());
+    hmApp->setXData(hmApp->preferences().extrapolatorName(), ioHandler.xData());
 
-    m->logic->loadTerrain();
+    m->logic->openTerrain(t);
 }
 
 void HeightMapWindow::saveFile()

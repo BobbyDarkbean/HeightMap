@@ -39,9 +39,9 @@ void LandscapeTextIOHandler::write(const Terrain *t, const QString &filename)
     }
 }
 
-void LandscapeTextIOHandler::read(Terrain *, const QString &)
+Terrain *LandscapeTextIOHandler::read(const QString &)
 {
-
+    return nullptr;
 }
 
 
