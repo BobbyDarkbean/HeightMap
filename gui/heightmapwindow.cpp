@@ -26,6 +26,7 @@ namespace HeightMap {
 
 
 namespace {
+const char *HM_FILE_EXT = "hmt";
 const char *LS_TEXT_FILE_EXT = "hmlst";
 const char *PK_TEXT_FILE_EXT = "hmpkt";
 }
@@ -35,6 +36,7 @@ struct HeightMapWindowImplementation
 {
     HeightMapWindowImplementation();
 
+    void adjustFileDialog(QFileDialog *);
     void provideExtrapolationWidgets(ExtrapolationOptionsDialog *);
 
     void displayHeightMapImage();
@@ -62,7 +64,10 @@ struct HeightMapWindowImplementation
     QLabel *lblPeaks;
     QLabel *lblIsobars;
 
-    QAction *actNewFile;
+    QAction *actNew;
+    QAction *actOpen;
+    QAction *actSave;
+    QAction *actSaveAs;
     QAction *actExportLs;
     QAction *actExportPk;
     QAction *actExit;
@@ -110,7 +115,10 @@ HeightMapWindowImplementation::HeightMapWindowImplementation()
       prgProcess(new QProgressBar),
       lblPeaks(new QLabel),
       lblIsobars(new QLabel),
-      actNewFile(nullptr),
+      actNew(nullptr),
+      actOpen(nullptr),
+      actSave(nullptr),
+      actSaveAs(nullptr),
       actExportLs(nullptr),
       actExportPk(nullptr),
       actExit(nullptr),
@@ -129,6 +137,14 @@ HeightMapWindowImplementation::HeightMapWindowImplementation()
       uskCommands(nullptr),
       hmvm(HMVM_Hybrid),
       processing(false) { }
+
+void HeightMapWindowImplementation::adjustFileDialog(QFileDialog *dialog)
+{
+    dialog->setOptions(QFileDialog::DontResolveSymlinks);
+    dialog->setDirectory(QDir::home());
+    dialog->setFileMode(QFileDialog::AnyFile);
+    dialog->setViewMode(QFileDialog::Detail);
+}
 
 void HeightMapWindowImplementation::provideExtrapolationWidgets(ExtrapolationOptionsDialog *dialog)
 {
@@ -208,7 +224,7 @@ HeightMapWindow::~HeightMapWindow()
 void HeightMapWindow::newFile()
 {
     TerrainOptionsDialog dialog(this);
-    dialog.setWindowTitle(tr("New file"));
+    dialog.setWindowTitle(tr("New terrain"));
     dialog.setPreferences(m->logic->preferences());
 
     if (!dialog.exec())
@@ -218,16 +234,59 @@ void HeightMapWindow::newFile()
     m->logic->newTerrain();
 }
 
+void HeightMapWindow::openFile()
+{
+    QFileDialog dialog(this);
+    m->adjustFileDialog(&dialog);
+    dialog.setWindowTitle(tr("Open terrain"));
+    dialog.setAcceptMode(QFileDialog::AcceptOpen);
+    dialog.setNameFilter(tr("HeightMap terrain files (*.%1)").arg(HM_FILE_EXT));
+
+    if (!dialog.exec())
+        return;
+
+    QString filename(dialog.selectedFiles().value(0));
+    m->logic->newTerrain();
+
+    HeightMapBinaryIOHandler ioHandler;
+    ioHandler.read(m->logic->terrain(), filename);
+    m->logic->setPreferences(ioHandler.preferences());
+    m->logic->setXData(ioHandler.xData());
+
+    m->logic->loadTerrain();
+}
+
+void HeightMapWindow::saveFile()
+{
+
+}
+
+void HeightMapWindow::saveAsFile()
+{
+    QFileDialog dialog(this);
+    m->adjustFileDialog(&dialog);
+    dialog.setWindowTitle(tr("Save terrain"));
+    dialog.setAcceptMode(QFileDialog::AcceptSave);
+    dialog.setNameFilter(tr("HeightMap terrain files (*.%1)").arg(HM_FILE_EXT));
+
+    if (!dialog.exec())
+        return;
+
+    QString filename(dialog.selectedFiles().value(0));
+
+    HeightMapBinaryIOHandler ioHandler;
+    ioHandler.setPreferences(m->logic->preferences());
+    ioHandler.setXData(m->logic->xData());
+    ioHandler.write(m->logic->terrain(), filename);
+}
+
 void HeightMapWindow::exportLandscape()
 {
     QFileDialog dialog(this);
+    m->adjustFileDialog(&dialog);
     dialog.setWindowTitle(tr("Export landscape"));
     dialog.setAcceptMode(QFileDialog::AcceptSave);
-    dialog.setOptions(QFileDialog::DontResolveSymlinks);
-    dialog.setDirectory(QDir::home());
-    dialog.setFileMode(QFileDialog::AnyFile);
     dialog.setNameFilter(tr("HeightMap landscape text files (*.%1)").arg(LS_TEXT_FILE_EXT));
-    dialog.setViewMode(QFileDialog::Detail);
 
     if (!dialog.exec())
         return;
@@ -241,13 +300,10 @@ void HeightMapWindow::exportLandscape()
 void HeightMapWindow::exportPeaks()
 {
     QFileDialog dialog(this);
+    m->adjustFileDialog(&dialog);
     dialog.setWindowTitle(tr("Export peaks"));
     dialog.setAcceptMode(QFileDialog::AcceptSave);
-    dialog.setOptions(QFileDialog::DontResolveSymlinks);
-    dialog.setDirectory(QDir::home());
-    dialog.setFileMode(QFileDialog::AnyFile);
     dialog.setNameFilter(tr("HeightMap peak text files (*.%1)").arg(PK_TEXT_FILE_EXT));
-    dialog.setViewMode(QFileDialog::Detail);
 
     if (!dialog.exec())
         return;
@@ -516,9 +572,21 @@ void HeightMapWindow::createDocks()
 
 void HeightMapWindow::createActions()
 {
-    m->actNewFile = new QAction(this);
-    m->actNewFile->setText(tr("&New file..."));
-    m->actNewFile->setShortcut(tr("Ctrl+N"));
+    m->actNew = new QAction(this);
+    m->actNew->setText(tr("&New terrain..."));
+    m->actNew->setShortcut(tr("Ctrl+N"));
+
+    m->actOpen = new QAction(this);
+    m->actOpen->setText(tr("&Open terrain..."));
+    m->actOpen->setShortcut(tr("Ctrl+O"));
+
+    m->actSave = new QAction(this);
+    m->actSave->setText(tr("&Save terrain"));
+    m->actSave->setShortcut(tr("Ctrl+S"));
+
+    m->actSaveAs = new QAction(this);
+    m->actSaveAs->setText(tr("&Save terrain as..."));
+    m->actSaveAs->setShortcut(tr("Ctrl+Shift+S"));
 
     m->actExportLs = new QAction(this);
     m->actExportLs->setText(tr("Export landscape..."));
@@ -531,7 +599,10 @@ void HeightMapWindow::createActions()
     m->actExit->setShortcut(tr("Alt+X"));
 
     QMenu *mnuFile = menuBar()->addMenu(tr("&File"));
-    mnuFile->addAction(m->actNewFile);
+    mnuFile->addAction(m->actNew);
+    mnuFile->addAction(m->actOpen);
+    mnuFile->addAction(m->actSave);
+    mnuFile->addAction(m->actSaveAs);
     mnuFile->addSeparator();
     mnuFile->addAction(m->actExportLs);
     mnuFile->addAction(m->actExportPk);
@@ -621,7 +692,10 @@ void HeightMapWindow::createActions()
     typedef QActionGroup G;
     typedef HeightMapWindow W;
 
-    connect(m->actNewFile,          &A::triggered,  this,       &W::newFile);
+    connect(m->actNew,              &A::triggered,  this,       &W::newFile);
+    connect(m->actOpen,             &A::triggered,  this,       &W::openFile);
+    connect(m->actSave,             &A::triggered,  this,       &W::saveFile);
+    connect(m->actSaveAs,           &A::triggered,  this,       &W::saveAsFile);
     connect(m->actExportLs,         &A::triggered,  this,       &W::exportLandscape);
     connect(m->actExportPk,         &A::triggered,  this,       &W::exportPeaks);
     connect(m->actExit,             &A::triggered,  this,       &W::close);

@@ -22,6 +22,9 @@ public:
 
 private slots:
     void newFile();
+    void openFile();
+    void saveFile();
+    void saveAsFile();
 
     void exportLandscape();
     void exportPeaks();
