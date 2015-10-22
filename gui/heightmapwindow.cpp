@@ -42,7 +42,8 @@ struct HeightMapWindowImplementation
     void displayHeightMapImage();
     void resetStatusBar();
 
-    void setActionsEnabled(bool);
+    void setLogicActionsEnabled(bool);
+    void setWindowActionsEnabled(bool);
     void setWidgetsEnabled(bool);
 
     ~HeightMapWindowImplementation();
@@ -176,23 +177,15 @@ void HeightMapWindowImplementation::resetStatusBar()
     lblIsobars->setText(QString());
 }
 
-void HeightMapWindowImplementation::setActionsEnabled(bool enabled)
+void HeightMapWindowImplementation::setLogicActionsEnabled(bool enabled)
 {
-    actNew->setEnabled(enabled);
-    actOpen->setEnabled(enabled);
     actSave->setEnabled(enabled);
     actSaveAs->setEnabled(enabled);
     actExportLs->setEnabled(enabled);
     actExportPk->setEnabled(enabled);
-    actExit->setEnabled(enabled);
 
-    actUndo->setEnabled(enabled);
-    actRedo->setEnabled(enabled);
-
-    actViewModePeaks->setEnabled(enabled);
-    actViewModeLandscape->setEnabled(enabled);
-    actViewModeIsobars->setEnabled(enabled);
-    actViewModeHybrid->setEnabled(enabled);
+    actUndo->setEnabled(enabled && uskCommands->canUndo());
+    actRedo->setEnabled(enabled && uskCommands->canRedo());
 
     actGenLs->setEnabled(enabled);
     actBuildLs->setEnabled(enabled);
@@ -200,6 +193,19 @@ void HeightMapWindowImplementation::setActionsEnabled(bool enabled)
     actHmSettings->setEnabled(enabled);
     actExtrapolSettings->setEnabled(enabled);
     actContourSettings->setEnabled(enabled);
+}
+
+void HeightMapWindowImplementation::setWindowActionsEnabled(bool enabled)
+{
+    actNew->setEnabled(enabled);
+    actOpen->setEnabled(enabled);
+
+    actExit->setEnabled(enabled);
+
+    actViewModePeaks->setEnabled(enabled);
+    actViewModeLandscape->setEnabled(enabled);
+    actViewModeIsobars->setEnabled(enabled);
+    actViewModeHybrid->setEnabled(enabled);
 }
 
 void HeightMapWindowImplementation::setWidgetsEnabled(bool enabled)
@@ -461,13 +467,14 @@ void HeightMapWindow::resetTerrainData()
     m->resetStatusBar();
     m->displayHeightMapImage();
 
-    m->setActionsEnabled(true);
+    m->setLogicActionsEnabled(true);
     m->setWidgetsEnabled(true);
 }
 
 void HeightMapWindow::onProcessStarted()
 {
-    m->setActionsEnabled(false);
+    m->setWindowActionsEnabled(false);
+    m->setLogicActionsEnabled(false);
     m->setWidgetsEnabled(false);
 
     m->lblState->setText(tr("Processing..."));
@@ -489,7 +496,8 @@ void HeightMapWindow::onProcessFinished()
 
     m->displayHeightMapImage();
 
-    m->setActionsEnabled(true);
+    m->setWindowActionsEnabled(true);
+    m->setLogicActionsEnabled(true);
     m->setWidgetsEnabled(true);
 }
 
@@ -751,7 +759,8 @@ void HeightMapWindow::createActions()
     connect(m->actContourSettings,  &A::triggered,  this,       &W::editContouringSettings);
     connect(agpViewMode,            &G::triggered,  this,       &W::setViewMode);
 
-    m->setActionsEnabled(false);
+    m->setWindowActionsEnabled(true);
+    m->setLogicActionsEnabled(false);
     m->setWidgetsEnabled(false);
 }
 
