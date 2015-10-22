@@ -20,6 +20,9 @@ public:
     void init(HeightMapLogic *);
     ~HeightMapWindow();
 
+protected:
+    void closeEvent(QCloseEvent *);
+
 private slots:
     void newFile();
     void openFile();

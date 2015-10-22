@@ -8,6 +8,8 @@
 #include <QBoxLayout>
 #include <QPixmap>
 #include <QFileDialog>
+#include <QMessageBox>
+#include <QCloseEvent>
 #include "heightmapapplication.h"
 #include "heightmaplogic.h"
 #include "terrain.h"
@@ -260,6 +262,22 @@ void HeightMapWindow::init(HeightMapLogic *l)
 HeightMapWindow::~HeightMapWindow()
 {
     delete m;
+}
+
+
+void HeightMapWindow::closeEvent(QCloseEvent *e)
+{
+    if (m->processing) {
+        QMessageBox msg(this);
+        msg.setText(tr("Can not close."));
+        msg.setInformativeText(tr("Background operations are being performed. Please wait."));
+        msg.setIcon(QMessageBox::Information);
+        msg.exec();
+
+        e->ignore();
+    } else {
+        e->accept();
+    }
 }
 
 
