@@ -125,6 +125,7 @@ HeightMapLogic::HeightMapLogic(QObject *parent)
 
     connect(worker, &W::processStarted,             this,   &L::processStarted,             Qt::BlockingQueuedConnection);
     connect(worker, &W::processFinished,            this,   &L::processFinished,            Qt::BlockingQueuedConnection);
+    connect(worker, &W::estimatedTimeCalculated,    this,   &L::estimatedTimeCalculated,    Qt::BlockingQueuedConnection);
     connect(worker, &W::peakGeneratingStarted,      this,   &L::peakGeneratingStarted,      Qt::BlockingQueuedConnection);
     connect(worker, &W::peakGeneratingFinished,     this,   &L::peakGeneratingFinished,     Qt::BlockingQueuedConnection);
     connect(worker, &W::peakExtrapolationStarted,   this,   &L::peakExtrapolationStarted,   Qt::BlockingQueuedConnection);

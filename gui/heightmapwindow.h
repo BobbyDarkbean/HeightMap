@@ -46,6 +46,7 @@ private slots:
     void resetTerrainData();
     void onProcessStarted();
     void onProcessFinished();
+    void onEstimatedTimeCalculated(int);
     void onPeakGeneratingStarted();
     void onPeakGeneratingFinished();
     void onPeakExtrapolationStarted();

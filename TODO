@@ -1,6 +1,5 @@
 Add presets support.
 Fix algorithm NaN values issue (with bsl plugin).
-Implement correct progress bar value calculation.
 Implement save action.
 Add file-changed indicator.
 Store last open and save paths.

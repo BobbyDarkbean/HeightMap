@@ -23,6 +23,10 @@ struct MappingWorkerImplementation
     PeakGenerationOptions genOptions() const;
     void fillLevels(std::vector<int> &levels);
 
+    int genTime() const;
+    int xTime() const;
+    int contourTime() const;
+
     void drawPeaks();
     void drawLandscape();
     void drawIsobars();
@@ -69,6 +73,15 @@ void MappingWorkerImplementation::fillLevels(std::vector<int> &levels)
     for (int i = minLvl; i <= maxLvl; i += step)
         levels.push_back(i);
 }
+
+int MappingWorkerImplementation::genTime() const
+{ return 0; }
+
+int MappingWorkerImplementation::xTime() const
+{ return static_cast<int>(logic->preferences().peakCount()); }
+
+int MappingWorkerImplementation::contourTime() const
+{ return logic->terrain()->width() - 1; }
 
 void MappingWorkerImplementation::drawPeaks()
 {
@@ -159,6 +172,7 @@ void MappingWorker::syncLandscape()
     QMutexLocker lock(&m->mutex);
 
     emit processStarted();
+    emit estimatedTimeCalculated(m->xTime() + m->contourTime());
 
     loadPeaks();
     extrapolatePeaks();
@@ -172,6 +186,7 @@ void MappingWorker::createLandscape()
     QMutexLocker lock(&m->mutex);
 
     emit processStarted();
+    emit estimatedTimeCalculated(m->genTime() + m->xTime() + m->contourTime());
 
     generatePeaks();
     extrapolatePeaks();
@@ -185,6 +200,7 @@ void MappingWorker::buildLandscapeFromPeaks()
     QMutexLocker lock(&m->mutex);
 
     emit processStarted();
+    emit estimatedTimeCalculated(m->xTime() + m->contourTime());
 
     extrapolatePeaks();
     calculateContours();
@@ -197,6 +213,7 @@ void MappingWorker::plotIsobars()
     QMutexLocker lock(&m->mutex);
 
     emit processStarted();
+    emit estimatedTimeCalculated(m->contourTime());
 
     calculateContours();
 

@@ -247,6 +247,7 @@ void HeightMapWindow::init(HeightMapLogic *l)
     connect(m->logic,   &L::terrainCreated,             this,   &W::resetTerrainData);
     connect(m->logic,   &L::processStarted,             this,   &W::onProcessStarted);
     connect(m->logic,   &L::processFinished,            this,   &W::onProcessFinished);
+    connect(m->logic,   &L::estimatedTimeCalculated,    this,   &W::onEstimatedTimeCalculated);
     connect(m->logic,   &L::peakGeneratingStarted,      this,   &W::onPeakGeneratingStarted);
     connect(m->logic,   &L::peakGeneratingFinished,     this,   &W::onPeakGeneratingFinished);
     connect(m->logic,   &L::peakExtrapolationStarted,   this,   &W::onPeakExtrapolationStarted);
@@ -497,8 +498,6 @@ void HeightMapWindow::onProcessStarted()
 
     m->lblState->setText(tr("Processing..."));
     m->prgProcess->setValue(0);
-    m->prgProcess->setMaximum(static_cast<int>(m->logic->preferences().peakCount()) +
-                              m->logic->terrain()->width() - 1);
     m->prgProcess->show();
 
     m->processing = true;
@@ -517,6 +516,11 @@ void HeightMapWindow::onProcessFinished()
     m->setWindowActionsEnabled(true);
     m->setLogicActionsEnabled(true);
     m->setWidgetsEnabled(true);
+}
+
+void HeightMapWindow::onEstimatedTimeCalculated(int time)
+{
+    m->prgProcess->setMaximum(time);
 }
 
 void HeightMapWindow::onPeakGeneratingStarted()

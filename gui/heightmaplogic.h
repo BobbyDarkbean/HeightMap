@@ -49,6 +49,7 @@ signals:
     void terrainCreated();
     void processStarted();
     void processFinished();
+    void estimatedTimeCalculated(int);
     void peakGeneratingStarted();
     void peakGeneratingFinished();
     void peakExtrapolationStarted();
