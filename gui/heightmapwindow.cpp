@@ -42,6 +42,9 @@ struct HeightMapWindowImplementation
     void displayHeightMapImage();
     void resetStatusBar();
 
+    void setActionsEnabled(bool);
+    void setWidgetsEnabled(bool);
+
     ~HeightMapWindowImplementation();
 
     HeightMapLogic *logic;
@@ -171,6 +174,39 @@ void HeightMapWindowImplementation::resetStatusBar()
     lblLevels->setText(QString());
     lblPeaks->setText(QString());
     lblIsobars->setText(QString());
+}
+
+void HeightMapWindowImplementation::setActionsEnabled(bool enabled)
+{
+    actNew->setEnabled(enabled);
+    actOpen->setEnabled(enabled);
+    actSave->setEnabled(enabled);
+    actSaveAs->setEnabled(enabled);
+    actExportLs->setEnabled(enabled);
+    actExportPk->setEnabled(enabled);
+    actExit->setEnabled(enabled);
+
+    actUndo->setEnabled(enabled);
+    actRedo->setEnabled(enabled);
+
+    actViewModePeaks->setEnabled(enabled);
+    actViewModeLandscape->setEnabled(enabled);
+    actViewModeIsobars->setEnabled(enabled);
+    actViewModeHybrid->setEnabled(enabled);
+
+    actGenLs->setEnabled(enabled);
+    actBuildLs->setEnabled(enabled);
+    actCalcContours->setEnabled(enabled);
+    actHmSettings->setEnabled(enabled);
+    actExtrapolSettings->setEnabled(enabled);
+    actContourSettings->setEnabled(enabled);
+}
+
+void HeightMapWindowImplementation::setWidgetsEnabled(bool enabled)
+{
+    wgtPeakGenerating->setEnabled(enabled);
+    wgtExtrapolation->setEnabled(enabled);
+    wgtContouring->setEnabled(enabled);
 }
 
 HeightMapWindowImplementation::~HeightMapWindowImplementation() { }
@@ -424,10 +460,16 @@ void HeightMapWindow::resetTerrainData()
 
     m->resetStatusBar();
     m->displayHeightMapImage();
+
+    m->setActionsEnabled(true);
+    m->setWidgetsEnabled(true);
 }
 
 void HeightMapWindow::onProcessStarted()
 {
+    m->setActionsEnabled(false);
+    m->setWidgetsEnabled(false);
+
     m->lblState->setText(tr("Processing..."));
     m->prgProcess->setValue(0);
     m->prgProcess->setMaximum(static_cast<int>(m->logic->preferences().peakCount()) +
@@ -446,6 +488,9 @@ void HeightMapWindow::onProcessFinished()
     m->prgProcess->hide();
 
     m->displayHeightMapImage();
+
+    m->setActionsEnabled(true);
+    m->setWidgetsEnabled(true);
 }
 
 void HeightMapWindow::onPeakGeneratingStarted()
@@ -705,6 +750,9 @@ void HeightMapWindow::createActions()
     connect(m->actExtrapolSettings, &A::triggered,  this,       &W::editExtrapolationSettings);
     connect(m->actContourSettings,  &A::triggered,  this,       &W::editContouringSettings);
     connect(agpViewMode,            &G::triggered,  this,       &W::setViewMode);
+
+    m->setActionsEnabled(false);
+    m->setWidgetsEnabled(false);
 }
 
 void HeightMapWindow::createStatusBar()
