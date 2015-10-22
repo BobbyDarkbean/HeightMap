@@ -1,0 +1,12 @@
+Add presets support.
+Fix algorithm NaN values issue (with bsl plugin).
+Implement correct progress bar value calculation.
+Implement save action.
+Add file-changed indicator.
+Store last open and save paths.
+Add icons.
+Add toolbars.
+Check connections.
+Check literal strings.
+Localization.
+Full cross-platform serialization.
