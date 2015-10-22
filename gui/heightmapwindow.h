@@ -3,12 +3,13 @@
 
 
 #include <QMainWindow>
-#include "hm_shared.h"
+#include "hmdef.h"
 
 
 namespace HeightMap {
 
 
+class HeightMapLogic;
 struct HeightMapWindowImplementation;
 class HeightMapWindow : public QMainWindow
 {
@@ -16,10 +17,17 @@ class HeightMapWindow : public QMainWindow
 
 public:
     explicit HeightMapWindow(QWidget *parent = 0);
+    void init(HeightMapLogic *);
     ~HeightMapWindow();
+
+protected:
+    void closeEvent(QCloseEvent *);
 
 private slots:
     void newFile();
+    void openFile();
+    void saveFile();
+    void saveAsFile();
 
     void exportLandscape();
     void exportPeaks();
@@ -28,9 +36,17 @@ private slots:
     void editExtrapolationSettings();
     void editContouringSettings();
 
+    void generateLandscape();
+    void extrapolatePeaks();
+    void calculateContours();
+
+    void adjustPreferences();
+    void adjustExtrapolationData(QString);
+
+    void resetTerrainData();
     void onProcessStarted();
     void onProcessFinished();
-
+    void onEstimatedTimeCalculated(int);
     void onPeakGeneratingStarted();
     void onPeakGeneratingFinished();
     void onPeakExtrapolationStarted();
@@ -46,6 +62,12 @@ private slots:
 private:
     DISABLE_COPY(HeightMapWindow)
     DISABLE_MOVE(HeightMapWindow)
+
+    void createCentral();
+    void createWidgets();
+    void createDocks();
+    void createActions();
+    void createStatusBar();
 
     HeightMapWindowImplementation *m;
 };

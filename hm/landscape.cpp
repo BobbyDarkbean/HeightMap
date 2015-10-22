@@ -1,4 +1,4 @@
-#include <ostream>
+#include "hmdef.h"
 #include "landscape.h"
 
 
@@ -78,24 +78,6 @@ void Landscape::fill(double level) { m->fill(level); }
 
 double *Landscape::matrix() { return m->data; }
 const double *Landscape::matrix() const { return m->data; }
-
-void Landscape::exportTo(
-    std::ostream &stream,
-    int precision) const
-{
-    stream.precision(precision);
-    stream.flags(std::ios::fixed);
-
-    // transposed matrix
-    const double *const d = matrix();
-    for (int i = 0; i < height(); ++i) {
-        for (int j = 0; j < width(); ++j) {
-            stream.width(12);
-            stream << std::right << *(d + j * height() + i);
-        }
-        stream << '\n';
-    }
-}
 
 
 void Landscape::swap(Landscape &other)

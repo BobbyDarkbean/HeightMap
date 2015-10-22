@@ -1,9 +1,11 @@
+#include <QDir>
+#include <QPluginLoader>
 #include <QSettings>
 #include "preferences.h"
-#include "extrapolation/simpleextrapolationfactory.h"
-#include "extrapolation/slopeextrapolationfactory.h"
-#include "extrapolation/baselevelextrapolationfactory.h"
-#include "extrapolation/fixedradiusextrapolationfactory.h"
+#include "preferencescontroller.h"
+#include "extrapolationdata.h"
+#include "extrapolationfactory.h"
+#include "heightmaplogic.h"
 
 #include "heightmapapplication.h"
 
@@ -14,12 +16,25 @@ namespace HeightMap {
 struct HeightMapApplicationImplementation
 {
     HeightMapApplicationImplementation();
+
+    void importExtrapolations();
+    void cleanupExtrapolations();
+
+    void loadPreferences();
+    void savePreferences();
+
+    void addExtrapolation(ExtrapolationFactory *);
+
     ~HeightMapApplicationImplementation();
 
+    HeightMapLogic *logic;
+
     Preferences prefs;
+    PreferencesController *ctrl;
     QMap<QString, ExtrapolationFactory *> extrapolations;
 
     const QString IniFilename;
+    const QString XDataPath;
 
 private:
     DISABLE_COPY(HeightMapApplicationImplementation)
@@ -28,19 +43,41 @@ private:
 
 
 HeightMapApplicationImplementation::HeightMapApplicationImplementation()
-    : prefs(),
+    : logic(nullptr),
+      prefs(),
+      ctrl(nullptr),
       extrapolations(),
-      IniFilename(QApplication::applicationDirPath() + "/hmcfg.ini")
+      IniFilename(QApplication::applicationDirPath() + "/hmcfg.ini"),
+      XDataPath(QApplication::applicationDirPath() + "/xdata")
 {
-    ExtrapolationFactory *xFactorySimple = new SimpleExtrapolationFactory;
-    ExtrapolationFactory *xFactorySlope = new SlopeExtrapolationFactory;
-    ExtrapolationFactory *xFactoryBaseLevel = new BaseLevelExtrapolationFactory;
-    ExtrapolationFactory *xFactoryFixedRadius = new FixedRadiusExtrapolationFactory;
-    extrapolations.insert(xFactorySimple->name(), xFactorySimple);
-    extrapolations.insert(xFactorySlope->name(), xFactorySlope);
-    extrapolations.insert(xFactoryBaseLevel->name(), xFactoryBaseLevel);
-    extrapolations.insert(xFactoryFixedRadius->name(), xFactoryFixedRadius);
+    loadPreferences();
+    importExtrapolations();
+}
 
+void HeightMapApplicationImplementation::importExtrapolations()
+{
+    QDir xDataDir(XDataPath);
+
+    QStringList dllFilter;
+    dllFilter << "*.dll";
+    QStringList pluginNames = xDataDir.entryList(dllFilter, QDir::Files);
+
+    foreach (const QString &filename, pluginNames) {
+        QPluginLoader loader(xDataDir.absoluteFilePath(filename));
+        if (ExtrapolationFactory *f = qobject_cast<ExtrapolationFactory *>(loader.instance()))
+            addExtrapolation(f);
+    }
+}
+
+void HeightMapApplicationImplementation::cleanupExtrapolations()
+{
+    for (auto i = extrapolations.constBegin(); i != extrapolations.constEnd(); ++i) {
+        delete i.value();
+    }
+}
+
+void HeightMapApplicationImplementation::loadPreferences()
+{
     QSettings settings(IniFilename, QSettings::IniFormat);
     prefs.setLandscapeWidth(qvariant_cast<int>(settings.value("landscape/width", Preferences::DefaultLandscapeWidth)));
     prefs.setLandscapeHeight(qvariant_cast<int>(settings.value("landscape/height", Preferences::DefaultLandscapeHeight)));
@@ -56,7 +93,7 @@ HeightMapApplicationImplementation::HeightMapApplicationImplementation()
     settings.sync();
 }
 
-HeightMapApplicationImplementation::~HeightMapApplicationImplementation()
+void HeightMapApplicationImplementation::savePreferences()
 {
     QSettings settings(IniFilename, QSettings::IniFormat);
 
@@ -86,11 +123,36 @@ HeightMapApplicationImplementation::~HeightMapApplicationImplementation()
     settings.endGroup();
 }
 
+void HeightMapApplicationImplementation::addExtrapolation(ExtrapolationFactory *f)
+{ extrapolations.insert(f->name(), f); }
+
+HeightMapApplicationImplementation::~HeightMapApplicationImplementation()
+{
+    cleanupExtrapolations();
+    savePreferences();
+}
+
 
 HeightMapApplication::HeightMapApplication(int &argc, char **argv)
     : QApplication(argc, argv),
-      m(new HeightMapApplicationImplementation) { }
+      m(new HeightMapApplicationImplementation)
+{
+    m->logic = new HeightMapLogic(this);
+    m->logic->setPreferences(m->prefs);
 
+    m->ctrl = new PreferencesController(this);
+    m->ctrl->setPreferences(&m->prefs);
+
+    typedef HeightMapLogic L;
+    typedef HeightMapApplication A;
+
+    connect(m->logic,   &L::preferencesChanged,         this,   &A::setPreferences);
+    connect(m->logic,   &L::extrapolationDataChanged,   this,   &A::setXData);
+}
+
+
+HeightMapLogic *HeightMapApplication::logic() const
+{ return m->logic; }
 
 const Preferences &HeightMapApplication::preferences() const
 { return m->prefs; }
@@ -103,38 +165,33 @@ void HeightMapApplication::setPreferences(const Preferences &prefs)
     }
 }
 
+PreferencesController *HeightMapApplication::preferencesController() const
+{ return m->ctrl; }
+
+ExtrapolationData HeightMapApplication::xData(const QString &name) const
+{
+    if (ExtrapolationFactory *f = extrapolationFactory(name))
+        return f->extractData();
+
+    return ExtrapolationData();
+}
+
+void HeightMapApplication::setXData(const QString &name, const ExtrapolationData &xdata)
+{
+    if (ExtrapolationFactory *f = extrapolationFactory(name)) {
+        f->provideData(xdata);
+        emit extrapolationDataChanged(name);
+    }
+}
+
 QStringList HeightMapApplication::extrapolatorKeys() const
-{
-    return m->extrapolations.keys();
-}
+{ return m->extrapolations.keys(); }
 
-AbstractExtrapolationWidget *HeightMapApplication::createExtrapolationWidget(const QString &name) const
-{
-    if (ExtrapolationFactory *f = m->extrapolations.value(name, nullptr)) {
-        return f->createWidget();
-    }
+ExtrapolationFactory *HeightMapApplication::extrapolationFactory(const QString &name) const
+{ return m->extrapolations.value(name, nullptr); }
 
-    return nullptr;
-}
-
-QString HeightMapApplication::extrapolationDescription(const QString &name) const
-{
-    if (ExtrapolationFactory *f = m->extrapolations.value(name, nullptr)) {
-        return f->description();
-    }
-
-    return QString();
-}
-
-Extrapolator *HeightMapApplication::currentExtrapolator() const
-{
-    QString currentExtrapolatorName = preferences().extrapolatorName();
-    if (ExtrapolationFactory *f = m->extrapolations.value(currentExtrapolatorName, nullptr)) {
-        return f->extrapolator();
-    }
-
-    return nullptr;
-}
+ExtrapolationFactory *HeightMapApplication::currentExtrapolationFactory() const
+{ return extrapolationFactory(preferences().extrapolatorName()); }
 
 
 HeightMapApplication::~HeightMapApplication()

@@ -4,6 +4,7 @@
 
 #include <QObject>
 #include <QPoint>
+#include "hmdef.h"
 #include "eventservice"
 #include "peakinfo.h"
 
@@ -12,6 +13,7 @@ namespace HeightMap {
 
 
 class Mapper;
+class HeightMapLogic;
 struct MappingData;
 struct MappingWorkerImplementation;
 class MappingWorker : public QObject
@@ -20,12 +22,17 @@ class MappingWorker : public QObject
 
 public:
     explicit MappingWorker(QObject *parent = 0);
+
+    void bindLogic(HeightMapLogic *);
     void initFrom(const MappingData &);
+
     ~MappingWorker();
 
 signals:
     void processStarted();
     void processFinished();
+    void estimatedTimeCalculated(int);
+
     void peakGeneratingStarted();
     void peakGeneratingFinished();
     void peakExtrapolationStarted();
@@ -37,6 +44,7 @@ signals:
     void contouringFinished();
 
 public slots:
+    void syncLandscape();
     void createLandscape();
     void buildLandscapeFromPeaks();
     void plotIsobars();
@@ -45,6 +53,7 @@ private:
     DISABLE_COPY(MappingWorker)
     DISABLE_MOVE(MappingWorker)
 
+    void loadPeaks();
     void generatePeaks();
     void extrapolatePeaks();
     void calculateContours();

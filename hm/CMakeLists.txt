@@ -17,6 +17,7 @@ set (HMCORE_HDR internal/contouring.h
                 eventservice
                 extrapolator.h
                 hm_shared.h
+                hmdef.h
                 landscape.h
                 line2dsegment.h
                 mapper.h
@@ -28,8 +29,8 @@ set (HMCORE_SRC extrapolator.cpp
                 mapper.cpp
                 terrain.cpp)
 
-if (UNIX OR MINGW)
-    set (CMAKE_CXX_FLAGS "-Wall -O3 -pedantic -s -std=c++11")
+if (CMAKE_COMPILER_IS_GNUCXX)
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -O3 -pedantic -s -std=c++11")
 endif ()
 add_definitions (-DHEIGHTMAP_LIB)
 

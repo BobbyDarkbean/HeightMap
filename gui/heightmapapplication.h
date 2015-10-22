@@ -3,15 +3,18 @@
 
 
 #include <QApplication>
-#include "hm_shared.h"
+#include "hmdef.h"
 
 
 namespace HeightMap {
 
 
-class Preferences;
-class Extrapolator;
 class AbstractExtrapolationWidget;
+class HeightMapLogic;
+class Preferences;
+class PreferencesController;
+class ExtrapolationFactory;
+class ExtrapolationData;
 struct HeightMapApplicationImplementation;
 class HeightMapApplication : public QApplication
 {
@@ -20,19 +23,24 @@ class HeightMapApplication : public QApplication
 public:
     HeightMapApplication(int &argc, char **argv);
 
+    HeightMapLogic *logic() const;
+
     const Preferences &preferences() const;
     void setPreferences(const Preferences &);
+    PreferencesController *preferencesController() const;
+
+    ExtrapolationData xData(const QString &name) const;
+    void setXData(const QString &, const ExtrapolationData &);
 
     QStringList extrapolatorKeys() const;
-
-    AbstractExtrapolationWidget *createExtrapolationWidget(const QString &name) const;
-    QString extrapolationDescription(const QString &name) const;
-    Extrapolator *currentExtrapolator() const;
+    ExtrapolationFactory *extrapolationFactory(const QString &name) const;
+    ExtrapolationFactory *currentExtrapolationFactory() const;
 
     ~HeightMapApplication();
 
 signals:
     void preferencesChanged();
+    void extrapolationDataChanged(QString);
 
 private:
     DISABLE_COPY(HeightMapApplication)

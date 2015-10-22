@@ -29,7 +29,10 @@ public:
     int height() const;
 
     const Landscape &landscape() const;
+
     const std::vector<PeakInfo> &peaks() const;
+    void setPeaks(const std::vector<PeakInfo> &);
+
     const std::list<Line2dSegment> &contours() const;
 
     void clearLandscape();
@@ -44,10 +47,6 @@ public:
                           Extrapolator *extrapolator);
     void calculateContours(Mapper *mapper,
                            const std::vector<int> &levelLayout);
-
-    void exportPeaks(std::ostream &) const;
-    void exportLandscape(std::ostream &,
-                         int precision) const;
 
     void swap(Terrain &);
 
