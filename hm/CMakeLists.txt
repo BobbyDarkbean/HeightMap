@@ -30,7 +30,7 @@ set (HMCORE_SRC extrapolator.cpp
                 terrain.cpp)
 
 if (CMAKE_COMPILER_IS_GNUCXX)
-    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -O3 -pedantic -s -std=c++11")
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -O3 -pedantic -s -std=c++0x")
 endif ()
 add_definitions (-DHEIGHTMAP_LIB)
 
