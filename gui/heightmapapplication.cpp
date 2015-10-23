@@ -58,9 +58,9 @@ void HeightMapApplicationImplementation::importExtrapolations()
 {
     QDir xDataDir(XDataPath);
 
-    QStringList dllFilter;
-    dllFilter << "*.dll";
-    QStringList pluginNames = xDataDir.entryList(dllFilter, QDir::Files);
+    QStringList pluginFilter;
+    pluginFilter << "*hmxplg*.*";
+    QStringList pluginNames = xDataDir.entryList(pluginFilter, QDir::Files);
 
     foreach (const QString &filename, pluginNames) {
         QPluginLoader loader(xDataDir.absoluteFilePath(filename));
