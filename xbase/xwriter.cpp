@@ -30,7 +30,7 @@ XWriterImplementation::XWriterImplementation(const QString &filename)
 XWriterImplementation::~XWriterImplementation()
 {
     QFile file(fname);
-    if (!file.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text)) {
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
         return;
     }
 
