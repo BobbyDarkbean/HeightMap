@@ -92,6 +92,7 @@ void MappingWorkerImplementation::drawPeaks()
     QImage imgPk(terrain->width() * imageFactor,
                  terrain->height() * imageFactor,
                  QImage::Format_ARGB32_Premultiplied);
+    imgPk.fill(Qt::transparent);
     engr.drawPeaks(terrain->peaks(), &imgPk, imageFactor);
 
     *data.imgPeaks = imgPk;
@@ -120,6 +121,7 @@ void MappingWorkerImplementation::drawIsobars()
     QImage imgBars(terrain->width() * imageFactor,
                    terrain->height() * imageFactor,
                    QImage::Format_ARGB32_Premultiplied);
+    imgBars.fill(Qt::transparent);
     engr.drawIsobars(terrain->contours(), &imgBars, true, imageFactor);
 
     *data.imgIsobars = imgBars;
