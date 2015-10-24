@@ -1,3 +1,4 @@
+#include <QApplication>
 #include "baselevelextrapolationwidget.h"
 #include "baselevelextrapolator.h"
 #include "extrapolationdata.h"
@@ -21,6 +22,8 @@ struct BaseLevelExtrapolationFactoryImplementation
 
     BaseLevelExtrapolator *x;
 
+    const QString XmlFilename;
+
 private:
     DISABLE_COPY(BaseLevelExtrapolationFactoryImplementation)
     DISABLE_MOVE(BaseLevelExtrapolationFactoryImplementation)
@@ -28,9 +31,10 @@ private:
 
 
 BaseLevelExtrapolationFactoryImplementation::BaseLevelExtrapolationFactoryImplementation()
-    : x(new BaseLevelExtrapolator)
+    : x(new BaseLevelExtrapolator),
+      XmlFilename(qApp->applicationDirPath() + "/xdata/bsl.xml")
 {
-    XReader xr("xdata/bsl.xml");
+    XReader xr(XmlFilename);
     provide(xr.data());
 }
 
@@ -48,7 +52,7 @@ void BaseLevelExtrapolationFactoryImplementation::provide(const ExtrapolationDat
 
 BaseLevelExtrapolationFactoryImplementation::~BaseLevelExtrapolationFactoryImplementation()
 {
-    XWriter xw("xdata/bsl.xml");
+    XWriter xw(XmlFilename);
     xw.setData(extract());
 
     delete x;

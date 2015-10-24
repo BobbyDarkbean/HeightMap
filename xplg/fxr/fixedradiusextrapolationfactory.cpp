@@ -1,3 +1,4 @@
+#include <QApplication>
 #include "fixedradiusextrapolationwidget.h"
 #include "fixedradiusextrapolator.h"
 #include "extrapolationdata.h"
@@ -21,6 +22,8 @@ struct FixedRadiusExtrapolationFactoryImplementation
 
     FixedRadiusExtrapolator *x;
 
+    const QString XmlFilename;
+
 private:
     DISABLE_COPY(FixedRadiusExtrapolationFactoryImplementation)
     DISABLE_MOVE(FixedRadiusExtrapolationFactoryImplementation)
@@ -28,9 +31,10 @@ private:
 
 
 FixedRadiusExtrapolationFactoryImplementation::FixedRadiusExtrapolationFactoryImplementation()
-    : x(new FixedRadiusExtrapolator)
+    : x(new FixedRadiusExtrapolator),
+      XmlFilename(qApp->applicationDirPath() + "/xdata/fxr.xml")
 {
-    XReader xr("xdata/fxr.xml");
+    XReader xr(XmlFilename);
     provide(xr.data());
 }
 
@@ -50,7 +54,7 @@ void FixedRadiusExtrapolationFactoryImplementation::provide(const ExtrapolationD
 
 FixedRadiusExtrapolationFactoryImplementation::~FixedRadiusExtrapolationFactoryImplementation()
 {
-    XWriter xw("xdata/fxr.xml");
+    XWriter xw(XmlFilename);
     xw.setData(extract());
 
     delete x;

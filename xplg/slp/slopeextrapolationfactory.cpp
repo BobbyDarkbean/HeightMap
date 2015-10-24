@@ -1,3 +1,4 @@
+#include <QApplication>
 #include "slopeextrapolationwidget.h"
 #include "slopeextrapolator.h"
 #include "extrapolationdata.h"
@@ -21,6 +22,8 @@ struct SlopeExtrapolationFactoryImplementation
 
     SlopeExtrapolator *x;
 
+    const QString XmlFilename;
+
 private:
     DISABLE_COPY(SlopeExtrapolationFactoryImplementation)
     DISABLE_MOVE(SlopeExtrapolationFactoryImplementation)
@@ -28,9 +31,10 @@ private:
 
 
 SlopeExtrapolationFactoryImplementation::SlopeExtrapolationFactoryImplementation()
-    : x(new SlopeExtrapolator)
+    : x(new SlopeExtrapolator),
+      XmlFilename(qApp->applicationDirPath() + "/xdata/slp.xml")
 {
-    XReader xr("xdata/slp.xml");
+    XReader xr(XmlFilename);
     provide(xr.data());
 }
 
@@ -50,7 +54,7 @@ void SlopeExtrapolationFactoryImplementation::provide(const ExtrapolationData &d
 
 SlopeExtrapolationFactoryImplementation::~SlopeExtrapolationFactoryImplementation()
 {
-    XWriter xw("xdata/slp.xml");
+    XWriter xw(XmlFilename);
     xw.setData(extract());
 
     delete x;

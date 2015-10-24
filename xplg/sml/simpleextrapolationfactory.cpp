@@ -1,3 +1,4 @@
+#include <QApplication>
 #include "simpleextrapolationwidget.h"
 #include "simpleextrapolator.h"
 #include "extrapolationdata.h"
@@ -21,6 +22,8 @@ struct SimpleExtrapolationFactoryImplementation
 
     SimpleExtrapolator *x;
 
+    const QString XmlFilename;
+
 private:
     DISABLE_COPY(SimpleExtrapolationFactoryImplementation)
     DISABLE_MOVE(SimpleExtrapolationFactoryImplementation)
@@ -28,9 +31,10 @@ private:
 
 
 SimpleExtrapolationFactoryImplementation::SimpleExtrapolationFactoryImplementation()
-    : x(new SimpleExtrapolator)
+    : x(new SimpleExtrapolator),
+      XmlFilename(qApp->applicationDirPath() + "/xdata/sml.xml")
 {
-    XReader xr("xdata/sml.xml");
+    XReader xr(XmlFilename);
     provide(xr.data());
 }
 
@@ -48,7 +52,7 @@ void SimpleExtrapolationFactoryImplementation::provide(const ExtrapolationData &
 
 SimpleExtrapolationFactoryImplementation::~SimpleExtrapolationFactoryImplementation()
 {
-    XWriter xw("xdata/sml.xml");
+    XWriter xw(XmlFilename);
     xw.setData(extract());
 
     delete x;
