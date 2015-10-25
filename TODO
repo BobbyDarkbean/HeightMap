@@ -1,5 +1,4 @@
 Add presets support.
-Fix algorithm NaN values issue (with bsl plugin).
 Implement save action.
 Add file-changed indicator.
 Store last open and save paths.

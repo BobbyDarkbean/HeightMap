@@ -20,9 +20,9 @@ void FixedRadiusExtrapolator::modify(
     double peak,
     double vectorLength)
 {
-    double h = peak - (peak / m_fixedRadius * vectorLength);    // extrapolated value
-    double h_diff = peak - currentValue;                        // current-peak difference
-    double add_val = h_diff / peak * h;                         // correction value
+    double h_diff = peak - currentValue;        // current-peak difference
+    double d = h_diff / m_fixedRadius;          // step
+    double add_val = h_diff - d * vectorLength; // correction value
 
     currentValue += add_val;
 }
