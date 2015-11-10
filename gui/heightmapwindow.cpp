@@ -41,6 +41,11 @@ struct HeightMapWindowImplementation
     void adjustFileDialog(QFileDialog *);
     void provideExtrapolationWidgets(ExtrapolationOptionsDialog *);
 
+    void loadTerrain(const QString &filename);
+    void saveTerrain(const QString &filename);
+    void saveLandscape(const QString &filename);
+    void savePeaks(const QString &filename);
+
     void displayHeightMapImage();
     void resetStatusBar();
 
@@ -51,6 +56,7 @@ struct HeightMapWindowImplementation
     ~HeightMapWindowImplementation();
 
     HeightMapLogic *logic;
+    QString currentFilename;
 
     QLabel *lblHmImg;
 
@@ -107,6 +113,7 @@ private:
 
 HeightMapWindowImplementation::HeightMapWindowImplementation()
     : logic(),
+      currentFilename(),
       lblHmImg(new QLabel),
       wgtPeakGenerating(nullptr),
       wgtExtrapolation(nullptr),
@@ -159,6 +166,36 @@ void HeightMapWindowImplementation::provideExtrapolationWidgets(ExtrapolationOpt
         if (ExtrapolationFactory *f = hmApp->extrapolationFactory(name))
             dialog->addExtrapolationWidget(f);
     }
+}
+
+void HeightMapWindowImplementation::loadTerrain(const QString &filename)
+{
+    HeightMapBinaryIOHandler ioHandler;
+    Terrain *t = ioHandler.read(filename);
+    hmApp->setPreferences(ioHandler.preferences());
+    hmApp->setXData(hmApp->preferences().extrapolatorName(), ioHandler.xData());
+
+    logic->openTerrain(t);
+}
+
+void HeightMapWindowImplementation::saveTerrain(const QString &filename)
+{
+    HeightMapBinaryIOHandler ioHandler;
+    ioHandler.setPreferences(logic->preferences());
+    ioHandler.setXData(logic->xData());
+    ioHandler.write(logic->terrain(), filename);
+}
+
+void HeightMapWindowImplementation::saveLandscape(const QString &filename)
+{
+    LandscapeTextIOHandler ioHandler;
+    ioHandler.write(logic->terrain(), filename);
+}
+
+void HeightMapWindowImplementation::savePeaks(const QString &filename)
+{
+    PeaksTextIOHandler ioHandler;
+    ioHandler.write(logic->terrain(), filename);
 }
 
 void HeightMapWindowImplementation::displayHeightMapImage()
@@ -307,18 +344,19 @@ void HeightMapWindow::openFile()
         return;
 
     QString filename(dialog.selectedFiles().value(0));
-
-    HeightMapBinaryIOHandler ioHandler;
-    Terrain *t = ioHandler.read(filename);
-    hmApp->setPreferences(ioHandler.preferences());
-    hmApp->setXData(hmApp->preferences().extrapolatorName(), ioHandler.xData());
-
-    m->logic->openTerrain(t);
+    if (!filename.isEmpty()) {
+        m->loadTerrain(filename);
+        m->currentFilename = filename;
+    }
 }
 
 void HeightMapWindow::saveFile()
 {
-
+    if (!m->currentFilename.isEmpty()) {
+        m->saveTerrain(m->currentFilename);
+    } else {
+        saveAsFile();
+    }
 }
 
 void HeightMapWindow::saveAsFile()
@@ -333,11 +371,10 @@ void HeightMapWindow::saveAsFile()
         return;
 
     QString filename(dialog.selectedFiles().value(0));
-
-    HeightMapBinaryIOHandler ioHandler;
-    ioHandler.setPreferences(m->logic->preferences());
-    ioHandler.setXData(m->logic->xData());
-    ioHandler.write(m->logic->terrain(), filename);
+    if (!filename.isEmpty()) {
+        m->saveTerrain(filename);
+        m->currentFilename = filename;
+    }
 }
 
 void HeightMapWindow::exportLandscape()
@@ -352,9 +389,8 @@ void HeightMapWindow::exportLandscape()
         return;
 
     QString filename(dialog.selectedFiles().value(0));
-
-    LandscapeTextIOHandler ioHandler;
-    ioHandler.write(m->logic->terrain(), filename);
+    if (!filename.isEmpty())
+        m->saveLandscape(filename);
 }
 
 void HeightMapWindow::exportPeaks()
@@ -369,9 +405,8 @@ void HeightMapWindow::exportPeaks()
         return;
 
     QString filename(dialog.selectedFiles().value(0));
-
-    PeaksTextIOHandler ioHandler;
-    ioHandler.write(m->logic->terrain(), filename);
+    if (!filename.isEmpty())
+        m->savePeaks(filename);
 }
 
 void HeightMapWindow::editPeakSettings()
@@ -482,6 +517,7 @@ void HeightMapWindow::adjustExtrapolationData(QString)
 void HeightMapWindow::resetTerrainData()
 {
     m->uskCommands->clear();
+    m->currentFilename.clear();
 
     m->resetStatusBar();
     m->displayHeightMapImage();
