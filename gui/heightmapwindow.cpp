@@ -53,6 +53,8 @@ struct HeightMapWindowImplementation
     void setWindowActionsEnabled(bool);
     void setWidgetsEnabled(bool);
 
+    QString strippedName(const QString &fullFilename) const;
+
     ~HeightMapWindowImplementation();
 
     HeightMapLogic *logic;
@@ -100,6 +102,7 @@ struct HeightMapWindowImplementation
     QAction *actViewModeHybrid;
 
     QUndoStack *uskCommands;
+    int historyPivotIdx;
 
     HeightMapViewMode hmvm;
 
@@ -148,6 +151,7 @@ HeightMapWindowImplementation::HeightMapWindowImplementation()
       actViewModeIsobars(nullptr),
       actViewModeHybrid(nullptr),
       uskCommands(nullptr),
+      historyPivotIdx(-1),
       hmvm(HMVM_Hybrid),
       processing(false) { }
 
@@ -254,6 +258,12 @@ void HeightMapWindowImplementation::setWidgetsEnabled(bool enabled)
     wgtContouring->setEnabled(enabled);
 }
 
+QString HeightMapWindowImplementation::strippedName(const QString &fullFilename) const
+{
+    QString filename = QFileInfo(fullFilename).fileName();
+    return filename.left(filename.indexOf(QChar('.')));
+}
+
 HeightMapWindowImplementation::~HeightMapWindowImplementation() { }
 
 
@@ -345,15 +355,14 @@ void HeightMapWindow::openFile()
 
     QString filename(dialog.selectedFiles().value(0));
     if (!filename.isEmpty()) {
-        m->loadTerrain(filename);
-        m->currentFilename = filename;
+        loadTerrain(filename);
     }
 }
 
 void HeightMapWindow::saveFile()
 {
     if (!m->currentFilename.isEmpty()) {
-        m->saveTerrain(m->currentFilename);
+        saveTerrain(m->currentFilename);
     } else {
         saveAsFile();
     }
@@ -372,8 +381,7 @@ void HeightMapWindow::saveAsFile()
 
     QString filename(dialog.selectedFiles().value(0));
     if (!filename.isEmpty()) {
-        m->saveTerrain(filename);
-        m->currentFilename = filename;
+        saveTerrain(filename);
     }
 }
 
@@ -517,13 +525,14 @@ void HeightMapWindow::adjustExtrapolationData(QString)
 void HeightMapWindow::resetTerrainData()
 {
     m->uskCommands->clear();
-    m->currentFilename.clear();
 
     m->resetStatusBar();
     m->displayHeightMapImage();
 
     m->setLogicActionsEnabled(true);
     m->setWidgetsEnabled(true);
+
+    specifyCurrentFilename(QString());
 }
 
 void HeightMapWindow::onProcessStarted()
@@ -603,6 +612,11 @@ void HeightMapWindow::onContouringFinished()
 {
     Terrain *terrain = m->logic->terrain();
     m->lblIsobars->setText(tr("%1 isobar segment(s)").arg(terrain->contours().size()));
+}
+
+void HeightMapWindow::adjustHistoryIndex(int historyIndex)
+{
+    setWindowModified(historyIndex != m->historyPivotIdx);
 }
 
 void HeightMapWindow::setViewMode(QAction *viewModeAct)
@@ -800,7 +814,10 @@ void HeightMapWindow::createActions()
 
     typedef QAction A;
     typedef QActionGroup G;
+    typedef QUndoStack U;
     typedef HeightMapWindow W;
+
+    connect(m->uskCommands,         &U::indexChanged,   this,   &W::adjustHistoryIndex);
 
     connect(m->actNew,              &A::triggered,  this,       &W::newFile);
     connect(m->actOpen,             &A::triggered,  this,       &W::openFile);
@@ -839,6 +856,37 @@ void HeightMapWindow::createStatusBar()
     statusBar()->addWidget(procBarShell, 12);
     statusBar()->addWidget(m->lblPeaks, 4);
     statusBar()->addWidget(m->lblIsobars, 6);
+}
+
+
+void HeightMapWindow::loadTerrain(const QString &filename)
+{
+    m->loadTerrain(filename);
+    specifyCurrentFilename(filename);
+    statusBar()->showMessage(tr("Terrain loaded"), 2000);
+}
+
+void HeightMapWindow::saveTerrain(const QString &filename)
+{
+    m->saveTerrain(filename);
+    specifyCurrentFilename(filename);
+    statusBar()->showMessage(tr("Terrain saved"), 2000);
+}
+
+
+void HeightMapWindow::specifyCurrentFilename(const QString &filename)
+{
+    m->currentFilename = filename;
+    m->historyPivotIdx = m->uskCommands->index();
+    setWindowModified(false);
+
+    QString shownName = tr("Untitled");
+    if (!m->currentFilename.isEmpty()) {
+        shownName = m->strippedName(filename);
+    }
+
+    setWindowTitle(tr("%1 - %2[*]").arg(hmApp->applicationName())
+                                   .arg(shownName));
 }
 
 

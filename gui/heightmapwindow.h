@@ -57,6 +57,7 @@ private slots:
     void onContouringAt(int);
     void onContouringFinished();
 
+    void adjustHistoryIndex(int);
     void setViewMode(QAction *);
 
 private:
@@ -68,6 +69,11 @@ private:
     void createDocks();
     void createActions();
     void createStatusBar();
+
+    void loadTerrain(const QString &filename);
+    void saveTerrain(const QString &filename);
+
+    void specifyCurrentFilename(const QString &);
 
     HeightMapWindowImplementation *m;
 };
