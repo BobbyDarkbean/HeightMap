@@ -819,20 +819,20 @@ void HeightMapWindow::createActions()
 
     connect(m->uskCommands,         &U::indexChanged,   this,   &W::adjustHistoryIndex);
 
-    connect(m->actNew,              &A::triggered,  this,       &W::newFile);
-    connect(m->actOpen,             &A::triggered,  this,       &W::openFile);
-    connect(m->actSave,             &A::triggered,  this,       &W::saveFile);
-    connect(m->actSaveAs,           &A::triggered,  this,       &W::saveAsFile);
-    connect(m->actExportLs,         &A::triggered,  this,       &W::exportLandscape);
-    connect(m->actExportPk,         &A::triggered,  this,       &W::exportPeaks);
-    connect(m->actExit,             &A::triggered,  this,       &W::close);
-    connect(m->actGenLs,            &A::triggered,  this,       &W::generateLandscape);
-    connect(m->actBuildLs,          &A::triggered,  this,       &W::extrapolatePeaks);
-    connect(m->actCalcContours,     &A::triggered,  this,       &W::calculateContours);
-    connect(m->actHmSettings,       &A::triggered,  this,       &W::editPeakSettings);
-    connect(m->actExtrapolSettings, &A::triggered,  this,       &W::editExtrapolationSettings);
-    connect(m->actContourSettings,  &A::triggered,  this,       &W::editContouringSettings);
-    connect(agpViewMode,            &G::triggered,  this,       &W::setViewMode);
+    connect(m->actNew,              &A::triggered,      this,   &W::newFile);
+    connect(m->actOpen,             &A::triggered,      this,   &W::openFile);
+    connect(m->actSave,             &A::triggered,      this,   &W::saveFile);
+    connect(m->actSaveAs,           &A::triggered,      this,   &W::saveAsFile);
+    connect(m->actExportLs,         &A::triggered,      this,   &W::exportLandscape);
+    connect(m->actExportPk,         &A::triggered,      this,   &W::exportPeaks);
+    connect(m->actExit,             &A::triggered,      this,   &W::close);
+    connect(m->actGenLs,            &A::triggered,      this,   &W::generateLandscape);
+    connect(m->actBuildLs,          &A::triggered,      this,   &W::extrapolatePeaks);
+    connect(m->actCalcContours,     &A::triggered,      this,   &W::calculateContours);
+    connect(m->actHmSettings,       &A::triggered,      this,   &W::editPeakSettings);
+    connect(m->actExtrapolSettings, &A::triggered,      this,   &W::editExtrapolationSettings);
+    connect(m->actContourSettings,  &A::triggered,      this,   &W::editContouringSettings);
+    connect(agpViewMode,            &G::triggered,      this,   &W::setViewMode);
 
     m->setWindowActionsEnabled(true);
     m->setLogicActionsEnabled(false);
