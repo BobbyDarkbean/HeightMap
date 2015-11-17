@@ -73,6 +73,8 @@ private:
     void loadTerrain(const QString &filename);
     void saveTerrain(const QString &filename);
 
+    bool handleModified();
+
     void specifyCurrentFilename(const QString &);
 
     HeightMapWindowImplementation *m;

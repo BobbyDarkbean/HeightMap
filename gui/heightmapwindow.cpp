@@ -323,6 +323,8 @@ void HeightMapWindow::closeEvent(QCloseEvent *e)
         msg.exec();
 
         e->ignore();
+    } else if (!handleModified()) {
+        e->ignore();
     } else {
         e->accept();
     }
@@ -331,6 +333,9 @@ void HeightMapWindow::closeEvent(QCloseEvent *e)
 
 void HeightMapWindow::newFile()
 {
+    if (!handleModified())
+        return;
+
     TerrainOptionsDialog dialog(this);
     dialog.setWindowTitle(tr("New terrain"));
     dialog.setPreferences(m->logic->preferences());
@@ -344,6 +349,9 @@ void HeightMapWindow::newFile()
 
 void HeightMapWindow::openFile()
 {
+    if (!handleModified())
+        return;
+
     QFileDialog dialog(this);
     m->adjustFileDialog(&dialog);
     dialog.setWindowTitle(tr("Open terrain"));
@@ -871,6 +879,30 @@ void HeightMapWindow::saveTerrain(const QString &filename)
     m->saveTerrain(filename);
     specifyCurrentFilename(filename);
     statusBar()->showMessage(tr("Terrain saved"), 2000);
+}
+
+
+bool HeightMapWindow::handleModified()
+{
+    if (!isWindowModified())
+        return true;
+
+    QMessageBox msg(this);
+    msg.setWindowTitle(hmApp->applicationName());
+    msg.setIcon(QMessageBox::Warning);
+    msg.setText(tr("The document has been modified.\n"
+                   "Do you want to save changes?"));
+    msg.setStandardButtons(QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
+
+    switch (msg.exec()) {
+    case QMessageBox::Yes:
+        saveFile();
+        /* fall through */
+    case QMessageBox::No:
+        return true;
+    default:
+        return false;
+    }
 }
 
 
