@@ -1,6 +1,5 @@
 Add presets support.
 Implement save action.
-Add file-changed indicator.
 Store last open and save paths.
 Add icons.
 Add toolbars.
