@@ -367,16 +367,17 @@ void HeightMapWindow::openFile()
     }
 }
 
-void HeightMapWindow::saveFile()
+bool HeightMapWindow::saveFile()
 {
     if (!m->currentFilename.isEmpty()) {
         saveTerrain(m->currentFilename);
+        return true;
     } else {
-        saveAsFile();
+        return saveAsFile();
     }
 }
 
-void HeightMapWindow::saveAsFile()
+bool HeightMapWindow::saveAsFile()
 {
     QFileDialog dialog(this);
     m->adjustFileDialog(&dialog);
@@ -385,12 +386,15 @@ void HeightMapWindow::saveAsFile()
     dialog.setNameFilter(tr("HeightMap terrain files (*.%1)").arg(HM_FILE_EXT));
 
     if (!dialog.exec())
-        return;
+        return false;
 
     QString filename(dialog.selectedFiles().value(0));
     if (!filename.isEmpty()) {
         saveTerrain(filename);
+        return true;
     }
+
+    return false;
 }
 
 void HeightMapWindow::exportLandscape()
@@ -896,8 +900,7 @@ bool HeightMapWindow::handleModified()
 
     switch (msg.exec()) {
     case QMessageBox::Yes:
-        saveFile();
-        /* fall through */
+        return saveFile();
     case QMessageBox::No:
         return true;
     default:

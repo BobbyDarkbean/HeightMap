@@ -26,8 +26,8 @@ protected:
 private slots:
     void newFile();
     void openFile();
-    void saveFile();
-    void saveAsFile();
+    bool saveFile();
+    bool saveAsFile();
 
     void exportLandscape();
     void exportPeaks();
